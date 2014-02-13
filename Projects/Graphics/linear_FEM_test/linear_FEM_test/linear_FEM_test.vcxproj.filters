@@ -27,6 +27,12 @@
     <ClInclude Include="utilities.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="sysinfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="conjugate_gradient.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="InitGL.cpp">
@@ -39,6 +45,9 @@
       <Filter>Resource Files</Filter>
     </ClCompile>
     <ClCompile Include="utilities.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
+    <ClCompile Include="conjugate_gradient.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
   </ItemGroup>

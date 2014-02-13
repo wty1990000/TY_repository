@@ -1,3 +1,6 @@
+#ifndef _TETMESH_H_
+#define _TETMESH_H_
+
 #include <glm/glm.hpp>
 #include "utilities.h"
 
@@ -11,3 +14,10 @@ struct Tetrahedron{
 	glm::mat3 K4[4][4];		//Stiffness matrix for each element
 	glm::vec3 B[4];			//Jacobian of shapefunction
 };
+
+static std::vector<Tetrahedron> tetrahedra;
+
+
+#endif // !_TETMESH_H_
+
+

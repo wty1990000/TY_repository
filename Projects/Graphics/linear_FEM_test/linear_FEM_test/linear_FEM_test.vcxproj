@@ -83,12 +83,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="conjugate_gradient.h" />
     <ClInclude Include="InitGL.h" />
     <ClInclude Include="physicalSimulation.h" />
+    <ClInclude Include="sysinfo.h" />
     <ClInclude Include="TetMesh.h" />
     <ClInclude Include="utilities.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="conjugate_gradient.cpp" />
     <ClCompile Include="InitGL.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="physicalSimulation.cpp" />

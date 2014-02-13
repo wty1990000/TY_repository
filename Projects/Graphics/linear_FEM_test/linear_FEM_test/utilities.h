@@ -12,6 +12,7 @@
 #include <ctime>		//	data and time functions
 #include <vector>
 #include <map>
+#include <Windows.h>
 
 bool user_say_yes();
 enum Error_code
