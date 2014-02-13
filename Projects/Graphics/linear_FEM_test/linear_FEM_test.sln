@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "linear_FEM_test", "linear_FEM_test\linear_FEM_test.vcxproj", "{CFE8E3A8-96D6-4EB2-A936-621DBA91E820}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CFE8E3A8-96D6-4EB2-A936-621DBA91E820}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CFE8E3A8-96D6-4EB2-A936-621DBA91E820}.Debug|Win32.Build.0 = Debug|Win32
+		{CFE8E3A8-96D6-4EB2-A936-621DBA91E820}.Release|Win32.ActiveCfg = Release|Win32
+		{CFE8E3A8-96D6-4EB2-A936-621DBA91E820}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

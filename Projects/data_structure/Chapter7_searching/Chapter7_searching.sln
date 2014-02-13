@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Sequential", "Sequential\Sequential.vcxproj", "{E124A985-5D5F-4E19-A618-2FC17D79E403}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Binary", "Binary\Binary.vcxproj", "{7E953A62-E63B-4286-8615-94B806A5EAB7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E124A985-5D5F-4E19-A618-2FC17D79E403}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E124A985-5D5F-4E19-A618-2FC17D79E403}.Debug|Win32.Build.0 = Debug|Win32
+		{E124A985-5D5F-4E19-A618-2FC17D79E403}.Release|Win32.ActiveCfg = Release|Win32
+		{E124A985-5D5F-4E19-A618-2FC17D79E403}.Release|Win32.Build.0 = Release|Win32
+		{7E953A62-E63B-4286-8615-94B806A5EAB7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7E953A62-E63B-4286-8615-94B806A5EAB7}.Debug|Win32.Build.0 = Debug|Win32
+		{7E953A62-E63B-4286-8615-94B806A5EAB7}.Release|Win32.ActiveCfg = Release|Win32
+		{7E953A62-E63B-4286-8615-94B806A5EAB7}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "list_reduction", "list_reduction\list_reduction.vcxproj", "{E9DA56A7-DE4B-4016-ABE9-F84688BAF20F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "list_scan", "list_scan\list_scan.vcxproj", "{256E433D-1B85-44D1-A568-2F4164A31545}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E9DA56A7-DE4B-4016-ABE9-F84688BAF20F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E9DA56A7-DE4B-4016-ABE9-F84688BAF20F}.Debug|Win32.Build.0 = Debug|Win32
+		{E9DA56A7-DE4B-4016-ABE9-F84688BAF20F}.Debug|x64.ActiveCfg = Debug|x64
+		{E9DA56A7-DE4B-4016-ABE9-F84688BAF20F}.Debug|x64.Build.0 = Debug|x64
+		{E9DA56A7-DE4B-4016-ABE9-F84688BAF20F}.Release|Win32.ActiveCfg = Release|Win32
+		{E9DA56A7-DE4B-4016-ABE9-F84688BAF20F}.Release|Win32.Build.0 = Release|Win32
+		{E9DA56A7-DE4B-4016-ABE9-F84688BAF20F}.Release|x64.ActiveCfg = Release|x64
+		{E9DA56A7-DE4B-4016-ABE9-F84688BAF20F}.Release|x64.Build.0 = Release|x64
+		{256E433D-1B85-44D1-A568-2F4164A31545}.Debug|Win32.ActiveCfg = Debug|Win32
+		{256E433D-1B85-44D1-A568-2F4164A31545}.Debug|Win32.Build.0 = Debug|Win32
+		{256E433D-1B85-44D1-A568-2F4164A31545}.Debug|x64.ActiveCfg = Debug|x64
+		{256E433D-1B85-44D1-A568-2F4164A31545}.Debug|x64.Build.0 = Debug|x64
+		{256E433D-1B85-44D1-A568-2F4164A31545}.Release|Win32.ActiveCfg = Release|Win32
+		{256E433D-1B85-44D1-A568-2F4164A31545}.Release|Win32.Build.0 = Release|Win32
+		{256E433D-1B85-44D1-A568-2F4164A31545}.Release|x64.ActiveCfg = Release|x64
+		{256E433D-1B85-44D1-A568-2F4164A31545}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
