@@ -17,6 +17,9 @@ struct ConjugateGradient
 	const int i_max = 20;	
 };
 
+ConjugateGradient *cgglobals;
+
+void initialize_CGsolver();
 void conjugate_gradient_solver(const float &dt, ConjugateGradient &CG);
 
 #endif // !CONJUGATE_GRADIENT_H_

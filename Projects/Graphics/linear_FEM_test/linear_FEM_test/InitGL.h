@@ -6,6 +6,8 @@
 #include <glm/glm.hpp>
 #include "utilities.h"
 
+const int iGridSize = 10;
+
 class GraphicGlobalVariables
 {	
 public:
@@ -23,8 +25,8 @@ public:
 	GLdouble dPorjection[16];
 
 };
-const int iGridSize = 10;
 
+GraphicGlobalVariables *graphicalglobals;
 /* --------- OpenGL initialization functions -----------*/
 
 void initGL( int iWindowWidth, int iWindowHeight);

@@ -11,6 +11,7 @@ typedef matrix_map::iterator matrix_iterator;
 struct PhysicalGlobalVariables
 {
 	int iNumofTetrohedron;
+	size_t total_points;
 	std::vector<glm::vec3> Xi;	//Material coordinates
 	std::vector<glm::vec3> P;	//world coordinates
 	std::vector<glm::vec3> V;	//velocity
@@ -24,12 +25,14 @@ struct PhysicalGlobalVariables
 	std::vector<glm::vec3> F0;
 	std::vector<glm::vec3> b;
 
+	bool bUsingStiffnessWarping;
+
 	PhysicalGlobalVariables()
-		:iNumofTetrohedron(0),eye(glm::vec3(1))
+		:iNumofTetrohedron(0),total_points(0),eye(glm::vec3(1)),bUsingStiffnessWarping(true)
 	{}
 };
 
-
+PhysicalGlobalVariables *physicalglobals;
 
 /* --------- Physical Quantities -----------*/
 const glm::vec3 gravAcceleration = glm::vec3(0.0f, -9.81f, 0.0f);	//Gravitational acceleration	
@@ -48,7 +51,11 @@ const float fType2 = fPoisonRatio * fGeneralMultiplier;												//d17
 const float fType3 = (1.0f - 2.0f * fPoisonRatio) * fGeneralMultiplier;								//d18
 const glm::vec3 hookLinearElastisity(fType1, fType2, fType3);										//Matrix D isotropic elasticity
 
-
+/* --------- functions for physical computing -----------*/
+void initializePhysics();
+float GetTetrahedronVolume(glm::vec3 e1, glm::vec3 e2, glm::vec3 e3);
+void addTetraheron(int i0, int i1, int i2, int i3);
+void genMesh(size_t xdim, size_t ydim, size_t zdim, float fWidth, float fHeight, float fDepth);
 
 
 #endif // !_PHYSICALSIMULATION_H_

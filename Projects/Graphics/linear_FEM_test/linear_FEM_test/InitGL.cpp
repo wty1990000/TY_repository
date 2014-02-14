@@ -12,6 +12,7 @@ extern void onMouseMotion(int x, int y);
 /* --------- OpenGL initialization functions -----------*/
 void initGL( int iWindowWidth, int iWindowHeight)
 {
+	graphicalglobals = new GraphicGlobalVariables();
 	glClearColor(148.0f / 256, 199.0f/256, 211.0f/256, 0.0);
 
 	glEnable(GL_DEPTH_TEST);

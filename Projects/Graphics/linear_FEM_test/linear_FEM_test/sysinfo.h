@@ -18,4 +18,6 @@ struct Sysinfo{
 	{}
 };
 
+Sysinfo *sysinfoglobals;
+
 #endif
