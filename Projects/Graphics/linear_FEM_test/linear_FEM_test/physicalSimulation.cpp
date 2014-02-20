@@ -1,4 +1,6 @@
 #include "physicalSimulation.h"
+#include <limits>
+using namespace std;
 
 //Initialize the physical parameters
 void initializePhysics()
@@ -75,5 +77,33 @@ void genMesh(size_t xdim, size_t ydim, size_t zdim, float fWidth, float fHeight,
 				physicalglobals->iNumofTetrohedron+=5;
 			}
 		}
+	}
+}
+//Compute vetex force
+void computeforce()
+{
+	size_t i=0;
+	for(i = 0; i< physicalglobals->total_points; i++){
+		physicalglobals->F[i] = glm::vec3(0);
+
+		//Only consider the gravity for non-fixed points
+		physicalglobals->F[i] += gravAcceleration*physicalglobals->MASS[i];
+	}
+}
+//Reassemble the lumped mass matrix
+void recalcmassmatrix()
+{
+	for(size_t i=0; i< physicalglobals->total_points;i++){
+		if(physicalglobals->IsFixed[i])
+			physicalglobals->MASS[i] = numeric_limits<float>::max( );
+		else
+			physicalglobals->MASS[i] = 1.0f/physicalglobals->total_points;
+	}
+	for(int i =0; i < physicalglobals->iNumofTetrohedron; i++){
+		float fM = (fDensity * tetrahedra[i].fVolume)*0.25f;
+		physicalglobals->MASS[tetrahedra[i].iIndex[0]] += fM;
+		physicalglobals->MASS[tetrahedra[i].iIndex[1]] += fM;
+		physicalglobals->MASS[tetrahedra[i].iIndex[2]] += fM;
+		physicalglobals->MASS[tetrahedra[i].iIndex[3]] += fM;
 	}
 }

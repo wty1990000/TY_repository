@@ -56,6 +56,7 @@ void initializePhysics();
 float GetTetrahedronVolume(glm::vec3 e1, glm::vec3 e2, glm::vec3 e3);
 void addTetraheron(int i0, int i1, int i2, int i3);
 void genMesh(size_t xdim, size_t ydim, size_t zdim, float fWidth, float fHeight, float fDepth);
-
+void computeforce();
+void recalcmassmatrix();
 
 #endif // !_PHYSICALSIMULATION_H_

@@ -1,5 +1,7 @@
 #include "conjugate_gradient.h"
 
+
+
 void initialize_CGsolver()
 {
 	cgglobals = new ConjugateGradient();

@@ -19,6 +19,9 @@ void initGL( int iWindowWidth, int iWindowHeight)
 	glShadeModel(GL_SMOOTH);
 	glEnable(GL_POLYGON_SMOOTH);
 	glEnable(GL_LINE_SMOOTH);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glPointSize(5);
+	wglSwapIntervalEXT(0);
 
 	reshapeFunc(iWindowWidth, iWindowHeight);
 	cout<<"Graphics intitialization has completed."<<endl;

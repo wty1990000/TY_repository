@@ -2,6 +2,7 @@
 #define _INITGL_H_
 
 #include <GL/glew.h>
+#include <GL/wglew.h>
 #include <GL/freeglut.h>
 #include <glm/glm.hpp>
 #include "utilities.h"

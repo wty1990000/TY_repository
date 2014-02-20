@@ -10,10 +10,20 @@
 using namespace std;  
 
 const int iWidth = 1024, iHeight = 1024;
+
 static float timeStep =  1/60.0f;
 static float currentTime = 0;
 static float accumulator = timeStep;
 static int selected_index = -1;
+
+/* --------- timers -----------*/
+LARGE_INTEGER frequency;        // ticks per second
+LARGE_INTEGER t1, t2;           // ticks
+static float frameTimeQP=0;
+static float frameTime =0 ;
+static float startTime =0, fps=0;
+static int totalFrames=0;
+
 
 /* --------- functions for GLUT -----------*/
 void displayFunc(void);
@@ -35,7 +45,7 @@ int main()
 	initializePhysics();
 	initialize_CGsolver();
 	initGL(iWidth, iHeight);
-	
+
 	return 0;	
 }
 
@@ -116,4 +126,23 @@ void initilization()
 
 	physicalglobals->total_points = physicalglobals->P.size();
 	physicalglobals->MASS.resize(physicalglobals->total_points);
+
+	physicalglobals->A_row.resize(physicalglobals->total_points);
+	physicalglobals->K_row.resize(physicalglobals->total_points);
+	physicalglobals->b.resize(physicalglobals->total_points);
+	physicalglobals->V.resize(physicalglobals->total_points);
+	physicalglobals->F.resize(physicalglobals->total_points);
+	physicalglobals->F0.resize(physicalglobals->total_points);
+	cgglobals->residual.resize(physicalglobals->total_points);
+	cgglobals->update.resize(physicalglobals->total_points);
+	cgglobals->prev.resize(physicalglobals->total_points);
+
+	memset(&(physicalglobals->V[0].x),0,physicalglobals->total_points*sizeof(glm::vec3));
+	startTime = (float)glutGet(GLUT_ELAPSED_TIME);
+	currentTime = startTime;
+
+	QueryPerformanceFrequency(&frequency);
+
+	QueryPerformanceCounter(&t1);
+	
 }

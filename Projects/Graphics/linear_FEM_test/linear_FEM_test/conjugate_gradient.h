@@ -4,17 +4,18 @@
 #include <glm/glm.hpp>
 #include "utilities.h"
 
+/* --------- variables for conjugate gradient solver -----------*/
+const float tiny = 1e-010f;
+const float tolerence = 0.001f;
+const int i_max = 20;
+
 struct ConjugateGradient
 {
 	ConjugateGradient(){}
 
 	std::vector<glm::vec3> residual;
 	std::vector<glm::vec3> prev;
-	std::vector<glm::vec3> update;
-
-	const float tiny = 1e-010f;
-	const float tolerence = 0.001f;
-	const int i_max = 20;	
+	std::vector<glm::vec3> update;	
 };
 
 ConjugateGradient *cgglobals;
