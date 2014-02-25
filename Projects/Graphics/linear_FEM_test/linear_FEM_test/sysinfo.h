@@ -2,6 +2,7 @@
 #define _SYSINFOR_H_
 
 #include "utilities.h"
+#include <Windows.h>
 
 struct Sysinfo{
 	LARGE_INTEGER frequency;

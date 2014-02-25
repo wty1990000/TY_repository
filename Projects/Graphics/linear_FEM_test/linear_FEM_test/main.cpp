@@ -2,6 +2,7 @@
 #include "physicalSimulation.h"
 #include "TetMesh.h"
 #include "conjugate_gradient.h"
+#include "sysinfo.h"
 #include <Windows.h>
 
 #define EPSILON 0.001f
@@ -45,6 +46,7 @@ int main()
 	initializePhysics();
 	initialize_CGsolver();
 	initGL(iWidth, iHeight);
+	sysinfoglobals = new Sysinfo();
 
 	return 0;	
 }
