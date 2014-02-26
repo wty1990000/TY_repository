@@ -107,22 +107,62 @@ void recalcmassmatrix()
 		physicalglobals->MASS[tetrahedra[i].iIndex[3]] += fM;
 	}
 }
-//Calculate the nodal forces
-void computeforce()
+//Assemble the stiffness matrix K
+void stiffnessAssemble()
 {
-	for (int i = 0; i < tetrahedra.size(); i++){
-		for (int j=0; j<physicalglobals->total_points; j++){
-			double temp = 0.0;
-			for( int k =0; k< physicalglobals->total_points;k++)
-			{
-				if(j>=k){
-					temp += physicalglobals->K_row[k]*physicalglobals->A_row[j];
-					
-					if(j>k)
-						
+	for (int e = 0; e < physicalglobals->total_points; e++){
+		glm::mat3 Re = tetrahedra[e].Re;
+		glm::mat3 ReT = glm::transpose(Re);
+
+		for(int i = 0; i < 4; i++){
+			glm::vec3 vTempForce = glm::vec3(0.0f,0.0f,0.0f);
+			for(int j=0; j < 4; j++){
+				glm::mat3 tmpKe = tetrahedra[e].Ke[i][j];
+				glm::vec3 x0 = physicalglobals->Xi[tetrahedra[e].iIndex[j]];
+				glm::vec3 prod = glm::vec3(tmpKe[0][0]*x0.x + tmpKe[0][1]*x0.y + tmpKe[0][2]*x0.z,
+										   tmpKe[1][0]*x0.x + tmpKe[1][1]*x0.y + tmpKe[1][2]*x0.z,
+										   tmpKe[2][0]*x0.x + tmpKe[2][1]*x0.y + tmpKe[2][2]*x0.z);
+				vTempForce += prod;
+				if ( j >= i){
+					glm::mat3 tmp = Re * tmpKe * ReT;
+					int index = tetrahedra[e].iIndex[i];
+
+					physicalglobals->K_row[index][tetrahedra[e].iIndex[j]] += (tmp);
+					if (j > i){
+						index = tetrahedra[e].iIndex[j];
+						physicalglobals->K_row[index][tetrahedra[e].iIndex[i]] += (glm::transpose(tmp));
+					}
 				}
 			}
+			int idx = tetrahedra[e].iIndex[i];
+			physicalglobals->F0[idx] -= Re * vTempForce;
 		}
 	}
+}
+//Implement Gram_Schmidt orthogonalization
+glm::mat3 Gram_Schmidt(glm::mat3 G)
+{
+	glm::vec3 row0(G[0][0], G[0][1], G[0][2]);
+	glm::vec3 row1(G[1][0], G[1][1], G[1][2]);
+	glm::vec3 row2(G[2][0], G[2][1], G[2][2]);
+
+	float L0 = glm::length(row0);
+	if(L0)
+		row0 /= L0;
+	row1 -= row0 * glm::dot(row0, row1);
+
+	float L1 = glm::length(row1);
+	if(L1)
+		row1 /= L1;
+
+	row2 = glm::cross( row0, row1);
+
+	return glm::mat3(row0,
+					 row1,
+					 row2);
+}
+//Compute the orientation used for warping
+void updateOrientation()
+{
 
 }

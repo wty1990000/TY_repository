@@ -52,11 +52,14 @@ const float fType3 = (1.0f - 2.0f * fPoisonRatio) * fGeneralMultiplier;								/
 const glm::vec3 hookLinearElastisity(fType1, fType2, fType3);										//Matrix D isotropic elasticity
 
 /* --------- functions for physical computing -----------*/
-void initializePhysics();
-float GetTetrahedronVolume(glm::vec3 e1, glm::vec3 e2, glm::vec3 e3);
-void addTetraheron(int i0, int i1, int i2, int i3);
-void genMesh(size_t xdim, size_t ydim, size_t zdim, float fWidth, float fHeight, float fDepth);
-void computeforce();
-void recalcmassmatrix();
+void initializePhysics();	//Allocate memory for Physics
+float GetTetrahedronVolume(glm::vec3 e1, glm::vec3 e2, glm::vec3 e3);	//Tetrahedron's volum = 1/6 * corresponding parrallelepiped
+void addTetraheron(int i0, int i1, int i2, int i3);		//used to build the tet mesh
+void genMesh(size_t xdim, size_t ydim, size_t zdim, float fWidth, float fHeight, float fDepth);		//generate the initial mesh
+void computeforce();	//Add gravity forces to nodes.
+void recalcmassmatrix();	//Calculated lumped mass matrix
+void stiffnessAssemble();	//Assemble the stiffness matrix
+glm::mat3 Gram_Schmidt(glm::mat3 G);	//Gram_Shcmidt orthoganolization
+void updateOrientation();		//Compute the orientation used for warping
 
 #endif // !_PHYSICALSIMULATION_H_
