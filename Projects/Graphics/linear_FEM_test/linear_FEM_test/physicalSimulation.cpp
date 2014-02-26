@@ -107,3 +107,22 @@ void recalcmassmatrix()
 		physicalglobals->MASS[tetrahedra[i].iIndex[3]] += fM;
 	}
 }
+//Calculate the nodal forces
+void computeforce()
+{
+	for (int i = 0; i < tetrahedra.size(); i++){
+		for (int j=0; j<physicalglobals->total_points; j++){
+			double temp = 0.0;
+			for( int k =0; k< physicalglobals->total_points;k++)
+			{
+				if(j>=k){
+					temp += physicalglobals->K_row[k]*physicalglobals->A_row[j];
+					
+					if(j>k)
+						
+				}
+			}
+		}
+	}
+
+}
