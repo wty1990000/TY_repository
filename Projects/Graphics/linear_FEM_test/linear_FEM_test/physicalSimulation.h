@@ -5,6 +5,8 @@
 #include "TetMesh.h"
 #include "utilities.h"
 
+#define MINIMUM(x,y) (x<y?x:y)
+
 typedef std::map<int, glm::mat3> matrix_map;
 typedef matrix_map::iterator matrix_iterator;
 
@@ -21,7 +23,7 @@ struct PhysicalGlobalVariables
 	glm::mat3 eye;
 	
 	std::vector<matrix_map> K_row;
-	std::vector<matrix_iterator> A_row;
+	std::vector<matrix_map> A_row;
 	std::vector<glm::vec3> F0;
 	std::vector<glm::vec3> b;
 
@@ -42,24 +44,28 @@ const float fPoisonRatio = 0.33f;			//Poisson ratio
 const float fYoungModulus = 50000.0f;		//Young's modulus
 const int creep = 0.20f;
 const int yield = 0.04f;
-const float m_max = 0.2f;
+const float c_max = 0.2f;
 
 /* --------- matrix parameters used in Hookean material constitutive model -----------*/
 const float fGeneralMultiplier = fYoungModulus / (1.0f + fPoisonRatio) / (1.0f - 2 * fPoisonRatio);	//d15
-const float fType1 = (1.0f - fPoisonRatio) * fGeneralMultiplier;									//d16
-const float fType2 = fPoisonRatio * fGeneralMultiplier;												//d17
-const float fType3 = (1.0f - 2.0f * fPoisonRatio) * fGeneralMultiplier;								//d18
-const glm::vec3 hookLinearElastisity(fType1, fType2, fType3);										//Matrix D isotropic elasticity
+const float D0 = (1.0f - fPoisonRatio) * fGeneralMultiplier;									//d16
+const float D1 = fPoisonRatio * fGeneralMultiplier;												//d17
+const float D2 = (1.0f - 2.0f * fPoisonRatio) * fGeneralMultiplier;								//d18
+const glm::vec3 D(D0, D1, D2);										//Matrix D isotropic elasticity
 
 /* --------- functions for physical computing -----------*/
 void initializePhysics();	//Allocate memory for Physics
 float GetTetrahedronVolume(glm::vec3 e1, glm::vec3 e2, glm::vec3 e3);	//Tetrahedron's volum = 1/6 * corresponding parrallelepiped
 void addTetraheron(int i0, int i1, int i2, int i3);		//used to build the tet mesh
 void genMesh(size_t xdim, size_t ydim, size_t zdim, float fWidth, float fHeight, float fDepth);		//generate the initial mesh
+void calculateStiffnessK();		//Calculate stiffness matrix
 void computeforce();	//Add gravity forces to nodes.
 void recalcmassmatrix();	//Calculated lumped mass matrix
 void stiffnessAssemble();	//Assemble the stiffness matrix
 glm::mat3 Gram_Schmidt(glm::mat3 G);	//Gram_Shcmidt orthoganolization
 void updateOrientation();		//Compute the orientation used for warping
+void resetOrientation();		//Reset orientation to I
+void initPlasticity();			//Initialize the plasticity to 0
+void forcePlasticity(const float& deltaT);				//Add plasticity
 
 #endif // !_PHYSICALSIMULATION_H_

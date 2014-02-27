@@ -120,7 +120,10 @@ void onMouseMotion(int x, int y)
 
 	glutPostRedisplay();
 }
+void keyboardFunc(unsigned char key, int x, int y)
+{
 
+}
 void initilization()
 {
 	genMesh(10,4,4,0.1f,0.1f,0.1f);

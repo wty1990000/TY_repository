@@ -1,5 +1,6 @@
 #include "physicalSimulation.h"
 #include <limits>
+
 using namespace std;
 
 //Initialize the physical parameters
@@ -75,6 +76,73 @@ void genMesh(size_t xdim, size_t ydim, size_t zdim, float fWidth, float fHeight,
 					addTetraheron(p2,p0,p7,p5); 
 				}
 				physicalglobals->iNumofTetrohedron+=5;
+			}
+		}
+	}
+}
+//Calculate Stiffness K
+void calculateStiffnessK()
+{
+	for(size_t k=0; k<tetrahedra.size(); k++){
+		glm::vec3 x0 = physicalglobals->Xi[tetrahedra[k].iIndex[0]];
+		glm::vec3 x1 = physicalglobals->Xi[tetrahedra[k].iIndex[1]];
+		glm::vec3 x2 = physicalglobals->Xi[tetrahedra[k].iIndex[2]];
+		glm::vec3 x3 = physicalglobals->Xi[tetrahedra[k].iIndex[3]];
+
+		glm::vec3 e10 = x1-x0;
+		glm::vec3 e20 = x2-x0;
+		glm::vec3 e30 = x3-x0;
+
+		tetrahedra[k].fVolume = GetTetrahedronVolume(e10, e20, e30);
+
+		glm::mat3 E = glm::mat3(e10.x, e10.y, e10.z,
+							    e20.x, e20.y, e20.z,
+								e30.x, e30.y, e30.z);
+
+		float detE = glm::determinant(E);
+		float invDetE = 1.0f / detE;
+
+		float invE10 = (e20.z*e30.y - e20.y*e30.z)*invDetE;
+		float invE20 = (e10.y*e30.z - e10.z*e30.y)*invDetE;
+		float invE30 = (e10.z*e20.y - e10.y*e20.z)*invDetE;
+		float invE00 = -invE10-invE20-invE30;
+
+		float invE11 = (e20.x*e30.z - e20.z*e30.x)*invDetE;
+		float invE21 = (e10.z*e30.x - e10.x*e30.z)*invDetE;
+		float invE31 = (e10.x*e20.z - e10.z*e20.x)*invDetE;
+		float invE01 = -invE11-invE21-invE31;
+
+		float invE12 = (e20.y*e30.x - e20.x*e30.y)*invDetE;
+		float invE22 = (e10.x*e30.y - e10.y*e30.x)*invDetE;
+		float invE32 = (e10.y*e30.x - e10.x*e30.y)*invDetE;
+		float invE02 = -invE12-invE22-invE32;
+
+		tetrahedra[k].B[0] = glm::vec3(invE00, invE01, invE02);
+		tetrahedra[k].B[1] = glm::vec3(invE10, invE11, invE12);
+		tetrahedra[k].B[2] = glm::vec3(invE20, invE21, invE22);
+		tetrahedra[k].B[3] = glm::vec3(invE30, invE31, invE32);
+
+		for(int i=0; i< 4; i++){
+			for(int j=0; j< 4; j++){
+				glm::mat3& Ke = tetrahedra[k].Ke[i][j];
+				float bn = tetrahedra[k].B[i].x;
+				float cn = tetrahedra[k].B[i].y;
+				float dn = tetrahedra[k].B[i].z;
+				float bm = tetrahedra[k].B[j].x;
+				float cm = tetrahedra[k].B[j].y;
+				float dm = tetrahedra[k].B[j].z;
+
+				Ke[0][0] = D0*bn*bm + D2*(cn*cm+dn*dm);
+				Ke[0][1] = D1*bn*cm + D2*cn*bm;
+				Ke[0][2] = D1*bn*dm + D2*dn*bm;
+				Ke[1][0] = D1*cn*bm + D2*bn*cm;
+				Ke[1][1] = D0*cn*cm + D2*(bn*bm+dn*dm);
+				Ke[1][2] = D1*cn*dm + D2*dn*cm;
+				Ke[2][0] = D1*dn*bm + D2*bn*dm;
+				Ke[2][1] = D1*dn*cm + D2*cn*dm;
+				Ke[2][2] = D0*dn*dm + D2*(bn*bm+cn*cm);
+
+				Ke *= tetrahedra[k].fVolume;
 			}
 		}
 	}
@@ -164,5 +232,144 @@ glm::mat3 Gram_Schmidt(glm::mat3 G)
 //Compute the orientation used for warping
 void updateOrientation()
 {
+	for( int i=0; i < physicalglobals->iNumofTetrohedron; i++){
+		float div6V = 1.0f / tetrahedra[i].fVolume * 6.0f;
 
+		int i0 = tetrahedra[i].iIndex[0];
+		int i1 = tetrahedra[i].iIndex[1];
+		int i2 = tetrahedra[i].iIndex[2];
+		int i3 = tetrahedra[i].iIndex[3];
+
+		glm::vec3 p0 = physicalglobals->P[i0];
+		glm::vec3 p1 = physicalglobals->P[i1];
+		glm::vec3 p2 = physicalglobals->P[i2];
+		glm::vec3 p3 = physicalglobals->P[i3];
+
+		glm::vec3 e1 = p1 - p0;
+		glm::vec3 e2 = p2 - p0;
+		glm::vec3 e3 = p3 - p0;
+
+		//G = [e1' e2' e3'][n1T n2T n3T]
+		glm::vec3 n1 = glm::cross(e2,e3) * div6V;
+		glm::vec3 n2 = glm::cross(e3,e1) * div6V;
+		glm::vec3 n3 = glm::cross(e1,e2) * div6V;
+
+		e1 = tetrahedra[i].e1;
+		e2 = tetrahedra[i].e2;
+		e3 = tetrahedra[i].e3;
+
+		tetrahedra[i].Re[0][0] = e1.x * n1.x + e2.x * n2.x + e3.x * n3.x;
+		tetrahedra[i].Re[0][1] = e1.x * n1.y + e2.x * n2.y + e3.x * n3.y;
+		tetrahedra[i].Re[0][2] = e1.x * n1.z + e2.x * n2.z + e3.x * n3.z;
+
+		tetrahedra[i].Re[1][0] = e1.y * n1.x + e2.y * n2.x + e3.y * n3.x;
+		tetrahedra[i].Re[1][1] = e1.y * n1.y + e2.y * n2.y + e3.y * n3.y;
+		tetrahedra[i].Re[1][2] = e1.y * n1.z + e2.y * n2.z + e3.y * n3.z;
+
+		tetrahedra[i].Re[2][0] = e1.z * n1.x + e2.z * n2.x + e3.z * n3.x;
+		tetrahedra[i].Re[2][1] = e1.z * n1.y + e2.z * n2.y + e3.z * n3.y;
+		tetrahedra[i].Re[2][2] = e1.z * n1.z + e2.z * n2.z + e3.z * n3.z;
+
+		tetrahedra[i].Re = Gram_Schmidt(tetrahedra[i].Re);
+	}
 }
+//Reset the orientation to I
+void resetOrientation()
+{
+	for(int i=0; i<physicalglobals->iNumofTetrohedron; i++){
+		tetrahedra[i].Re = physicalglobals->eye;
+	}
+}
+//Initialize the plasticity to 0
+void initPlasticity()
+{
+	for(size_t i=0; i<tetrahedra.size(); i++){
+		for(int j=0; j<6; j++){
+			tetrahedra[i].fPlastic[j] = 0.0f;
+		}
+	}
+}
+//Compute Elasticity force
+void forcePlasticity(const float& deltaT)
+{
+	for(int k=0; k<physicalglobals->iNumofTetrohedron;k++){
+		float e_total[6];
+		float e_elastic[6];
+		for(unsigned int i=0; i<6; i++)
+			e_elastic[i] = e_total[i] = 0.0f;
+
+		//----------e_total = B((Re)^{-1}x-x0)
+		for(unsigned int j=0; j<4; j++){
+			glm::vec3 x_j = physicalglobals->P[tetrahedra[k].iIndex[j]];
+			glm::vec3 x0_j = physicalglobals->Xi[tetrahedra[k].iIndex[j]];
+			glm::mat3 ReT = glm::transpose(tetrahedra[k].Re);
+			glm::vec3 prod = glm::vec3(ReT[0][0]*x_j.x + ReT[0][1]*x_j.y + ReT[0][2]*x_j.z,
+									   ReT[1][0]*x_j.x + ReT[1][1]*x_j.y + ReT[1][2]*x_j.z,
+									   ReT[2][0]*x_j.x + ReT[2][1]*x_j.y + ReT[2][2]*x_j.z);
+			glm::vec3 tmp = prod - x0_j;
+
+			float bj = tetrahedra[k].B[j].x;
+			float cj = tetrahedra[k].B[j].y;
+			float dj = tetrahedra[k].B[j].z;
+
+			e_total[0] += bj*tmp.x;
+			e_total[1] +=			 cj*tmp.y;
+			e_total[2] +=					   dj*tmp.z;
+			e_total[3] += cj*tmp.x + bj*tmp.y;
+			e_total[4] += dj*tmp.x			  +bj*tmp.z;
+			e_total[5] +=			 dj*tmp.y +cj*tmp.z;
+		}
+
+		//Elastic strain
+		for(int i=0; i<6; i++)
+			e_elastic[i] = e_total[i] - tetrahedra[k].fPlastic[i];
+
+		//---------if elastic strain excedds cyield, then it is added to plastic strain by creep
+		float fNormOfElastic = 0.0;
+		for(int i=0; i<6; i++)
+			fNormOfElastic += e_elastic[i]*e_elastic[i];
+		fNormOfElastic = sqrt(fNormOfElastic);
+		if(fNormOfElastic > yield){
+			float amount = deltaT * MINIMUM(creep,1.0f / deltaT);
+			for(int i=0; i<6; i++)
+				tetrahedra[k].fPlastic[i] += amount*e_elastic[i];
+		}
+
+		//--------if plastic strain exceeds Cmax, it is clamped to maximum magnitude
+		float fNormOfPlastic = 0.0;
+		for(int i=0; i<6; i++)
+			fNormOfPlastic += tetrahedra[k].fPlastic[i] * tetrahedra[k].fPlastic[i];
+		fNormOfPlastic = sqrt(fNormOfPlastic);
+		if(fNormOfPlastic > c_max){
+			float fScale = c_max / fNormOfPlastic;
+			for(int i=0; i<6; i++)
+				tetrahedra[k].fPlastic[i] *= fScale;
+		}
+		for(size_t n=0; n<4; ++n){
+			float* e_plastic = tetrahedra[k].fPlastic;
+
+			float bn = tetrahedra[k].B[n].x;
+			float cn = tetrahedra[k].B[n].y;
+			float dn = tetrahedra[k].B[n].z;
+			glm::vec3 f= glm::vec3(0);
+
+			float bnD0 = bn*D0;
+			float bnD1 = bn*D1;
+			float bnD2 = bn*D2;
+			float cnD0 = cn*D0;
+			float cnD1 = cn*D1;
+			float cnD2 = cn*D2;
+			float dnD0 = dn*D0;
+			float dnD1 = dn*D1;
+			float dnD2 = dn*D2;
+
+			f.x = bnD0*e_plastic[0] + bnD1*e_plastic[1] + bnD1*e_plastic[2] + cnD2*e_plastic[3] + dnD2*e_plastic[4];
+			f.y = cnD1*e_plastic[0] + cnD0*e_plastic[1] + cnD1*e_plastic[2] + bnD2*e_plastic[3]					   + dnD2*e_plastic[5];
+			f.z = dnD1*e_plastic[0] + dnD1*e_plastic[1] + dnD0*e_plastic[2] +					+bnD2*e_plastic[4] + cnD2*e_plastic[5];
+
+			f *= tetrahedra[k].fVolume;
+			int idx = tetrahedra[k].iIndex[n];
+			physicalglobals->F[idx] += tetrahedra[k].Re*f;
+		}
+	}
+}	
