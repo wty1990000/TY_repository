@@ -14,13 +14,14 @@ struct ConjugateGradient
 	ConjugateGradient(){}
 
 	std::vector<glm::vec3> residual;
-	std::vector<glm::vec3> prev;
-	std::vector<glm::vec3> update;	
+	std::vector<glm::vec3> d;
+	std::vector<glm::vec3> q;	
 };
 
-ConjugateGradient *cgglobals;
+extern ConjugateGradient *cgglobals;
 
-void initialize_CGsolver();
-void conjugate_gradient_solver(const float &dt, ConjugateGradient &CG);
+//void initialize_CGsolver();
+void conjugate_gradient_solver(float dt);
+
 
 #endif // !CONJUGATE_GRADIENT_H_

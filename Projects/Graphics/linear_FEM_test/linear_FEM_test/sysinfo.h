@@ -10,12 +10,13 @@ struct Sysinfo{
 	float fFrameTimeQP;
 	float fFrameTime;
 	float fStartTime, fps;
+	float currentTime;
 	int iTotalFrames;
 	char cTitleinfo[MAX_PATH];
 
 	Sysinfo()
-		:fFrameTime(0.0f),fFrameTimeQP(0.0f)
-		,fStartTime(0.0f),fps(0.0f), iTotalFrames(0.0f)
+		:fFrameTime(0.0f),fFrameTimeQP(0.0f),currentTime(0.0),
+		fStartTime(0.0f),fps(0.0f), iTotalFrames(0.0f)
 	{}
 };
 

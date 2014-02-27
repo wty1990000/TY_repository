@@ -15,7 +15,7 @@ struct Tetrahedron{
 	glm::vec3 B[4];			//Jacobian of shapefunction
 };
 
-static std::vector<Tetrahedron> tetrahedra;
+extern std::vector<Tetrahedron> tetrahedra;
 
 
 #endif // !_TETMESH_H_

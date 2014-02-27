@@ -2,17 +2,19 @@
 
 using namespace std;
 
-extern void displayFunc(void);
-extern void reshapeFunc(int iWindowWidth, int iWindowHeight);
-extern void idleFunc(void);
-extern void keyboardFunc(unsigned char key, int x, int y);
-extern void onMouseDown(int button, int state, int x, int y);
-extern void onMouseMotion(int x, int y);
+GraphicGlobalVariables* graphicalglobals;
+
+//extern void displayFunc(void);
+//extern void reshapeFunc(int iWindowWidth, int iWindowHeight);
+//extern void idleFunc(void);
+//extern void keyboardFunc(unsigned char key, int x, int y);
+//extern void onMouseDown(int button, int state, int x, int y);
+//extern void onMouseMotion(int x, int y);
+//extern void close();
 
 /* --------- OpenGL initialization functions -----------*/
-void initGL( int iWindowWidth, int iWindowHeight)
+void initGL()
 {
-	graphicalglobals = new GraphicGlobalVariables();
 	glClearColor(148.0f / 256, 199.0f/256, 211.0f/256, 0.0);
 
 	glEnable(GL_DEPTH_TEST);
@@ -21,26 +23,25 @@ void initGL( int iWindowWidth, int iWindowHeight)
 	glEnable(GL_LINE_SMOOTH);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glPointSize(5);
-	wglSwapIntervalEXT(0);
-
-	reshapeFunc(iWindowWidth, iWindowHeight);
+		//reshapeFunc(iWindowWidth, iWindowHeight);
 	cout<<"Graphics intitialization has completed."<<endl;
 }
-void initGlut(int argc, char **argv, char *pt_cWindowTitle, 
-			  int iWindowWidth, int iWindowHeight, int *pt_iWindowId)
-{
-	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-	glutInitWindowSize(iWindowWidth, iWindowHeight);
-	*pt_iWindowId = glutCreateWindow(pt_cWindowTitle);
-	
-	glutDisplayFunc(displayFunc);
-	glutReshapeFunc(reshapeFunc);
-	glutIdleFunc(idleFunc);
-	glutKeyboardFunc(keyboardFunc);
-	glutMouseFunc(onMouseDown);
-	glutMotionFunc(onMouseMotion);
-}
+//void initGlut(int argc, char **argv, char *pt_cWindowTitle, 
+//			  int iWindowWidth, int iWindowHeight, int &pt_iWindowId)
+//{
+//	glutInit(&argc, argv);
+//	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+//	glutInitWindowSize(iWindowWidth, iWindowHeight);
+//	pt_iWindowId = glutCreateWindow(pt_cWindowTitle);
+//	
+//	glutDisplayFunc(displayFunc);
+//	glutReshapeFunc(reshapeFunc);
+//	glutIdleFunc(idleFunc);
+//	glutKeyboardFunc(keyboardFunc);
+//	glutMouseFunc(onMouseDown);
+//	glutMotionFunc(onMouseMotion);
+//	glutCloseFunc(close);
+//}
 
 /* --------- Draw the environment -----------*/
 void drawGround()

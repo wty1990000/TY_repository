@@ -13,7 +13,7 @@ class GraphicGlobalVariables
 {	
 public:
 	GraphicGlobalVariables()
-		: iOldX(0),iOldY(0),rX(15.0f),rY(0.0f),iState(1),fDist(-2.5f),Up(glm::vec3(0.0f,1.0f,0.0f))
+		: iOldX(0),iOldY(0),rX(30.0f),rY(-30.0f),iState(1),fDist(-2.5f),Up(glm::vec3(0.0f,1.0f,0.0f))
 	{}
 
 	int iOldX, iOldY;
@@ -27,12 +27,12 @@ public:
 
 };
 
-GraphicGlobalVariables *graphicalglobals;
+extern GraphicGlobalVariables *graphicalglobals;
 /* --------- OpenGL initialization functions -----------*/
 
-void initGL( int iWindowWidth, int iWindowHeight);
+void initGL();
 void initGlut(int argc, char **argv, char *pt_cWindowTitle, 
-			  int iWindowWidth, int iWindowHeight, int *pt_iWindowId);
+			  int iWindowWidth, int iWindowHeight, int &pt_iWindowId);
 
 /* --------- Draw the environment -----------*/
 void drawGround();

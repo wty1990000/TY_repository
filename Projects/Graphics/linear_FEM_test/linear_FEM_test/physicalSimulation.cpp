@@ -1,14 +1,18 @@
 #include "physicalSimulation.h"
+#include "conjugate_gradient.h"
 #include <limits>
 
 using namespace std;
 
 //Initialize the physical parameters
-void initializePhysics()
+/*void initializePhysics()
 {
 	physicalglobals = new PhysicalGlobalVariables();
-}
+}*/
 //compute the volume of a tetraheron
+
+PhysicalGlobalVariables* physicalglobals;
+
 float GetTetrahedronVolume(glm::vec3 e1, glm::vec3 e2, glm::vec3 e3)
 {
 	return (glm::dot(e1, glm::cross(e2,e3)))/6.0f;
@@ -75,7 +79,7 @@ void genMesh(size_t xdim, size_t ydim, size_t zdim, float fWidth, float fHeight,
 					addTetraheron(p0,p7,p5,p4);
 					addTetraheron(p2,p0,p7,p5); 
 				}
-				physicalglobals->iNumofTetrohedron+=5;
+				physicalglobals->iNumofTetrohedron += 5;
 			}
 		}
 	}
@@ -167,7 +171,7 @@ void recalcmassmatrix()
 		else
 			physicalglobals->MASS[i] = 1.0f/physicalglobals->total_points;
 	}
-	for(int i =0; i < physicalglobals->iNumofTetrohedron; i++){
+	for(size_t i =0; i < physicalglobals->iNumofTetrohedron; i++){
 		float fM = (fDensity * tetrahedra[i].fVolume)*0.25f;
 		physicalglobals->MASS[tetrahedra[i].iIndex[0]] += fM;
 		physicalglobals->MASS[tetrahedra[i].iIndex[1]] += fM;
@@ -178,7 +182,7 @@ void recalcmassmatrix()
 //Assemble the stiffness matrix K
 void stiffnessAssemble()
 {
-	for (int e = 0; e < physicalglobals->total_points; e++){
+	for (size_t e = 0; e < physicalglobals->iNumofTetrohedron; e++){
 		glm::mat3 Re = tetrahedra[e].Re;
 		glm::mat3 ReT = glm::transpose(Re);
 
@@ -207,6 +211,19 @@ void stiffnessAssemble()
 		}
 	}
 }
+//Clear the stiffness matrix
+void clearStiffnessMatrix()
+{
+	for(size_t k=0; k<physicalglobals->total_points;k++){
+		physicalglobals->F0[k].x = 0.0f;
+		physicalglobals->F0[k].y = 0.0f;
+		physicalglobals->F0[k].z = 0.0f;
+
+		for(matrix_iterator Kij = physicalglobals->K_row[k].begin(); Kij != physicalglobals->K_row[k].end(); ++Kij){
+			Kij->second = glm::mat3(0);
+		}
+	}
+}
 //Implement Gram_Schmidt orthogonalization
 glm::mat3 Gram_Schmidt(glm::mat3 G)
 {
@@ -232,7 +249,7 @@ glm::mat3 Gram_Schmidt(glm::mat3 G)
 //Compute the orientation used for warping
 void updateOrientation()
 {
-	for( int i=0; i < physicalglobals->iNumofTetrohedron; i++){
+	for( size_t i=0; i < physicalglobals->iNumofTetrohedron; i++){
 		float div6V = 1.0f / tetrahedra[i].fVolume * 6.0f;
 
 		int i0 = tetrahedra[i].iIndex[0];
@@ -276,7 +293,7 @@ void updateOrientation()
 //Reset the orientation to I
 void resetOrientation()
 {
-	for(int i=0; i<physicalglobals->iNumofTetrohedron; i++){
+	for(size_t i=0; i<physicalglobals->iNumofTetrohedron; i++){
 		tetrahedra[i].Re = physicalglobals->eye;
 	}
 }
@@ -290,9 +307,9 @@ void initPlasticity()
 	}
 }
 //Compute Elasticity force
-void forcePlasticity(const float& deltaT)
+void forcePlasticity(float deltaT)
 {
-	for(int k=0; k<physicalglobals->iNumofTetrohedron;k++){
+	for(size_t k=0; k<physicalglobals->iNumofTetrohedron;k++){
 		float e_total[6];
 		float e_elastic[6];
 		for(unsigned int i=0; i<6; i++)
@@ -365,7 +382,7 @@ void forcePlasticity(const float& deltaT)
 
 			f.x = bnD0*e_plastic[0] + bnD1*e_plastic[1] + bnD1*e_plastic[2] + cnD2*e_plastic[3] + dnD2*e_plastic[4];
 			f.y = cnD1*e_plastic[0] + cnD0*e_plastic[1] + cnD1*e_plastic[2] + bnD2*e_plastic[3]					   + dnD2*e_plastic[5];
-			f.z = dnD1*e_plastic[0] + dnD1*e_plastic[1] + dnD0*e_plastic[2] +					+bnD2*e_plastic[4] + cnD2*e_plastic[5];
+			f.z = dnD1*e_plastic[0] + dnD1*e_plastic[1] + dnD0*e_plastic[2] +					 bnD2*e_plastic[4] + cnD2*e_plastic[5];
 
 			f *= tetrahedra[k].fVolume;
 			int idx = tetrahedra[k].iIndex[n];
@@ -373,3 +390,76 @@ void forcePlasticity(const float& deltaT)
 		}
 	}
 }	
+//Time integration
+void dynamicsAssembly(float deltaT)
+{
+	float deltaT2 = deltaT * deltaT;
+	for(size_t k=0; k<physicalglobals->total_points; k++){
+		float m_i = physicalglobals->MASS[k];
+		physicalglobals->b[k] = glm::vec3(0.0, 0.0, 0.0);
+
+		matrix_map tmp = physicalglobals->K_row[k];
+		matrix_iterator Kbegin = tmp.begin();
+		matrix_iterator Kend = tmp.end();
+		for(matrix_iterator K = Kbegin; K != Kend; K++){
+			unsigned int j = K->first;
+			glm::mat3 K_ij = K->second;
+			glm::vec3 x_j = physicalglobals->P[j];
+			glm::mat3& A_ij = physicalglobals->A_row[k][j];
+
+			A_ij = K_ij * (deltaT2);
+			glm::vec3 prod = glm::vec3(K_ij[0][0]*x_j.x + K_ij[0][1]*x_j.y + K_ij[0][2]*x_j.z,
+									   K_ij[1][0]*x_j.x + K_ij[1][1]*x_j.y + K_ij[1][2]*x_j.z,
+									   K_ij[2][0]*x_j.x + K_ij[2][1]*x_j.y + K_ij[2][2]*x_j.z);
+
+			physicalglobals->b[k] -= prod;
+			
+			if(k == j){
+				float c_i = fDamping*m_i;
+				float tmp = m_i + deltaT*c_i;
+				A_ij[0][0] += tmp;
+				A_ij[1][1] += tmp;
+				A_ij[2][2] += tmp;
+			}
+		}
+		physicalglobals->b[k] -= physicalglobals->F0[k];
+		physicalglobals->b[k] += physicalglobals->F[k];
+		physicalglobals->b[k] *= deltaT;
+		physicalglobals->b[k] += physicalglobals->V[k] * m_i;
+	}
+}
+//Update positions
+void updatePosition(float deltaT)
+{
+	for(size_t k=0; k<physicalglobals->total_points; k++){
+		if(physicalglobals->IsFixed[k])
+			continue;
+		physicalglobals->P[k] += float(deltaT)*physicalglobals->V[k];
+	}
+}
+//Collision detection
+void collisionGround()
+{
+	for(size_t i =0; i<physicalglobals->total_points; i++){
+		if(physicalglobals->P[i].y<0.0)
+			physicalglobals->P[i].y=0.0;
+	}
+}
+//Step Physics
+void stepPhysics(float deltaT)
+{
+	computeforce();
+	clearStiffnessMatrix();
+
+	if(physicalglobals->bUsingStiffnessWarping)
+		updateOrientation();
+	else
+		resetOrientation();
+
+	stiffnessAssemble();
+	forcePlasticity(deltaT);
+	dynamicsAssembly(deltaT);
+	conjugate_gradient_solver(deltaT);
+	updatePosition(deltaT);
+	collisionGround();
+}
