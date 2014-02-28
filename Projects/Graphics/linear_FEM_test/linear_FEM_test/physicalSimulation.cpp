@@ -97,6 +97,10 @@ void calculateStiffnessK()
 		glm::vec3 e20 = x2-x0;
 		glm::vec3 e30 = x3-x0;
 
+		tetrahedra[k].e1 = e10;
+		tetrahedra[k].e2 = e20;
+		tetrahedra[k].e3 = e30;
+
 		tetrahedra[k].fVolume = GetTetrahedronVolume(e10, e20, e30);
 
 		glm::mat3 E = glm::mat3(e10.x, e10.y, e10.z,
@@ -118,7 +122,7 @@ void calculateStiffnessK()
 
 		float invE12 = (e20.y*e30.x - e20.x*e30.y)*invDetE;
 		float invE22 = (e10.x*e30.y - e10.y*e30.x)*invDetE;
-		float invE32 = (e10.y*e30.x - e10.x*e30.y)*invDetE;
+		float invE32 = (e10.y*e20.x - e10.x*e20.y)*invDetE;
 		float invE02 = -invE12-invE22-invE32;
 
 		tetrahedra[k].B[0] = glm::vec3(invE00, invE01, invE02);
