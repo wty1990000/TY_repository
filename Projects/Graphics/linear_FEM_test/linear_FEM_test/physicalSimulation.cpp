@@ -465,5 +465,5 @@ void stepPhysics(float deltaT)
 	dynamicsAssembly(deltaT);
 	conjugate_gradient_solver(deltaT);
 	updatePosition(deltaT);
-	collisionGround();
+	//collisionGround();
 }

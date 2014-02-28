@@ -38,10 +38,10 @@ extern PhysicalGlobalVariables *physicalglobals;
 
 /* --------- Physical Quantities -----------*/
 const glm::vec3 gravAcceleration = glm::vec3(0.0f, -9.81f, 0.0f);	//Gravitational acceleration	
-const float fDensity = 1000.0f;										//mass density
+const float fDensity = 10.0f;										//mass density
 const float fDamping = 1.0f;
 const float fPoisonRatio = 0.33f;			//Poisson ratio
-const float fYoungModulus = 500000.0f;		//Young's modulus
+const float fYoungModulus = 5000.0f;		//Young's modulus
 const float creep = 0.20f;
 const float yield = 0.04f;
 const float c_max = 0.2f;
