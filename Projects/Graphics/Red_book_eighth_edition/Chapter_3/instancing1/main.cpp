@@ -190,7 +190,7 @@ void display(void)
 	glUseProgram(glb->render_prog);
 
 	mat4 view_matrix(translate(0.0f, 0.0f, -1500.0f) * rotate(t * 360.f * 2.0f, 0.0f, 1.0f, 0.0f));
-	mat4 projection_matrix(frustum(-1.0f, 1.0f, -glb->aspect, glb->aspect, 1.0f, 500.0f));
+	mat4 projection_matrix(frustum(-1.0f, 1.0f, -glb->aspect, glb->aspect, 1.0f, 5000.0f));
 
 	glUniformMatrix4fv(glb->view_matrix_loc, 1, GL_FALSE, view_matrix);
 	glUniformMatrix4fv(glb->projection_matrix_loc, 1, GL_FALSE, projection_matrix);
