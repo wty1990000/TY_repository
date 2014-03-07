@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vertex_color", "vertex_color\vertex_color.vcxproj", "{80C0FC77-4CF6-4D06-AD1A-895CE4D38562}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stencil_test", "Stencil_test\Stencil_test.vcxproj", "{B17C204E-C611-4350-A8C9-F23A6C24B4B1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{80C0FC77-4CF6-4D06-AD1A-895CE4D38562}.Debug|Win32.ActiveCfg = Debug|Win32
+		{80C0FC77-4CF6-4D06-AD1A-895CE4D38562}.Debug|Win32.Build.0 = Debug|Win32
+		{80C0FC77-4CF6-4D06-AD1A-895CE4D38562}.Release|Win32.ActiveCfg = Release|Win32
+		{80C0FC77-4CF6-4D06-AD1A-895CE4D38562}.Release|Win32.Build.0 = Release|Win32
+		{B17C204E-C611-4350-A8C9-F23A6C24B4B1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B17C204E-C611-4350-A8C9-F23A6C24B4B1}.Debug|Win32.Build.0 = Debug|Win32
+		{B17C204E-C611-4350-A8C9-F23A6C24B4B1}.Release|Win32.ActiveCfg = Release|Win32
+		{B17C204E-C611-4350-A8C9-F23A6C24B4B1}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
