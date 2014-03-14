@@ -252,29 +252,24 @@ void CPiDICDlg::OnBnClickedOk()
 	// TODO: Add your control notification handler code here
 	// Acquire input parameters
 	UpdateData(TRUE);
-	//	CDialogEx::OnOK();
 
 	// Check if the file path of the reference image and the taget image are set
-	if (m_sRefImgPath.IsEmpty())
-	{
+	if (m_sRefImgPath.IsEmpty()){
 		MessageBox(_T("No reference image selected£¡"));
 		return;
 	}
-	if (m_sTarImgPath.IsEmpty())
-	{
+	if (m_sTarImgPath.IsEmpty()){
 		MessageBox(_T("No target image selected£¡"));
 		return;
 	}
 	// Load images using CImage class
 	HRESULT hResult = m_Image1.Load(m_sRefImgPath);
-	if (FAILED(hResult))
-	{
+	if (FAILED(hResult)){
 		MessageBox(_T("Fail to load Reference Image"), NULL, MB_ICONERROR | MB_OK);
 		return;
 	}
 	hResult = m_Image2.Load(m_sTarImgPath);
-	if (FAILED(hResult))
-	{
+	if (FAILED(hResult)){
 		MessageBox(_T("Fail to load Target Image"), NULL, MB_ICONERROR | MB_OK);
 		return;
 	}
@@ -284,13 +279,11 @@ void CPiDICDlg::OnBnClickedOk()
 	m_iImgWidth = m_Image1.GetWidth();
 	m_iImgHeight = m_Image1.GetHeight();
 
-	if (m_iImgWidth != m_Image2.GetWidth())
-	{
+	if (m_iImgWidth != m_Image2.GetWidth()){
 		MessageBox(_T("The width of the two images are not equal!"), NULL, MB_ICONERROR | MB_OK);
 		return;
 	}
-	if (m_iImgWidth != m_Image2.GetWidth())
-	{
+	if (m_iImgWidth != m_Image2.GetWidth()){
 		MessageBox(_T("The Heights of the two images are not equal!"), NULL, MB_ICONERROR | MB_OK);
 		return;
 	}
@@ -308,8 +301,7 @@ void CPiDICDlg::OnBnClickedOk()
 	double **m_dImg1 = new double *[m_iImgHeight];
 	double **m_dImg2 = new double *[m_iImgHeight];
 
-	for (i = 0; i < m_iImgHeight; i++)
-	{
+	for (i = 0; i < m_iImgHeight; i++){
 		m_dImg1[i] = new double[m_iImgWidth];
 		m_dImg2[i] = new double[m_iImgWidth];
 	}
@@ -317,10 +309,8 @@ void CPiDICDlg::OnBnClickedOk()
 	double m_dTemp, m_dTempX, m_dTempY;
 	COLORREF m_PixelColor;
 
-	for (i = 0; i < m_iImgHeight; i++)
-	{
-		for (j = 0; j < m_iImgWidth; j++)
-		{
+	for (i = 0; i < m_iImgHeight; i++){
+		for (j = 0; j < m_iImgWidth; j++){
 			m_PixelColor = m_Image1.GetPixel(j, i);
 			m_dTemp = double((GetRValue(m_PixelColor) + GetGValue(m_PixelColor) + GetBValue(m_PixelColor)) / 3);
 			m_dImg1[i][j] = m_dTemp;
