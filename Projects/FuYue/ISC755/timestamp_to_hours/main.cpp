@@ -19,6 +19,13 @@ int gethour(long int& timestamp)
     ts=*localtime(&rawtime);
     return ts.tm_hour; 
 }
+int getday(long int& timestamp)
+{
+    time_t rawtime=(time_t)timestamp;
+    struct tm  ts;
+    ts=*localtime(&rawtime);
+	return ts.tm_wday; 
+}
 void single_loader(vector<long int>& userID,const char* filename)
 {
 	fstream infile(filename);
@@ -34,12 +41,12 @@ void single_loader(vector<long int>& userID,const char* filename)
 		cerr<<"Fooey!\n";
 	}
 }
-void ouput(vector<int>& hours)
+void ouput(vector<int>& dorh)
 {
-	ofstream file3("T.csv");
+	ofstream file3("T_D.csv");
 	if(file3.is_open()){
-		for(unsigned int i=0; i<hours.size(); i++){
-			file3<<hours[i]<<","<<endl;
+		for(unsigned int i=0; i<dorh.size(); i++){
+			file3<<dorh[i]<<","<<endl;
 		}
 	}
 	file3.close();
@@ -48,14 +55,14 @@ void ouput(vector<int>& hours)
 int main()
 {
 	vector<long int> timeStamp;
-	vector<int>hours;
+	vector<int>day;
 
 	single_loader(timeStamp,"timeS.txt");
 
 	for(size_t i=0; i<timeStamp.size(); i++){
-		hours.push_back(gethour(timeStamp[i]));
+		day.push_back(getday(timeStamp[i]));
 	}
-	ouput(hours);
+	ouput(day);
 
 
 	return 0;
