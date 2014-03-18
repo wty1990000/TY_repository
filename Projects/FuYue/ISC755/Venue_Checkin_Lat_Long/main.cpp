@@ -55,7 +55,7 @@ void V_Check_LAT_LONG(vector<int>& V, vector<int>& V2, vector<float>& LAT, vecto
 	}
 	string s = to_string(n);
 	//string ss = "Results/Category_2/Category_2_"+s+".csv";
-	string sss = "Results/Category_8/DAY/Category_8_MultiVenue_DAY"+s+".csv";
+	string sss = "Results/Category_1/Hour/Category_1_MultiVenue_Hour"+s+".csv";
 
 	//ofstream file(ss.c_str());
 	ofstream file1(sss.c_str());
@@ -84,14 +84,14 @@ int main()
 	vector<float>LAT;
 	vector<float>LONG;
 
-	single_loaderf(LAT,"CAT8/LAT.csv");
-	single_loaderf(LONG,"CAT8/LONG.csv");
-	single_loaderi(V, "CAT8/V.csv");
-	single_loaderi(hours, "U_V_T/T_D.csv");
+	single_loaderf(LAT,"CAT1/LAT.csv");
+	single_loaderf(LONG,"CAT1/LONG.csv");
+	single_loaderi(V, "CAT1/V.csv");
+	single_loaderi(hours, "U_V_T/T.csv");
 	single_loaderi(V2, "U_V_T/V.csv");
 	vector<unsigned int> checkin(V.size(),0);
 
-	for(int n=0; n<7; n++){
+	for(int n=0; n<24; n++){
 		V_Check_LAT_LONG(V,V2,LAT,LONG,hours,n);
 	}
 

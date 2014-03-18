@@ -26,6 +26,20 @@ int getday(long int& timestamp)
     ts=*localtime(&rawtime);
 	return ts.tm_wday; 
 }
+int getyear(long int& timestamp)
+{
+    time_t rawtime=(time_t)timestamp;
+    struct tm  ts;
+    ts=*localtime(&rawtime);
+	return ts.tm_year;
+}
+int getmonth(long int& timestamp)
+{
+    time_t rawtime=(time_t)timestamp;
+    struct tm  ts;
+    ts=*localtime(&rawtime);
+	return ts.tm_mon;
+}
 void single_loader(vector<long int>& userID,const char* filename)
 {
 	fstream infile(filename);
@@ -41,12 +55,12 @@ void single_loader(vector<long int>& userID,const char* filename)
 		cerr<<"Fooey!\n";
 	}
 }
-void ouput(vector<int>& dorh)
+void ouput(vector<int>& dorh, vector<int>& mon)
 {
-	ofstream file3("T_D.csv");
+	ofstream file3("T_Y_M.csv");
 	if(file3.is_open()){
 		for(unsigned int i=0; i<dorh.size(); i++){
-			file3<<dorh[i]<<","<<endl;
+			file3<<dorh[i]<<","<<mon[i]<<endl;
 		}
 	}
 	file3.close();
@@ -55,14 +69,16 @@ void ouput(vector<int>& dorh)
 int main()
 {
 	vector<long int> timeStamp;
-	vector<int>day;
+	vector<int>year;
+	vector<int>mon;
 
 	single_loader(timeStamp,"timeS.txt");
 
 	for(size_t i=0; i<timeStamp.size(); i++){
-		day.push_back(getday(timeStamp[i]));
+		year.push_back(getyear(timeStamp[i]));
+		mon.push_back(getmonth(timeStamp[i]));
 	}
-	ouput(day);
+	ouput(year,mon);
 
 
 	return 0;
