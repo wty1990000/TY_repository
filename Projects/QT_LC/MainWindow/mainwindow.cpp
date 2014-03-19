@@ -21,6 +21,7 @@ MainWindow::MainWindow(QWidget *parent)
  
     QToolBar *toolBar = addToolBar(tr("&File"));
     toolBar->addAction(openAction);
+	toolBar->setMovable(false);
  
     statusBar() ;
 }

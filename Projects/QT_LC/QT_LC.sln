@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MainWindow", "MainWindow\Ma
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "layout", "layout\layout.vcxproj", "{C16C3704-46E6-49FE-BA14-F2414D78ED1F}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dialog", "dialog\dialog.vcxproj", "{4197211B-8468-4B5D-8222-9684B199D470}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -49,6 +51,14 @@ Global
 		{C16C3704-46E6-49FE-BA14-F2414D78ED1F}.Release|Win32.Build.0 = Release|Win32
 		{C16C3704-46E6-49FE-BA14-F2414D78ED1F}.Release|x64.ActiveCfg = Release|x64
 		{C16C3704-46E6-49FE-BA14-F2414D78ED1F}.Release|x64.Build.0 = Release|x64
+		{4197211B-8468-4B5D-8222-9684B199D470}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4197211B-8468-4B5D-8222-9684B199D470}.Debug|Win32.Build.0 = Debug|Win32
+		{4197211B-8468-4B5D-8222-9684B199D470}.Debug|x64.ActiveCfg = Debug|x64
+		{4197211B-8468-4B5D-8222-9684B199D470}.Debug|x64.Build.0 = Debug|x64
+		{4197211B-8468-4B5D-8222-9684B199D470}.Release|Win32.ActiveCfg = Release|Win32
+		{4197211B-8468-4B5D-8222-9684B199D470}.Release|Win32.Build.0 = Release|Win32
+		{4197211B-8468-4B5D-8222-9684B199D470}.Release|x64.ActiveCfg = Release|x64
+		{4197211B-8468-4B5D-8222-9684B199D470}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
