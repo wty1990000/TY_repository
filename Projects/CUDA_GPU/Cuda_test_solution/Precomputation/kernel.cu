@@ -19,19 +19,19 @@ __global__ void RGradient_kernel(const double *d_InputIMGR, const double *d_Inpu
 	unsigned int row = blockIdx.y * blockDim.y + threadIdx.y;
 	unsigned int col = blockIdx.x * blockDim.x + threadIdx.x;
 
-	unsigned int i  = row * width;		unsigned int j  = col;
-	unsigned int i1 = (row+1) * width;	unsigned int j1 = col +1;
-	unsigned int i2 = (row+2) * width;  unsigned int j2 = col +2;
+	unsigned int i  = row * (width+2);		unsigned int j  = col;
+	unsigned int i1 = (row+1) * (width+2);	unsigned int j1 = col +1;
+	unsigned int i2 = (row+2) * (width+2);  unsigned int j2 = col +2;
 
 	if(row < height && col < width){
-		d_OutputIMGR[i+j]  = d_InputIMGR[i1+j1];
-		d_OutputIMGRx[i+j] = 0.5 * (d_InputIMGR[i1+j2] - d_InputIMGR[i1+j]);
-		d_OutputIMGRy[i+j] = 0.5 * (d_InputIMGR[i2+j1] - d_InputIMGR[i+j1]);
+		d_OutputIMGR[row*width+col]  = d_InputIMGR[i1+j1];
+		d_OutputIMGRx[row*width+col] = 0.5 * (d_InputIMGR[i1+j2] - d_InputIMGR[i1+j]);
+		d_OutputIMGRy[row*width+col] = 0.5 * (d_InputIMGR[i2+j1] - d_InputIMGR[i+j1]);
 
-		d_OutputIMGT[i+j]  = d_InputIMGT[i1+j1];
-		d_OutputIMGTx[i+j] = 0.5 * (d_InputIMGT[i1+j2] - d_InputIMGT[i1+j]);
-		d_OutputIMGTy[i+j] = 0.5 * (d_InputIMGT[i2+j1] - d_InputIMGT[i+j1]);
-		d_OutputIMGTxy[i+j]= 0.25 * (d_InputIMGT[i2+j2] - d_InputIMGT[i+j2] - d_InputIMGT[i2+j] + d_InputIMGT[i+j]);
+		d_OutputIMGT[row*width+col]  = d_InputIMGT[i1+j1];
+		d_OutputIMGTx[row*width+col] = 0.5 * (d_InputIMGT[i1+j2] - d_InputIMGT[i1+j]);
+		d_OutputIMGTy[row*width+col] = 0.5 * (d_InputIMGT[i2+j1] - d_InputIMGT[i+j1]);
+		d_OutputIMGTxy[row*width+col]= 0.25 * (d_InputIMGT[i2+j2] - d_InputIMGT[i+j2] - d_InputIMGT[i2+j] + d_InputIMGT[i+j]);
 	}
 	
 

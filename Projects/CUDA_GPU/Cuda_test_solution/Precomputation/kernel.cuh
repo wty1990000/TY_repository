@@ -1,7 +1,7 @@
 #ifndef _KERNEL_CUH_
 #define _KERNEL_CUH_
 
-#define BLOCK_SIZE 128
+#define BLOCK_SIZE 6
 
 
 void launch_kernel(const double *h_InputIMGR, const double *h_InputIMGT,
