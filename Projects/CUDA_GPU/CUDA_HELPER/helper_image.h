@@ -20,7 +20,7 @@
 #include <algorithm>
 
 #include <assert.h>
-#include <exception.h>
+#include <exception>
 #include <math.h>
 
 #ifndef MIN
