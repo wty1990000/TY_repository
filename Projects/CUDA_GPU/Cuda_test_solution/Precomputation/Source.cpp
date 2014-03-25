@@ -1,5 +1,5 @@
 #include <iostream>
-#include "kernel.cuh"
+#include "precomputation.cuh"
 #include <stdio.h>
 
 using namespace std;
@@ -9,41 +9,60 @@ int main()
 	double *h_InputIMGR, *h_InputIMGT;
 	double *h_OutputIMGR,*h_OutputIMGT; 
 	double *h_OutputIMGRx, *h_OutputIMGRy;
-	double *h_OutputIMGTx, *h_OutputIMGTy, *h_OutputIMGTxy;
+	double *h_OutputIMGTx, *h_OutputIMGTy, *h_OutputIMGTxy, *h_OutputdTBicubic;
 
-	h_InputIMGR = (double*)malloc(256*256*sizeof(double));
-	h_InputIMGT = (double*)malloc(256*256*sizeof(double));
+	h_InputIMGR = (double*)malloc(8*8*sizeof(double));
+	h_InputIMGT = (double*)malloc(8*8*sizeof(double));
 
 
-	for(int i=0; i<256*256; i++){
+	for(int i=0; i<8*8; i++){
 		h_InputIMGR[i] = double(i);
 		h_InputIMGT[i] = double(i*i);
-		}
+	}
 
-	for(int i=0; i<256; i++){
-		for(int j=0; j<256; j++){
-			cout<<h_InputIMGR[i*256+j]<<","<<h_InputIMGT[i*256+j]<<endl;
+	for(int i=0; i<8; i++){
+		for(int j=0; j<8; j++){
+			cout<<h_InputIMGR[i*8+j]<<","<<h_InputIMGT[i*8+j]<<endl;
 		}
 	}
 
-	h_OutputIMGR = (double*)malloc(254*254*sizeof(double));
-	h_OutputIMGT = (double*)malloc(254*254*sizeof(double));
-	h_OutputIMGRx = (double*)malloc(254*254*sizeof(double));
-	h_OutputIMGRy = (double*)malloc(254*254*sizeof(double));
-	h_OutputIMGTx = (double*)malloc(254*254*sizeof(double));
-	h_OutputIMGTy = (double*)malloc(254*254*sizeof(double));
-	h_OutputIMGTxy = (double*)malloc(254*254*sizeof(double));
+	cout<<endl;
+
+	h_OutputIMGR = (double*)malloc(6*6*sizeof(double));
+	h_OutputIMGT = (double*)malloc(6*6*sizeof(double));
+	h_OutputIMGRx = (double*)malloc(6*6*sizeof(double));
+	h_OutputIMGRy = (double*)malloc(6*6*sizeof(double));
+	h_OutputIMGTx = (double*)malloc(6*6*sizeof(double));
+	h_OutputIMGTy = (double*)malloc(6*6*sizeof(double));
+	h_OutputIMGTxy = (double*)malloc(6*6*sizeof(double));
+	h_OutputdTBicubic = (double*)malloc((6-1)*(6-1)*4*4*sizeof(double));
 
 	launch_kernel(h_InputIMGR,h_InputIMGT,h_OutputIMGR,h_OutputIMGT,
-				  h_OutputIMGRx, h_OutputIMGRy,h_OutputIMGTx,h_OutputIMGTy,h_OutputIMGTxy,254,254);
+				  h_OutputIMGRx, h_OutputIMGRy,h_OutputIMGTx,h_OutputIMGTy,h_OutputIMGTxy,h_OutputdTBicubic,6,6);
 
-
-	for(int i=0; i<254; i++)
-		for(int j=0; j<254; j++){
-			cout<<h_OutputIMGR[i*254+j]<<","<<h_OutputIMGT[i*254+j]
-			<<","<<h_OutputIMGRx[i*254+j]<<","<<h_OutputIMGRy[i*254+j]
-			<<","<<h_OutputIMGTx[i*254+j]<<","<<h_OutputIMGTy[i*254+j]<<","<<h_OutputIMGTxy[i*254+j]<<endl;
+	for(int i=0; i<6; i++){
+		for(int j=0; j<6; j++){
+			cout<<h_OutputIMGR[i*6+j]<<","<<h_OutputIMGT[i*6+j]
+				<<","<<h_OutputIMGRx[i*6+j]<<","<<h_OutputIMGRy[i*6+j]
+				<<","<<h_OutputIMGTx[i*6+j]<<","<<h_OutputIMGTy[i*6+j]<<","<<h_OutputIMGTxy[i*6+j]<<endl;
 		}
+	}
+
+	cout<<endl;
+
+	for(int i=0; i<(6-1); i++){
+		for(int j=0; j<(6-1); j++){
+			for(int k=0; k<4; k++){
+				for(int l=0; l<4; l++){
+					cout<<h_OutputdTBicubic[((i*(6-1)+j)*4+k)*4+l]<<",\t";
+				}
+				cout<<endl;
+			}
+			cout<<endl;
+		}
+	}
+
+	cout<<endl;
 	cout<<"Done!"<<endl;
 
 	free(h_OutputIMGR);
@@ -53,6 +72,7 @@ int main()
 	free(h_OutputIMGTx);
 	free(h_OutputIMGTy);
 	free(h_OutputIMGTxy);
+	free(h_OutputdTBicubic);
 
 
 	return 0;

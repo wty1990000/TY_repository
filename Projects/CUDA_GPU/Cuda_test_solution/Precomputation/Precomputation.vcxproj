@@ -21,6 +21,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{452C86F7-8FF1-4BB8-8321-F9E223534E8C}</ProjectGuid>
     <RootNamespace>Precomputation</RootNamespace>
+    <ProjectName>DIC_CUDA_COMB</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -150,10 +151,10 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CudaCompile Include="kernel.cu" />
+    <CudaCompile Include="precomputation.cu" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="kernel.cuh" />
+    <None Include="precomputation.cuh" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp" />
