@@ -14,8 +14,11 @@ int main()
 		cudaGetDeviceProperties(&prop, i);
 	}
 	if (prop.deviceOverlap){
-		printf("Device support CUDA streams");
+		printf("Device support CUDA streams\n");
 	}
+	printf("Device has %d SMs\n",prop.multiProcessorCount);
+	printf("Device has %d threads per SMs",prop.maxThreadsPerMultiProcessor);
+	printf("Device has %d threads per block",prop.maxThreadsPerBlock);
 	
 	return 0;
 }

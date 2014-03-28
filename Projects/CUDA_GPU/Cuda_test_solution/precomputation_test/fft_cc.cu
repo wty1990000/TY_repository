@@ -8,3 +8,7 @@
 
 #include "fft_cc.cuh"
 
+void launch_cufft()
+{
+
+}

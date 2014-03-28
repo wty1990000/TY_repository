@@ -80,6 +80,8 @@ __global__ void RGradient_kernel(const double *d_InputIMGR, const double *d_Inpu
 				d_AlphaT[k] += (d_InputBiubicMatrix[k*16+l] * d_TaoT[l]);
 			}
 		}
+		//Data layout: d_OutputdtBicubic[y][x][4][4]
+
 		d_OutputdtBicubic[((rowo*(width-1)+colo)*4+0)*4+0] = d_AlphaT[0];
 		d_OutputdtBicubic[((rowo*(width-1)+colo)*4+0)*4+1] = d_AlphaT[1];
 		d_OutputdtBicubic[((rowo*(width-1)+colo)*4+0)*4+2] = d_AlphaT[2];
