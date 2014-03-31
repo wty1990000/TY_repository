@@ -7,9 +7,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DIC_CUDA_COMB", "Precomputa
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test_printf", "Test_printf\Test_printf.vcxproj", "{7C48809A-2E12-4233-ABC9-A6C58FFF7509}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DIC_CUDA_TEST", "precomputation_test\precomputation_test.vcxproj", "{2702AD35-88E7-47CD-873F-30D648588680}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DIC_CUDA_PRECOMPUTATION", "precomputation_test\precomputation_test.vcxproj", "{2702AD35-88E7-47CD-873F-30D648588680}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "properties", "properties\properties.vcxproj", "{98B6A4B5-AB9E-4006-B08D-59DE77DD0FF1}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DIC_CUDA_FFT", "DIC_CUDA_FFT\DIC_CUDA_FFT.vcxproj", "{543C52B5-A7C0-4F3D-9844-2F2F74AC1B03}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,6 +61,14 @@ Global
 		{98B6A4B5-AB9E-4006-B08D-59DE77DD0FF1}.Release|Win32.Build.0 = Release|Win32
 		{98B6A4B5-AB9E-4006-B08D-59DE77DD0FF1}.Release|x64.ActiveCfg = Release|x64
 		{98B6A4B5-AB9E-4006-B08D-59DE77DD0FF1}.Release|x64.Build.0 = Release|x64
+		{543C52B5-A7C0-4F3D-9844-2F2F74AC1B03}.Debug|Win32.ActiveCfg = Debug|Win32
+		{543C52B5-A7C0-4F3D-9844-2F2F74AC1B03}.Debug|Win32.Build.0 = Debug|Win32
+		{543C52B5-A7C0-4F3D-9844-2F2F74AC1B03}.Debug|x64.ActiveCfg = Debug|x64
+		{543C52B5-A7C0-4F3D-9844-2F2F74AC1B03}.Debug|x64.Build.0 = Debug|x64
+		{543C52B5-A7C0-4F3D-9844-2F2F74AC1B03}.Release|Win32.ActiveCfg = Release|Win32
+		{543C52B5-A7C0-4F3D-9844-2F2F74AC1B03}.Release|Win32.Build.0 = Release|Win32
+		{543C52B5-A7C0-4F3D-9844-2F2F74AC1B03}.Release|x64.ActiveCfg = Release|x64
+		{543C52B5-A7C0-4F3D-9844-2F2F74AC1B03}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
