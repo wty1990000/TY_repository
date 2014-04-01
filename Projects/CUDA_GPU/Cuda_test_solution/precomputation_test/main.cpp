@@ -14,11 +14,11 @@ int main()
 	double *h_OutputIMGRx, *h_OutputIMGRy;
 	double *h_OutputIMGTx, *h_OutputIMGTy, *h_OutputIMGTxy, *h_OutputdTBicubic;
 
-	h_InputIMGR = (double*)malloc(128*128*sizeof(double));
-	h_InputIMGT = (double*)malloc(128*128*sizeof(double));
+	h_InputIMGR = (double*)malloc(256*256*sizeof(double));
+	h_InputIMGT = (double*)malloc(256*256*sizeof(double));
 
 
-	for(int i=0; i<128*128; i++){
+	for(int i=0; i<256*256; i++){
 		h_InputIMGR[i] = double(r.random_integer(0,255));
 		h_InputIMGT[i] = double(r.random_integer(0,255));
 	}
@@ -31,17 +31,17 @@ int main()
 
 	cout<<endl;
 
-	h_OutputIMGR = (double*)malloc(126*126*sizeof(double));
-	h_OutputIMGT = (double*)malloc(126*126*sizeof(double));
-	h_OutputIMGRx = (double*)malloc(126*126*sizeof(double));
-	h_OutputIMGRy = (double*)malloc(126*126*sizeof(double));
-	h_OutputIMGTx = (double*)malloc(126*126*sizeof(double));
-	h_OutputIMGTy = (double*)malloc(126*126*sizeof(double));
-	h_OutputIMGTxy = (double*)malloc(126*126*sizeof(double));
-	h_OutputdTBicubic = (double*)malloc((126)*(126)*4*4*sizeof(double));
+	h_OutputIMGR = (double*)malloc(254*254*sizeof(double));
+	h_OutputIMGT = (double*)malloc(254*254*sizeof(double));
+	h_OutputIMGRx = (double*)malloc(254*254*sizeof(double));
+	h_OutputIMGRy = (double*)malloc(254*254*sizeof(double));
+	h_OutputIMGTx = (double*)malloc(254*254*sizeof(double));
+	h_OutputIMGTy = (double*)malloc(254*254*sizeof(double));
+	h_OutputIMGTxy = (double*)malloc(254*254*sizeof(double));
+	h_OutputdTBicubic = (double*)malloc((254)*(254)*4*4*sizeof(double));
 
 	launch_kernel(h_InputIMGR,h_InputIMGT,h_OutputIMGR,h_OutputIMGT,
-				  h_OutputIMGRx, h_OutputIMGRy,h_OutputIMGTx,h_OutputIMGTy,h_OutputIMGTxy,h_OutputdTBicubic,126,126);
+				  h_OutputIMGRx, h_OutputIMGRy,h_OutputIMGTx,h_OutputIMGTy,h_OutputIMGTxy,h_OutputdTBicubic,254,254);
 
 	//for(int i=0; i<2; i++){
 	//	for(int j=0; j<2; j++){
