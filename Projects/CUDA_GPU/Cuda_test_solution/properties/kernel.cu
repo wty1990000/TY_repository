@@ -16,6 +16,9 @@ int main()
 	if (prop.deviceOverlap){
 		printf("Device support CUDA streams\n");
 	}
+	if (prop.canMapHostMemory==1){
+		printf("Device supports zero-copying");
+	}
 	printf("Device has %d SMs\n",prop.multiProcessorCount);
 	printf("Device has %d threads per SMs",prop.maxThreadsPerMultiProcessor);
 	printf("Device has %d threads per block",prop.maxThreadsPerBlock);
