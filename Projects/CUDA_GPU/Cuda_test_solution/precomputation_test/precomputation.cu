@@ -9,114 +9,92 @@
 
 #include "precomputation.cuh"
 
-__global__ void RGradient_kernel(const double *d_InputIMGR, const double *d_InputIMGT,const double* __restrict__ d_InputBiubicMatrix,
+
+__global__ void RGradient_kernel(const double *d_InputIMGR, const double *d_InputIMGT, const double* __restrict__ d_InputBiubicMatrix,
 								 double *d_OutputIMGR, double *d_OutputIMGT, 
 								 double *d_OutputIMGRx, double *d_OutputIMGRy,
 								 double *d_OutputIMGTx, double *d_OutputIMGTy, double *d_OutputIMGTxy, double *d_OutputdtBicubic,
 								 int width, int height)
 {
-	/* Here the width and height have been minused by 2. That is the original image width and height should be width+2
-	   and height+2	*/
-	//Share memory for Bicubic computation
-	__shared__ double Input_R[BLOCK_SIZE][BLOCK_SIZE];
-	__shared__ double Input_T[BLOCK_SIZE][BLOCK_SIZE];
-	//temperary parameters
+	//The size of input images
+	int row = blockIdx.y * blockDim.y + threadIdx.y;
+	int col = blockIdx.x * blockDim.x + threadIdx.x;
+	int offseti = row * (width+2) + col;
+	//Temp arrays
 	double d_TaoT[16];
 	double d_AlphaT[16];
 
-	//Map the threads to the pixel positions
-	int tx  = threadIdx.x;
-	int ty  = threadIdx.y;
-	//The size of input images
-	int rowi = blockIdx.y * blockDim.y + threadIdx.y;
-	int coli = blockIdx.x * blockDim.x + threadIdx.x;
 	//The rows and cols of output matrix.
-	int rowo = rowi-2;
-	int colo = coli-2;
 
-	if(rowi < (height+2) && coli < (width+2)){
-		Input_R[ty][tx] = d_InputIMGR[rowi*(width+2)+coli];
-		Input_T[ty][tx] = d_InputIMGT[rowi*(width+2)+coli];
-	}
-	else{
-		Input_R[ty][tx] = 0.0;
-		Input_T[ty][tx] = 0.0;
-	}
-	//When all the threads finish the loading task, continue to computation.
-	__syncthreads();
+	if((row < height) && (col < width)){
+		d_OutputIMGR[row*width+col]  = d_InputIMGR[(row+1)*(width+2)+col+1];
+		d_OutputIMGRx[row*width+col] = 0.5 * (d_InputIMGR[(row+1)*(width+2)+col+2] - d_InputIMGR[(row+1)*(width+2)+col]);
+		d_OutputIMGRy[row*width+col] = 0.5 * (d_InputIMGR[(row+2)*(width+2)+col+1] - d_InputIMGR[(row)*(width+2)+col+1]);
 
-	if((rowo>=0) && (rowo < height) && (colo>=0) && (colo < width)&&(ty>=2)&&(tx>=2)){
-		d_OutputIMGR[rowo*width+colo]  = Input_R[ty-1][tx-1];
-		d_OutputIMGRx[rowo*width+colo] = 0.5 * (Input_R[ty-1][tx] - Input_R[ty-1][tx-2]);
-		d_OutputIMGRy[rowo*width+colo] = 0.5 * (Input_R[ty][tx-1] - Input_R[ty-2][tx-1]);
-
-		d_OutputIMGT[rowo*width+colo]  = Input_T[ty-1][tx-1];
-		d_OutputIMGTx[rowo*width+colo] = 0.5 * (Input_T[ty-1][tx] - Input_T[ty-1][tx-2]);
-		d_OutputIMGTy[rowo*width+colo] = 0.5 * (Input_T[ty][tx-1] - Input_T[ty-2][tx-1]);
-		d_OutputIMGTxy[rowo*width+colo]= 0.25 * (Input_T[ty][tx]  - Input_T[ty-2][tx] - Input_T[ty][tx-2] + Input_T[ty-2][tx-2]);
+		d_OutputIMGT[row*width+col]  = d_InputIMGT[(row+1)*(width+2)+col+1];
+		d_OutputIMGTx[row*width+col] = 0.5 * (d_InputIMGT[(row+1)*(width+2)+col+2] -d_InputIMGT[(row+1)*(width+2)+col]);
+		d_OutputIMGTy[row*width+col] = 0.5 * (d_InputIMGT[(row+2)*(width+2)+col+1] - d_InputIMGT[(row)*(width+2)+col+1]);
+		d_OutputIMGTxy[row*width+col]= 0.25 * (d_InputIMGT[(row+2)*(width+2)+col+2]  - d_InputIMGT[(row)*(width+2)+col+2] -d_InputIMGT[(row+2)*(width+2)+col] + d_InputIMGT[(row)*(width+2)+col]);
 	}
 	__syncthreads();
-	if(rowo>=0 && colo>=0){
-		if((rowo < height-1) && (colo < width-1)){
-		d_TaoT[0] = d_OutputIMGT[rowo*(width)+colo];
-		d_TaoT[1] = d_OutputIMGT[rowo*(width)+colo+1];
-		d_TaoT[2] = d_OutputIMGT[(rowo+1)*(width)+colo];
-		d_TaoT[3] = d_OutputIMGT[(rowo+1)*(width)+colo+1];
-		d_TaoT[4] = d_OutputIMGTx[rowo*(width)+colo];
-		d_TaoT[5] = d_OutputIMGTx[rowo*(width)+colo+1];
-		d_TaoT[6] = d_OutputIMGTx[(rowo+1)*(width)+colo];
-		d_TaoT[7] = d_OutputIMGTx[(rowo+1)*(width)+colo+1];
-		d_TaoT[8] = d_OutputIMGTy[rowo*(width)+colo];
-		d_TaoT[9] = d_OutputIMGTy[rowo*(width)+colo+1];
-		d_TaoT[10] = d_OutputIMGTy[(rowo+1)*(width)+colo];
-		d_TaoT[11] = d_OutputIMGTy[(rowo+1)*(width)+colo+1];
-		d_TaoT[12] = d_OutputIMGTxy[rowo*(width)+colo];
-		d_TaoT[13] = d_OutputIMGTxy[rowo*(width)+colo+1];
-		d_TaoT[14] = d_OutputIMGTxy[(rowo+1)*(width)+colo];
-		d_TaoT[15] = d_OutputIMGTxy[(rowo+1)*(width)+colo+1];
+		if((row < height-1) && (col < width-1)){
+		d_TaoT[0] = d_OutputIMGT[row*(width)+col];
+		d_TaoT[1] = d_OutputIMGT[row*(width)+col+1];
+		d_TaoT[2] = d_OutputIMGT[(row+1)*(width)+col];
+		d_TaoT[3] = d_OutputIMGT[(row+1)*(width)+col+1];
+		d_TaoT[4] = d_OutputIMGTx[row*(width)+col];
+		d_TaoT[5] = d_OutputIMGTx[row*(width)+col+1];
+		d_TaoT[6] = d_OutputIMGTx[(row+1)*(width)+col];
+		d_TaoT[7] = d_OutputIMGTx[(row+1)*(width)+col+1];
+		d_TaoT[8] = d_OutputIMGTy[row*(width)+col];
+		d_TaoT[9] = d_OutputIMGTy[row*(width)+col+1];
+		d_TaoT[10] = d_OutputIMGTy[(row+1)*(width)+col];
+		d_TaoT[11] = d_OutputIMGTy[(row+1)*(width)+col+1];
+		d_TaoT[12] = d_OutputIMGTxy[row*(width)+col];
+		d_TaoT[13] = d_OutputIMGTxy[row*(width)+col+1];
+		d_TaoT[14] = d_OutputIMGTxy[(row+1)*(width)+col];
+		d_TaoT[15] = d_OutputIMGTxy[(row+1)*(width)+col+1];
 		for(int k=0; k<16; k++){
 			d_AlphaT[k] = 0.0;
 			for(int l=0; l<16; l++){
 				d_AlphaT[k] += (d_InputBiubicMatrix[k*16+l] * d_TaoT[l]);
 			}
 		}
-		d_OutputdtBicubic[((rowo*(width)+colo)*4+0)*4+0] = d_AlphaT[0];
-		d_OutputdtBicubic[((rowo*(width)+colo)*4+0)*4+1] = d_AlphaT[1];
-		d_OutputdtBicubic[((rowo*(width)+colo)*4+0)*4+2] = d_AlphaT[2];
-		d_OutputdtBicubic[((rowo*(width)+colo)*4+0)*4+3] = d_AlphaT[3];
-		d_OutputdtBicubic[((rowo*(width)+colo)*4+1)*4+0] = d_AlphaT[4];
-		d_OutputdtBicubic[((rowo*(width)+colo)*4+1)*4+1] = d_AlphaT[5];
-		d_OutputdtBicubic[((rowo*(width)+colo)*4+1)*4+2] = d_AlphaT[6];
-		d_OutputdtBicubic[((rowo*(width)+colo)*4+1)*4+3] = d_AlphaT[7];
-		d_OutputdtBicubic[((rowo*(width)+colo)*4+2)*4+0] = d_AlphaT[8];
-		d_OutputdtBicubic[((rowo*(width)+colo)*4+2)*4+1] = d_AlphaT[9];
-		d_OutputdtBicubic[((rowo*(width)+colo)*4+2)*4+2] = d_AlphaT[10];
-		d_OutputdtBicubic[((rowo*(width)+colo)*4+2)*4+3] = d_AlphaT[11];
-		d_OutputdtBicubic[((rowo*(width)+colo)*4+3)*4+0] = d_AlphaT[12];
-		d_OutputdtBicubic[((rowo*(width)+colo)*4+3)*4+1] = d_AlphaT[13];
-		d_OutputdtBicubic[((rowo*(width)+colo)*4+3)*4+2] = d_AlphaT[14];
-		d_OutputdtBicubic[((rowo*(width)+colo)*4+3)*4+3] = d_AlphaT[15];
+		d_OutputdtBicubic[((row*(width)+col)*4+0)*4+0] = d_AlphaT[0];
+		d_OutputdtBicubic[((row*(width)+col)*4+0)*4+1] = d_AlphaT[1];
+		d_OutputdtBicubic[((row*(width)+col)*4+0)*4+2] = d_AlphaT[2];
+		d_OutputdtBicubic[((row*(width)+col)*4+0)*4+3] = d_AlphaT[3];
+		d_OutputdtBicubic[((row*(width)+col)*4+1)*4+0] = d_AlphaT[4];
+		d_OutputdtBicubic[((row*(width)+col)*4+1)*4+1] = d_AlphaT[5];
+		d_OutputdtBicubic[((row*(width)+col)*4+1)*4+2] = d_AlphaT[6];
+		d_OutputdtBicubic[((row*(width)+col)*4+1)*4+3] = d_AlphaT[7];
+		d_OutputdtBicubic[((row*(width)+col)*4+2)*4+0] = d_AlphaT[8];
+		d_OutputdtBicubic[((row*(width)+col)*4+2)*4+1] = d_AlphaT[9];
+		d_OutputdtBicubic[((row*(width)+col)*4+2)*4+2] = d_AlphaT[10];
+		d_OutputdtBicubic[((row*(width)+col)*4+2)*4+3] = d_AlphaT[11];
+		d_OutputdtBicubic[((row*(width)+col)*4+3)*4+0] = d_AlphaT[12];
+		d_OutputdtBicubic[((row*(width)+col)*4+3)*4+1] = d_AlphaT[13];
+		d_OutputdtBicubic[((row*(width)+col)*4+3)*4+2] = d_AlphaT[14];
+		d_OutputdtBicubic[((row*(width)+col)*4+3)*4+3] = d_AlphaT[15];
 	}
 	else {
-		d_OutputdtBicubic[((rowo*(width)+colo)*4+0)*4+0] = 0;
-		d_OutputdtBicubic[((rowo*(width)+colo)*4+0)*4+1] = 0;
-		d_OutputdtBicubic[((rowo*(width)+colo)*4+0)*4+2] = 0;
-		d_OutputdtBicubic[((rowo*(width)+colo)*4+0)*4+3] = 0;
-		d_OutputdtBicubic[((rowo*(width)+colo)*4+1)*4+0] = 0;
-		d_OutputdtBicubic[((rowo*(width)+colo)*4+1)*4+1] = 0;
-		d_OutputdtBicubic[((rowo*(width)+colo)*4+1)*4+2] = 0;
-		d_OutputdtBicubic[((rowo*(width)+colo)*4+1)*4+3] = 0;
-		d_OutputdtBicubic[((rowo*(width)+colo)*4+2)*4+0] = 0;
-		d_OutputdtBicubic[((rowo*(width)+colo)*4+2)*4+1] = 0;
-		d_OutputdtBicubic[((rowo*(width)+colo)*4+2)*4+2] = 0;
-		d_OutputdtBicubic[((rowo*(width)+colo)*4+2)*4+3] = 0;
-		d_OutputdtBicubic[((rowo*(width)+colo)*4+3)*4+0] = 0;
-		d_OutputdtBicubic[((rowo*(width)+colo)*4+3)*4+1] = 0;
-		d_OutputdtBicubic[((rowo*(width)+colo)*4+3)*4+2] = 0;
-		d_OutputdtBicubic[((rowo*(width)+colo)*4+3)*4+3] = 0;
+		d_OutputdtBicubic[((row*(width)+col)*4+0)*4+0] = 0;
+		d_OutputdtBicubic[((row*(width)+col)*4+0)*4+1] = 0;
+		d_OutputdtBicubic[((row*(width)+col)*4+0)*4+2] = 0;
+		d_OutputdtBicubic[((row*(width)+col)*4+0)*4+3] = 0;
+		d_OutputdtBicubic[((row*(width)+col)*4+1)*4+0] = 0;
+		d_OutputdtBicubic[((row*(width)+col)*4+1)*4+1] = 0;
+		d_OutputdtBicubic[((row*(width)+col)*4+1)*4+2] = 0;
+		d_OutputdtBicubic[((row*(width)+col)*4+1)*4+3] = 0;
+		d_OutputdtBicubic[((row*(width)+col)*4+2)*4+0] = 0;
+		d_OutputdtBicubic[((row*(width)+col)*4+2)*4+1] = 0;
+		d_OutputdtBicubic[((row*(width)+col)*4+2)*4+2] = 0;
+		d_OutputdtBicubic[((row*(width)+col)*4+2)*4+3] = 0;
+		d_OutputdtBicubic[((row*(width)+col)*4+3)*4+0] = 0;
+		d_OutputdtBicubic[((row*(width)+col)*4+3)*4+1] = 0;
+		d_OutputdtBicubic[((row*(width)+col)*4+3)*4+2] = 0;
+		d_OutputdtBicubic[((row*(width)+col)*4+3)*4+3] = 0;
 	}
-	}
-	
 	
 
 }
@@ -168,7 +146,7 @@ void launch_kernel(const double *h_InputIMGR, const double *h_InputIMGT,
 	checkCudaErrors(cudaMalloc((void**)&d_OutputdTBicubic, width*height*4*4*sizeof(double)));
 
 	dim3 dimB(BLOCK_SIZE,BLOCK_SIZE,1);
-	dim3 dimG((width+1)/BLOCK_SIZE+1,(height+1)/BLOCK_SIZE+1,1);
+	dim3 dimG((width-1)/BLOCK_SIZE+1,(height-1)/BLOCK_SIZE+1,1);
 
 	RGradient_kernel<<<dimG, dimB>>>(d_InputIMGR,d_InputIMGT,d_InputBiubicMatrix,
 								d_OutputIMGR, d_OutputIMGT, 
