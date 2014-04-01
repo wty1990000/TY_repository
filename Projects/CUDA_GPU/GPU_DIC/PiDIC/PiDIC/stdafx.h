@@ -24,9 +24,9 @@
 
 #include <atlimage.h>
 #include "fftw3.h"
-#include "kernel.cuh"
 #include <math.h>
 #include <iostream>
+#include <stdio.h>
 #include <fstream>
 
 using namespace std;

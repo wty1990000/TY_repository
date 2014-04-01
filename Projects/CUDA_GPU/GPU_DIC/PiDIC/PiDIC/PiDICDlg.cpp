@@ -6,6 +6,7 @@
 #include "PiDIC.h"
 #include "PiDICDlg.h"
 #include "afxdialogex.h"
+#include "precomputation.cuh"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -29,24 +30,16 @@ protected:
 protected:
 	DECLARE_MESSAGE_MAP()
 };
-
 CAboutDlg::CAboutDlg() : CDialogEx(CAboutDlg::IDD)
 {
 }
-
 void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 }
-
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
-
-
 // CPiDICDlg dialog
-
-
-
 CPiDICDlg::CPiDICDlg(CWnd* pParent /*=NULL*/)
 : CDialogEx(CPiDICDlg::IDD, pParent)
 , m_sRefImgPath(_T(""))
@@ -62,7 +55,6 @@ CPiDICDlg::CPiDICDlg(CWnd* pParent /*=NULL*/)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
-
 void CPiDICDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
@@ -85,7 +77,6 @@ void CPiDICDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDITMARGINX, m_iMarginX);
 	DDV_MinMaxInt(pDX, m_iMarginX, 1, 10000);
 }
-
 BEGIN_MESSAGE_MAP(CPiDICDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
@@ -94,10 +85,7 @@ BEGIN_MESSAGE_MAP(CPiDICDlg, CDialogEx)
 	ON_BN_CLICKED(IDOK, &CPiDICDlg::OnBnClickedOk)
 	ON_BN_CLICKED(IDC_SelectTarBtn, &CPiDICDlg::OnBnClickedSelecttarbtn)
 END_MESSAGE_MAP()
-
-
 // CPiDICDlg message handlers
-
 BOOL CPiDICDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
@@ -141,7 +129,6 @@ BOOL CPiDICDlg::OnInitDialog()
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
-
 void CPiDICDlg::OnSysCommand(UINT nID, LPARAM lParam)
 {
 	if ((nID & 0xFFF0) == IDM_ABOUTBOX)
@@ -154,11 +141,9 @@ void CPiDICDlg::OnSysCommand(UINT nID, LPARAM lParam)
 		CDialogEx::OnSysCommand(nID, lParam);
 	}
 }
-
 // If you add a minimize button to your dialog, you will need the code below
 //  to draw the icon.  For MFC applications using the document/view model,
 //  this is automatically done for you by the framework.
-
 void CPiDICDlg::OnPaint()
 {
 	if (IsIconic())
@@ -183,16 +168,12 @@ void CPiDICDlg::OnPaint()
 		CDialogEx::OnPaint();
 	}
 }
-
 // The system calls this function to obtain the cursor to display while the user drags
 //  the minimized window.
 HCURSOR CPiDICDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
-
-
-
 void CPiDICDlg::OnBnClickedSelectrefbtn()
 {
 	// TODO: Add your control notification handler code here
@@ -218,7 +199,6 @@ void CPiDICDlg::OnBnClickedSelectrefbtn()
 	m_sRefImgPath = FullPath;
 	UpdateData(FALSE);
 }
-
 void CPiDICDlg::OnBnClickedSelecttarbtn()
 {
 	// TODO: Add your control notification handler code here
@@ -246,7 +226,6 @@ void CPiDICDlg::OnBnClickedSelecttarbtn()
 	UpdateData(FALSE);
 
 }
-
 void CPiDICDlg::OnBnClickedOk()
 {
 	// TODO: Add your control notification handler code here
@@ -298,13 +277,15 @@ void CPiDICDlg::OnBnClickedOk()
 	m_dICGNTime = 0;
 
 	//Read images and convert the gray value of intensity to double precision number
-	double **m_dImg1 = new double *[m_iImgHeight];
-	double **m_dImg2 = new double *[m_iImgHeight];
-
-	for (i = 0; i < m_iImgHeight; i++){
+	/*----------------Linearlize---------------------*/
+	double *m_dImg1 = (double*)malloc(m_iImgHeight*m_iImgWidth*sizeof(double));
+	double *m_dImg2 = (double*)malloc(m_iImgHeight*m_iImgWidth*sizeof(double));
+	//double **m_dImg1 = new double *[m_iImgHeight];
+	//double **m_dImg2 = new double *[m_iImgHeight];
+	/*for (i = 0; i < m_iImgHeight; i++){
 		m_dImg1[i] = new double[m_iImgWidth];
 		m_dImg2[i] = new double[m_iImgWidth];
-	}
+	}*/
 
 	double m_dTemp, m_dTempX, m_dTempY;
 	COLORREF m_PixelColor;
@@ -313,10 +294,10 @@ void CPiDICDlg::OnBnClickedOk()
 		for (j = 0; j < m_iImgWidth; j++){
 			m_PixelColor = m_Image1.GetPixel(j, i);
 			m_dTemp = double((GetRValue(m_PixelColor) + GetGValue(m_PixelColor) + GetBValue(m_PixelColor)) / 3);
-			m_dImg1[i][j] = m_dTemp;
+			m_dImg1[i*m_iImgWidth+j] = m_dTemp;
 			m_PixelColor = m_Image2.GetPixel(j, i);
 			m_dTemp = double((GetRValue(m_PixelColor) + GetGValue(m_PixelColor) + GetBValue(m_PixelColor)) / 3);
-			m_dImg2[i][j] = m_dTemp;
+			m_dImg2[i*m_iImgWidth+j] = m_dTemp;
 		}
 	}
 	// Pop up a dialog when the two images are successfully loaded
@@ -324,13 +305,32 @@ void CPiDICDlg::OnBnClickedOk()
 
 
 	//Calculate the coefficients of bicubic spline Interpolation (natural boundary condition) in the target image
-	static double m_dBicubicMatrix[16][16] = { { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { -3, 3, 0, 0, -2, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 2, -2, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, -3, 3, 0, 0, -2, -1, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 2, -2, 0, 0, 1, 1, 0, 0 }, { -3, 0, 3, 0, 0, 0, 0, 0, -2, 0, -1, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, -3, 0, 3, 0, 0, 0, 0, 0, -2, 0, -1, 0 }, { 9, -9, -9, 9, 6, 3, -6, -3, 6, -6, 3, -3, 4, 2, 2, 1 }, { -6, 6, 6, -6, -3, -3, 3, 3, -4, 4, -2, 2, -2, -2, -1, -1 }, { 2, 0, -2, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 2, 0, -2, 0, 0, 0, 0, 0, 1, 0, 1, 0 }, { -6, 6, 6, -6, -4, -2, 4, 2, -3, 3, -3, 3, -2, -1, -2, -1 }, { 4, -4, -4, 4, 2, 2, -2, -2, 2, -2, 2, -2, 1, 1, 1, 1 } };
-
+	/*-------------move to the kernel------------------------
+	//static double m_dBicubicMatrix[16][16] = { { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { -3, 3, 0, 0, -2, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 2, -2, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, -3, 3, 0, 0, -2, -1, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 2, -2, 0, 0, 1, 1, 0, 0 }, { -3, 0, 3, 0, 0, 0, 0, 0, -2, 0, -1, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, -3, 0, 3, 0, 0, 0, 0, 0, -2, 0, -1, 0 }, { 9, -9, -9, 9, 6, 3, -6, -3, 6, -6, 3, -3, 4, 2, 2, 1 }, { -6, 6, 6, -6, -3, -3, 3, 3, -4, 4, -2, 2, -2, -2, -1, -1 }, { 2, 0, -2, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 2, 0, -2, 0, 0, 0, 0, 0, 1, 0, 1, 0 }, { -6, 6, 6, -6, -4, -2, 4, 2, -3, 3, -3, 3, -2, -1, -2, -1 }, { 4, -4, -4, 4, 2, 2, -2, -2, 2, -2, 2, -2, 1, 1, 1, 1 } };
+	*/
 	//Define the size of region of interest (ROI)
 	int m_iWidth = m_iImgWidth - 2; // set margin = 1 column
 	int m_iHeight = m_iImgHeight - 2; // set margin = 1 row
 
-	//R: reference image, T: target image
+	//R: reference image, T: target image, TBicubic: the interpolatino matrix
+	/*------------Linearlize--------------------*/
+	double *m_dR;	//=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
+	double *m_dRx;	//=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
+	double *m_dRy;	//=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
+	double *m_dT;	//=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
+	double *m_dTx;	//=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
+	double *m_dTy;	//=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
+	double *m_dTxy;//	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
+	double *m_dTBicubic;
+	m_dR	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
+	m_dRx	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
+	m_dRy	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
+	m_dT	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
+	m_dTx	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
+	m_dTy	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
+	m_dTxy	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
+	m_dTBicubic=(double*)malloc(m_iHeight*m_iWidth*4*4*sizeof(double));
+	/*
 	double **m_dT = new double *[m_iHeight];
 	double **m_dTx = new double *[m_iHeight];
 	double **m_dTy = new double *[m_iHeight];
@@ -340,7 +340,6 @@ void CPiDICDlg::OnBnClickedOk()
 	double **m_dR = new double *[m_iHeight];
 	double **m_dRx = new double *[m_iHeight];
 	double **m_dRy = new double *[m_iHeight];
-
 	for (i = 0; i < m_iHeight; i++)
 	{
 		m_dTBicubic[i] = new double **[m_iWidth];
@@ -384,13 +383,15 @@ void CPiDICDlg::OnBnClickedOk()
 
 	double *m_dTaoT = new double[16];
 	double *m_dAlphaT = new double[16];
-
+	*/
 	//Start the timer for pre-computation
 	QueryPerformanceFrequency(&m_Freq);
 	QueryPerformanceCounter(&m_Start);
 
 	//Compute the gradient of R and the biubic interpolation coefficents of T
-	for (i = 0; i < m_iHeight; i++)
+	/*--------------Calling CUDA kernel to do the computation--------------------*/
+	precompute_kernel(m_dImg1,m_dImg2,m_dR,m_dT,m_dRx,m_dRy,m_dTx,m_dTy,m_dTxy,m_dTBicubic,m_iWidth,m_iHeight);
+	/*for (i = 0; i < m_iHeight; i++)
 	{
 		for (j = 0; j < m_iWidth; j++)
 		{
@@ -453,6 +454,7 @@ void CPiDICDlg::OnBnClickedOk()
 			m_dTBicubic[i][j][3][3] = m_dAlphaT[15];
 		}
 	}
+	*/
 	//Stop the timer for pre-computation and calculate the time consumed
 	QueryPerformanceCounter(&m_Stop);
 	m_dPrecomputeTime = 1000 * (m_Stop.QuadPart - m_Start.QuadPart) / double(m_Freq.QuadPart); //unit: millisec
@@ -592,13 +594,17 @@ void CPiDICDlg::OnBnClickedOk()
 			m_dAvef = 0; // R_m
 			m_dAveg = 0; // T_m
 			// Feed the gray intensity values into subsets
+			double tempr;
+			double tempt;
 			for (l = 0; l < m_iFFTSubH; l++)
 			{
 				for (m = 0; m < m_iFFTSubW; m++)
 				{
-					m_Subset1[(l * m_iFFTSubW + m)] = m_dR[int(m_dPXY[i][j][0] - m_iSubsetY + l)][int(m_dPXY[i][j][1] - m_iSubsetX + m)];
+					m_Subset1[(l * m_iFFTSubW + m)] = m_dR[int(m_dPXY[i][j][0] - m_iSubsetY + l)*m_iWidth+/*][*/int(m_dPXY[i][j][1] - m_iSubsetX + m)];
+					tempr = m_dR[int(m_dPXY[i][j][0] - m_iSubsetY + l)*m_iWidth+/*][*/int(m_dPXY[i][j][1] - m_iSubsetX + m)];
 					m_dAvef += (m_Subset1[l * m_iFFTSubW + m] / (m_iFFTSubH * m_iFFTSubW));
-					m_Subset2[(l * m_iFFTSubW + m)] = m_dT[int(m_dPXY[i][j][0] - m_iSubsetY + l)][int(m_dPXY[i][j][1] - m_iSubsetX + m)];
+					m_Subset2[(l * m_iFFTSubW + m)] = m_dT[int(m_dPXY[i][j][0] - m_iSubsetY + l)*m_iWidth+/*][*/int(m_dPXY[i][j][1] - m_iSubsetX + m)];
+					tempt = m_dT[int(m_dPXY[i][j][0] - m_iSubsetY + l)*m_iWidth+/*][*/int(m_dPXY[i][j][1] - m_iSubsetX + m)];
 					m_dAveg += (m_Subset2[l * m_iFFTSubW + m] / (m_iFFTSubH * m_iFFTSubW));
 				}
 			}
@@ -719,7 +725,7 @@ void CPiDICDlg::OnBnClickedOk()
 			{
 				for (m = 0; m < m_iSubsetW; m++)
 				{
-					m_dSubsetR[l][m] = m_dR[int(m_dPXY[i][j][0] - m_iSubsetY + l)][int(m_dPXY[i][j][1] - m_iSubsetX + m)];
+					m_dSubsetR[l][m] = m_dR[int(m_dPXY[i][j][0] - m_iSubsetY + l)*m_iWidth+/*][*/int(m_dPXY[i][j][1] - m_iSubsetX + m)];
 					m_dSubAveR += (m_dSubsetR[l][m] / (m_iSubsetH * m_iSubsetW));
 
 					// Evaluate the Jacbian dW/dp at (x, 0);
@@ -739,7 +745,7 @@ void CPiDICDlg::OnBnClickedOk()
 					// Compute the steepest descent image DealtR*dW/dp
 					for (k = 0; k < 6; k++)
 					{
-						m_dRDescent[l][m][k] = m_dRx[int(m_dPXY[i][j][0] - m_iSubsetY + l)][int(m_dPXY[i][j][1] - m_iSubsetX + m)] * m_dJacobian[l][m][0][k] + m_dRy[int(m_dPXY[i][j][0] - m_iSubsetY + l)][int(m_dPXY[i][j][1] - m_iSubsetX + m)] * m_dJacobian[l][m][1][k];
+						m_dRDescent[l][m][k] = m_dRx[int(m_dPXY[i][j][0] - m_iSubsetY + l)*m_iWidth+/*][*/int(m_dPXY[i][j][1] - m_iSubsetX + m)] * m_dJacobian[l][m][0][k] + m_dRy[int(m_dPXY[i][j][0] - m_iSubsetY + l)*m_iWidth+/*][*/int(m_dPXY[i][j][1] - m_iSubsetX + m)] * m_dJacobian[l][m][1][k];
 					}
 
 					// Compute the Hessian matrix
@@ -868,7 +874,7 @@ void CPiDICDlg::OnBnClickedOk()
 							// if it is integer-pixel location, feed the gray intensity of T into the subset T
 							if ((m_dTempX == 0) && (m_dTempY == 0))
 							{
-								m_dSubsetT[l][m] = m_dT[m_iTempY][m_iTempX];
+								m_dSubsetT[l][m] = m_dT[m_iTempY*m_iWidth+/*][*/m_iTempX];
 							}
 							else
 							{
@@ -878,7 +884,7 @@ void CPiDICDlg::OnBnClickedOk()
 								{
 									for (n = 0; n < 4; n++)
 									{
-										m_dSubsetT[l][m] += m_dTBicubic[m_iTempY][m_iTempX][k][n] * pow(m_dTempY, k) * pow(m_dTempX, n); 
+										m_dSubsetT[l][m] += m_dTBicubic[((m_iTempY*m_iWidth+m_iTempX)*4+k)*4+n]/*[m_iTempY][m_iTempX][k][n]*/ * pow(m_dTempY, k) * pow(m_dTempX, n); 
 									}
 								}
 							}
@@ -1105,8 +1111,14 @@ void CPiDICDlg::OnBnClickedOk()
 	delete[]m_dZNCC;
 	delete[]m_iIterationNum;
 
-
-	delete[]m_dTaoT;
+	free(m_dT);
+	free(m_dR);
+	free(m_dRx);
+	free(m_dRy);
+	free(m_dTx);
+	free(m_dTy);
+	free(m_dTxy);
+	/*delete[]m_dTaoT;
 	delete[]m_dAlphaT;
 
 	for (i; i < m_iHeight; i++)
@@ -1119,39 +1131,40 @@ void CPiDICDlg::OnBnClickedOk()
 		delete[]m_dTx[i];
 		delete[]m_dTy[i];
 		delete[]m_dTxy[i];
-	}
+	}*/
 
-	delete[]m_dT;
+	/*delete[]m_dT;
 	delete[]m_dTx;
 	delete[]m_dTy;
 	delete[]m_dTxy;
 
 	delete[]m_dR;
 	delete[]m_dRx;
-	delete[]m_dRy;
+	delete[]m_dRy;*/
+	free(m_dTBicubic);
+	//for (i; i < m_iHeight; i++)
+	//{
+	//	for (j; j < m_iWidth; j++)
+	//	{
+	//		for (k; k < 4; k++)
+	//		{
+	//			delete[]m_dTBicubic[i][j][k];
+	//		}
+	//		delete[]m_dTBicubic[i][j];
+	//	}
+	//	delete[]m_dTBicubic[i];
+	//}
+	//delete[]m_dTBicubic;
+	free(m_dImg1);
+	free(m_dImg2);
 
-	for (i; i < m_iHeight; i++)
-	{
-		for (j; j < m_iWidth; j++)
-		{
-			for (k; k < 4; k++)
-			{
-				delete[]m_dTBicubic[i][j][k];
-			}
-			delete[]m_dTBicubic[i][j];
-		}
-		delete[]m_dTBicubic[i];
-	}
-	delete[]m_dTBicubic;
-
-
-	for (i = 0; i < m_iImgHeight; i++)
-	{
-		delete[]m_dImg1[i];
-		delete[]m_dImg2[i];
-	}
-	delete[]m_dImg1;
-	delete[]m_dImg2;
+	//for (i = 0; i < m_iImgHeight; i++)
+	//{
+	//	delete[]m_dImg1[i];
+	//	delete[]m_dImg2[i];
+	//}
+	//delete[]m_dImg1;
+	//delete[]m_dImg2;
 
 	// Destroy CImage objects
 	m_Image1.Destroy();

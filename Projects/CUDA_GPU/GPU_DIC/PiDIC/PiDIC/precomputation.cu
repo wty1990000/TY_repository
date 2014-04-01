@@ -45,7 +45,7 @@ __global__ void RGradient_kernel(const double *d_InputIMGR, const double *d_Inpu
 	//When all the threads finish the loading task, continue to computation.
 	__syncthreads();
 
-	if((rowo>=0) && (rowo < height) && (colo>=0) && (colo < width)&&(ty>=2)&&(tx>=2)){
+	if((rowo>=0) && (rowo < height) && (colo>=0) && (colo < width)&&(tx>=2)&&(ty>=2)){
 		d_OutputIMGR[rowo*width+colo]  = Input_R[ty-1][tx-1];
 		d_OutputIMGRx[rowo*width+colo] = 0.5 * (Input_R[ty-1][tx] - Input_R[ty-1][tx-2]);
 		d_OutputIMGRy[rowo*width+colo] = 0.5 * (Input_R[ty][tx-1] - Input_R[ty-2][tx-1]);
@@ -97,7 +97,7 @@ __global__ void RGradient_kernel(const double *d_InputIMGR, const double *d_Inpu
 		d_OutputdtBicubic[((rowo*(width)+colo)*4+3)*4+2] = d_AlphaT[14];
 		d_OutputdtBicubic[((rowo*(width)+colo)*4+3)*4+3] = d_AlphaT[15];
 	}
-	else {
+	else{
 		d_OutputdtBicubic[((rowo*(width)+colo)*4+0)*4+0] = 0;
 		d_OutputdtBicubic[((rowo*(width)+colo)*4+0)*4+1] = 0;
 		d_OutputdtBicubic[((rowo*(width)+colo)*4+0)*4+2] = 0;
@@ -121,7 +121,7 @@ __global__ void RGradient_kernel(const double *d_InputIMGR, const double *d_Inpu
 
 }
 
-void launch_kernel(const double *h_InputIMGR, const double *h_InputIMGT,
+void precompute_kernel(const double *h_InputIMGR, const double *h_InputIMGT,
 								 double *h_OutputIMGR, double *h_OutputIMGT, 
 								 double *h_OutputIMGRx, double *h_OutputIMGRy,
 								 double *h_OutputIMGTx, double *h_OutputIMGTy, double *h_OutputIMGTxy, double *h_OutputdTBicubic,
@@ -130,7 +130,16 @@ void launch_kernel(const double *h_InputIMGR, const double *h_InputIMGT,
 	double *d_InputIMGR, *d_InputIMGT, *d_InputBiubicMatrix;
 	double *d_OutputIMGR, *d_OutputIMGT, *d_OutputIMGRx, *d_OutputIMGRy, *d_OutputIMGTx, *d_OutputIMGTy, *d_OutputIMGTxy;
 	double *d_OutputdTBicubic;
-	
+
+	/*h_OutputIMGR = (double*)malloc(width*height*sizeof(double));
+	h_OutputIMGT = (double*)malloc(width*height*sizeof(double));
+	h_OutputIMGRx = (double*)malloc(width*height*sizeof(double));
+	h_OutputIMGRy = (double*)malloc(width*height*sizeof(double));
+	h_OutputIMGTx = (double*)malloc(width*height*sizeof(double));
+	h_OutputIMGTy = (double*)malloc(width*height*sizeof(double));
+	h_OutputIMGTxy = (double*)malloc(width*height*sizeof(double));
+	h_OutputdTBicubic = (double*)malloc(width*height*4*4*sizeof(double));*/
+
 	const static double h_InputBicubicMatrix[16*16] = {  
 													1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 													0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,
@@ -150,22 +159,22 @@ void launch_kernel(const double *h_InputIMGR, const double *h_InputIMGT,
 													4, -4, -4, 4, 2, 2, -2, -2, 2, -2, 2, -2, 1, 1, 1, 1 
 												   };
 
-	checkCudaErrors(cudaMalloc((void**)&d_InputIMGR, (width+2)*(height+2)*sizeof(double)));
-	checkCudaErrors(cudaMalloc((void**)&d_InputIMGT, (width+2)*(height+2)*sizeof(double)));
-	checkCudaErrors(cudaMalloc((void**)&d_InputBiubicMatrix, 16*16*sizeof(double)));
+	cudaMalloc((void**)&d_InputIMGR, (width+2)*(height+2)*sizeof(double));
+	cudaMalloc((void**)&d_InputIMGT, (width+2)*(height+2)*sizeof(double));
+	cudaMalloc((void**)&d_InputBiubicMatrix, 16*16*sizeof(double));
 
-	checkCudaErrors(cudaMemcpy(d_InputIMGR,h_InputIMGR,(width+2)*(height+2)*sizeof(double),cudaMemcpyHostToDevice));
-	checkCudaErrors(cudaMemcpy(d_InputIMGT,h_InputIMGT,(width+2)*(height+2)*sizeof(double),cudaMemcpyHostToDevice));
-	checkCudaErrors(cudaMemcpy(d_InputBiubicMatrix,h_InputBicubicMatrix,16*16*sizeof(double),cudaMemcpyHostToDevice));
+	cudaMemcpy(d_InputIMGR,h_InputIMGR,(width+2)*(height+2)*sizeof(double),cudaMemcpyHostToDevice);
+	cudaMemcpy(d_InputIMGT,h_InputIMGT,(width+2)*(height+2)*sizeof(double),cudaMemcpyHostToDevice);
+	cudaMemcpy(d_InputBiubicMatrix,h_InputBicubicMatrix,16*16*sizeof(double),cudaMemcpyHostToDevice);
 	
-	checkCudaErrors(cudaMalloc((void**)&d_OutputIMGR, width*height*sizeof(double)));
-	checkCudaErrors(cudaMalloc((void**)&d_OutputIMGT, width*height*sizeof(double)));
-	checkCudaErrors(cudaMalloc((void**)&d_OutputIMGRx, width*height*sizeof(double)));
-	checkCudaErrors(cudaMalloc((void**)&d_OutputIMGRy, width*height*sizeof(double)));
-	checkCudaErrors(cudaMalloc((void**)&d_OutputIMGTx, width*height*sizeof(double)));
-	checkCudaErrors(cudaMalloc((void**)&d_OutputIMGTy, width*height*sizeof(double)));
-	checkCudaErrors(cudaMalloc((void**)&d_OutputIMGTxy, width*height*sizeof(double)));
-	checkCudaErrors(cudaMalloc((void**)&d_OutputdTBicubic, width*height*4*4*sizeof(double)));
+	cudaMalloc((void**)&d_OutputIMGR, width*height*sizeof(double));
+	cudaMalloc((void**)&d_OutputIMGT, width*height*sizeof(double));
+	cudaMalloc((void**)&d_OutputIMGRx, width*height*sizeof(double));
+	cudaMalloc((void**)&d_OutputIMGRy, width*height*sizeof(double));
+	cudaMalloc((void**)&d_OutputIMGTx, width*height*sizeof(double));
+	cudaMalloc((void**)&d_OutputIMGTy, width*height*sizeof(double));
+	cudaMalloc((void**)&d_OutputIMGTxy, width*height*sizeof(double));
+	cudaMalloc((void**)&d_OutputdTBicubic, width*height*4*4*sizeof(double));
 
 	dim3 dimB(BLOCK_SIZE,BLOCK_SIZE,1);
 	dim3 dimG((width+1)/BLOCK_SIZE+1,(height+1)/BLOCK_SIZE+1,1);
@@ -178,22 +187,22 @@ void launch_kernel(const double *h_InputIMGR, const double *h_InputIMGT,
 
 	cudaDeviceSynchronize();
 
-	checkCudaErrors(cudaMemcpy(h_OutputIMGR,d_OutputIMGR,width*height*sizeof(double),cudaMemcpyDeviceToHost));
-	checkCudaErrors(cudaMemcpy(h_OutputIMGT,d_OutputIMGT,width*height*sizeof(double),cudaMemcpyDeviceToHost));
-	checkCudaErrors(cudaMemcpy(h_OutputIMGRx,d_OutputIMGRx,width*height*sizeof(double),cudaMemcpyDeviceToHost));
-	checkCudaErrors(cudaMemcpy(h_OutputIMGRy,d_OutputIMGRy,width*height*sizeof(double),cudaMemcpyDeviceToHost));
-	checkCudaErrors(cudaMemcpy(h_OutputIMGTx,d_OutputIMGTx,width*height*sizeof(double),cudaMemcpyDeviceToHost));
-	checkCudaErrors(cudaMemcpy(h_OutputIMGTy,d_OutputIMGTy,width*height*sizeof(double),cudaMemcpyDeviceToHost));
-	checkCudaErrors(cudaMemcpy(h_OutputIMGTxy,d_OutputIMGTxy,width*height*sizeof(double),cudaMemcpyDeviceToHost));
-	checkCudaErrors(cudaMemcpy(h_OutputdTBicubic,d_OutputdTBicubic,width*height*4*4*sizeof(double),cudaMemcpyDeviceToHost));
+	cudaMemcpy(h_OutputIMGR,d_OutputIMGR,width*height*sizeof(double),cudaMemcpyDeviceToHost);
+	cudaMemcpy(h_OutputIMGT,d_OutputIMGT,width*height*sizeof(double),cudaMemcpyDeviceToHost);
+	cudaMemcpy(h_OutputIMGRx,d_OutputIMGRx,width*height*sizeof(double),cudaMemcpyDeviceToHost);
+	cudaMemcpy(h_OutputIMGRy,d_OutputIMGRy,width*height*sizeof(double),cudaMemcpyDeviceToHost);
+	cudaMemcpy(h_OutputIMGTx,d_OutputIMGTx,width*height*sizeof(double),cudaMemcpyDeviceToHost);
+	cudaMemcpy(h_OutputIMGTy,d_OutputIMGTy,width*height*sizeof(double),cudaMemcpyDeviceToHost);
+	cudaMemcpy(h_OutputIMGTxy,d_OutputIMGTxy,width*height*sizeof(double),cudaMemcpyDeviceToHost);
+	cudaMemcpy(h_OutputdTBicubic,d_OutputdTBicubic,width*height*4*4*sizeof(double),cudaMemcpyDeviceToHost);
 
-	checkCudaErrors(cudaFree(d_OutputIMGR));
-	checkCudaErrors(cudaFree(d_OutputIMGT));
-	checkCudaErrors(cudaFree(d_OutputIMGRx));
-	checkCudaErrors(cudaFree(d_OutputIMGRy));
-	checkCudaErrors(cudaFree(d_OutputIMGTx));
-	checkCudaErrors(cudaFree(d_OutputIMGTy));
-	checkCudaErrors(cudaFree(d_OutputIMGTxy));
-	checkCudaErrors(cudaFree(d_OutputdTBicubic));
+	cudaFree(d_OutputIMGR);
+	cudaFree(d_OutputIMGT);
+	cudaFree(d_OutputIMGRx);
+	cudaFree(d_OutputIMGRy);
+	cudaFree(d_OutputIMGTx);
+	cudaFree(d_OutputIMGTy);
+	cudaFree(d_OutputIMGTxy);
+	cudaFree(d_OutputdTBicubic);
 }
 

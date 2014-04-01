@@ -57,7 +57,7 @@
     <None Include="res\PiDIC.rc2">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="kernel.cuh">
+    <None Include="precomputation.cuh">
       <Filter>CUDA</Filter>
     </None>
   </ItemGroup>
@@ -67,7 +67,7 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="kernel.cu">
+    <CudaCompile Include="precomputation.cu">
       <Filter>CUDA</Filter>
     </CudaCompile>
   </ItemGroup>

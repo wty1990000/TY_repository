@@ -45,7 +45,10 @@ public:
 			totalFFT = h_data_elements/n2ft2d;
 	}
 };
-
+int main()
+{
+	
+}
 
 
 
