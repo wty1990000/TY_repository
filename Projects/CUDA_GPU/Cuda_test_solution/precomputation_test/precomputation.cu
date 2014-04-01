@@ -19,7 +19,6 @@ __global__ void RGradient_kernel(const double *d_InputIMGR, const double *d_Inpu
 	//The size of input images
 	int row = blockIdx.y * blockDim.y + threadIdx.y;
 	int col = blockIdx.x * blockDim.x + threadIdx.x;
-	int offseti = row * (width+2) + col;
 	//Temp arrays
 	double d_TaoT[16];
 	double d_AlphaT[16];
@@ -105,6 +104,9 @@ void launch_kernel(const double *h_InputIMGR, const double *h_InputIMGT,
 								 double *h_OutputIMGTx, double *h_OutputIMGTy, double *h_OutputIMGTxy, double *h_OutputdTBicubic,
 								 int width, int height)
 {
+	float total_time, compute_time;
+	StopWatchWin total, compute;
+
 	double *d_InputIMGR, *d_InputIMGT, *d_InputBiubicMatrix;
 	double *d_OutputIMGR, *d_OutputIMGT, *d_OutputIMGRx, *d_OutputIMGRy, *d_OutputIMGTx, *d_OutputIMGTy, *d_OutputIMGTxy;
 	double *d_OutputdTBicubic;
@@ -127,7 +129,7 @@ void launch_kernel(const double *h_InputIMGR, const double *h_InputIMGT,
 													-6, 6, 6, -6, -4, -2, 4, 2, -3, 3, -3, 3, -2, -1, -2, -1,
 													4, -4, -4, 4, 2, 2, -2, -2, 2, -2, 2, -2, 1, 1, 1, 1 
 												   };
-
+	total.start();
 	checkCudaErrors(cudaMalloc((void**)&d_InputIMGR, (width+2)*(height+2)*sizeof(double)));
 	checkCudaErrors(cudaMalloc((void**)&d_InputIMGT, (width+2)*(height+2)*sizeof(double)));
 	checkCudaErrors(cudaMalloc((void**)&d_InputBiubicMatrix, 16*16*sizeof(double)));
@@ -148,13 +150,14 @@ void launch_kernel(const double *h_InputIMGR, const double *h_InputIMGT,
 	dim3 dimB(BLOCK_SIZE,BLOCK_SIZE,1);
 	dim3 dimG((width-1)/BLOCK_SIZE+1,(height-1)/BLOCK_SIZE+1,1);
 
+	compute.start();
 	RGradient_kernel<<<dimG, dimB>>>(d_InputIMGR,d_InputIMGT,d_InputBiubicMatrix,
 								d_OutputIMGR, d_OutputIMGT, 
 								 d_OutputIMGRx, d_OutputIMGRy,
 								 d_OutputIMGTx, d_OutputIMGTy, d_OutputIMGTxy,d_OutputdTBicubic,
 								 width, height);
-
-	cudaDeviceSynchronize();
+	compute.stop();
+	compute_time = compute.getTime();
 
 	checkCudaErrors(cudaMemcpy(h_OutputIMGR,d_OutputIMGR,width*height*sizeof(double),cudaMemcpyDeviceToHost));
 	checkCudaErrors(cudaMemcpy(h_OutputIMGT,d_OutputIMGT,width*height*sizeof(double),cudaMemcpyDeviceToHost));
@@ -173,5 +176,9 @@ void launch_kernel(const double *h_InputIMGR, const double *h_InputIMGT,
 	checkCudaErrors(cudaFree(d_OutputIMGTy));
 	checkCudaErrors(cudaFree(d_OutputIMGTxy));
 	checkCudaErrors(cudaFree(d_OutputdTBicubic));
+	total.stop();
+	total_time = total.getTime();
+	printf("\nTotal time: %f\n",total_time);
+	printf("Compute time: %f\n",compute_time);
 }
 
