@@ -13,6 +13,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "properties", "properties\pr
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DIC_CUDA_FFT", "DIC_CUDA_FFT\DIC_CUDA_FFT.vcxproj", "{543C52B5-A7C0-4F3D-9844-2F2F74AC1B03}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zero_copying_test", "zero_copying_test\zero_copying_test.vcxproj", "{5FBC9678-4B03-4B8C-98BC-B0C2798E0D9A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -69,6 +71,14 @@ Global
 		{543C52B5-A7C0-4F3D-9844-2F2F74AC1B03}.Release|Win32.Build.0 = Release|Win32
 		{543C52B5-A7C0-4F3D-9844-2F2F74AC1B03}.Release|x64.ActiveCfg = Release|x64
 		{543C52B5-A7C0-4F3D-9844-2F2F74AC1B03}.Release|x64.Build.0 = Release|x64
+		{5FBC9678-4B03-4B8C-98BC-B0C2798E0D9A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5FBC9678-4B03-4B8C-98BC-B0C2798E0D9A}.Debug|Win32.Build.0 = Debug|Win32
+		{5FBC9678-4B03-4B8C-98BC-B0C2798E0D9A}.Debug|x64.ActiveCfg = Debug|x64
+		{5FBC9678-4B03-4B8C-98BC-B0C2798E0D9A}.Debug|x64.Build.0 = Debug|x64
+		{5FBC9678-4B03-4B8C-98BC-B0C2798E0D9A}.Release|Win32.ActiveCfg = Release|Win32
+		{5FBC9678-4B03-4B8C-98BC-B0C2798E0D9A}.Release|Win32.Build.0 = Release|Win32
+		{5FBC9678-4B03-4B8C-98BC-B0C2798E0D9A}.Release|x64.ActiveCfg = Release|x64
+		{5FBC9678-4B03-4B8C-98BC-B0C2798E0D9A}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

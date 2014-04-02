@@ -1,5 +1,5 @@
 
-#include "precomputation.cuh"
+#include "kernel.cuh"
 #include "Random.h"
 #include <stdio.h>
 #include <iostream>
@@ -31,14 +31,14 @@ int main()
 
 	cout<<endl;
 
-	h_OutputIMGR = (double*)malloc(254*254*sizeof(double));
+	/*h_OutputIMGR = (double*)malloc(254*254*sizeof(double));
 	h_OutputIMGT = (double*)malloc(254*254*sizeof(double));
 	h_OutputIMGRx = (double*)malloc(254*254*sizeof(double));
 	h_OutputIMGRy = (double*)malloc(254*254*sizeof(double));
 	h_OutputIMGTx = (double*)malloc(254*254*sizeof(double));
 	h_OutputIMGTy = (double*)malloc(254*254*sizeof(double));
 	h_OutputIMGTxy = (double*)malloc(254*254*sizeof(double));
-	h_OutputdTBicubic = (double*)malloc((254)*(254)*4*4*sizeof(double));
+	h_OutputdTBicubic = (double*)malloc((254)*(254)*4*4*sizeof(double));*/
 
 	launch_kernel(h_InputIMGR,h_InputIMGT,h_OutputIMGR,h_OutputIMGT,
 				  h_OutputIMGRx, h_OutputIMGRy,h_OutputIMGTx,h_OutputIMGTy,h_OutputIMGTxy,h_OutputdTBicubic,254,254);
@@ -53,32 +53,31 @@ int main()
 
 	cout<<endl;
 
-	/*for(int i=0; i<2; i++){
-		for(int j=0; j<2; j++){
-			for(int k=0; k<4; k++){
-				for(int l=0; l<4; l++){
-					cout<<h_OutputdTBicubic[((i*2+j)*4+k)*4+l]<<",\t";
-				}
-				cout<<endl;
-			}
-			cout<<endl;
-		}
-	}*/
-	for(int k=0; k<4; k++)
+	//for(int i=0; i<2; i++){
+		//for(int j=0; j<2; j++){
+			for(int k=0; k<4; k++)
 				for(int l=0; l<4; l++){
 					cout<<h_OutputdTBicubic[(k)*4+l]<<",\t";
 				}
+			//	cout<<endl;
+		//	}
+		//	cout<<endl;
+		//}
+	//}/
+
 	cout<<endl;
 	cout<<"Done!"<<endl;
 
-	free(h_OutputIMGR);
-	free(h_OutputIMGT);
-	free(h_OutputIMGRx);
-	free(h_OutputIMGRy);
-	free(h_OutputIMGTx);
-	free(h_OutputIMGTy);
-	free(h_OutputIMGTxy);
-	free(h_OutputdTBicubic);
+	free(h_InputIMGR);
+	free(h_InputIMGT);
+	freeing(h_OutputIMGR);
+	freeing(h_OutputIMGT);
+	freeing(h_OutputIMGRx);
+	freeing(h_OutputIMGRy);
+	freeing(h_OutputIMGTx);
+	freeing(h_OutputIMGTy);
+	freeing(h_OutputIMGTxy);
+	freeing(h_OutputdTBicubic);
 
 
 	return 0;
