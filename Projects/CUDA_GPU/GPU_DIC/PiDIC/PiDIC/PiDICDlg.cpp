@@ -7,6 +7,7 @@
 #include "PiDICDlg.h"
 #include "afxdialogex.h"
 #include "precomputation.cuh"
+#include "helper_functions.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -269,7 +270,7 @@ void CPiDICDlg::OnBnClickedOk()
 	}
 
 	int i, j, k, l, m, n; //counter parameters for loop
-	LARGE_INTEGER m_Start, m_Stop, m_Freq, m_Begin, m_End, m_Start1, m_Stop1, m_Start2, m_Stop2; //parameters for timer 
+	StopWatchWin total, fftCC, icgn; //parameters for timer 
 	float m_dConsumedTime, m_dPrecomputeTime, m_dFFTTime, m_dICGNTime; //parameters for timer 
 	CString m_strMessage; 	//message for pop-out dialog
 	m_dConsumedTime = 0;
@@ -319,9 +320,9 @@ void CPiDICDlg::OnBnClickedOk()
 	double *m_dRx;	//=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
 	double *m_dRy;	//=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
 	double *m_dT;	//=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
-	double *m_dTx;	//=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
-	double *m_dTy;	//=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
-	double *m_dTxy;//	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
+//	double *m_dTx;	//=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
+//	double *m_dTy;	//=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
+//	double *m_dTxy;//	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
 	double *m_dTBicubic;
 	m_dR	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
 	m_dRx	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
@@ -386,7 +387,7 @@ void CPiDICDlg::OnBnClickedOk()
 	double *m_dAlphaT = new double[16];
 	*/
 	//Start the timer for pre-computation
-	QueryPerformanceFrequency(&m_Freq);
+	//QueryPerformanceFrequency(&m_Freq);
 	//QueryPerformanceCounter(&m_Start);
 
 	//Compute the gradient of R and the biubic interpolation coefficents of T
@@ -582,7 +583,8 @@ void CPiDICDlg::OnBnClickedOk()
 	int m_iIteration, m_iTemp, m_iTempX, m_iTempY;
 
 	//Start timer for FFT-CC algorithm + IC-GN algorithm
-	QueryPerformanceCounter(&m_Begin);
+	//QueryPerformanceCounter(&m_Begin);
+	total.start();
 	for (i = 0; i < m_iNumberY; i++)
 	{
 		for (j = 0; j < m_iNumberX; j++)
@@ -592,7 +594,8 @@ void CPiDICDlg::OnBnClickedOk()
 			m_iOutofBoundaryFlag = 0;
 
 			// Start timer for FFT-CC algorithm
-			QueryPerformanceCounter(&m_Start1);
+			//QueryPerformanceCounter(&m_Start1);
+			fftCC.start();
 			m_dAvef = 0; // R_m
 			m_dAveg = 0; // T_m
 			// Feed the gray intensity values into subsets
@@ -600,10 +603,10 @@ void CPiDICDlg::OnBnClickedOk()
 			{
 				for (m = 0; m < m_iFFTSubW; m++)
 				{
-					m_Subset1[(l * m_iFFTSubW + m)] = m_dR[int(m_dPXY[i][j][0] - m_iSubsetY + l)*m_iWidth+/*][*/int(m_dPXY[i][j][1] - m_iSubsetX + m)];
+					m_Subset1[(l * m_iFFTSubW + m)] = m_dR[(int(m_dPXY[i][j][0] - m_iSubsetY + l))*m_iWidth+int(m_dPXY[i][j][1] - m_iSubsetX + m)];
 					//tempr = m_dR[int(m_dPXY[i][j][0] - m_iSubsetY + l)*m_iWidth+/*][*/int(m_dPXY[i][j][1] - m_iSubsetX + m)];
 					m_dAvef += (m_Subset1[l * m_iFFTSubW + m] / (m_iFFTSubH * m_iFFTSubW));
-					m_Subset2[(l * m_iFFTSubW + m)] = m_dT[int(m_dPXY[i][j][0] - m_iSubsetY + l)*m_iWidth+/*][*/int(m_dPXY[i][j][1] - m_iSubsetX + m)];
+					m_Subset2[(l * m_iFFTSubW + m)] = m_dT[(int(m_dPXY[i][j][0] - m_iSubsetY + l))*m_iWidth+int(m_dPXY[i][j][1] - m_iSubsetX + m)];
 					//tempt = m_dT[int(m_dPXY[i][j][0] - m_iSubsetY + l)*m_iWidth+/*][*/int(m_dPXY[i][j][1] - m_iSubsetX + m)];
 					m_dAveg += (m_Subset2[l * m_iFFTSubW + m] / (m_iFFTSubH * m_iFFTSubW));
 				}
@@ -673,11 +676,11 @@ void CPiDICDlg::OnBnClickedOk()
 			}
 			m_dZNCC[i][j] = m_dCorrPeak; // save the ZNCC
 			// Stop the timer for FFT-CC algorithm and calculate the time consumed
-			QueryPerformanceCounter(&m_Stop1);
-			m_dFFTTime += 1000 * (m_Stop1.QuadPart - m_Start1.QuadPart) / double(m_Freq.QuadPart); //unit: millisec
+			fftCC.stop();//QueryPerformanceCounter(&m_Stop1);
+			m_dFFTTime += fftCC.getTime(); //unit: millisec
 
 			// Stop the timer for IC-GN algorithm
-			QueryPerformanceCounter(&m_Start2);
+			icgn.start();//QueryPerformanceCounter(&m_Start2);
 			//Initialize matrix P and DP
 			m_iU[i][j] = m_iCorrPeakX; // integer-pixel u
 			m_iV[i][j] = m_iCorrPeakY; // integer-pixel v
@@ -725,7 +728,7 @@ void CPiDICDlg::OnBnClickedOk()
 			{
 				for (m = 0; m < m_iSubsetW; m++)
 				{
-					m_dSubsetR[l][m] = m_dR[int(m_dPXY[i][j][0] - m_iSubsetY + l)*m_iWidth+/*][*/int(m_dPXY[i][j][1] - m_iSubsetX + m)];
+					m_dSubsetR[l][m] = m_dR[(int(m_dPXY[i][j][0] - m_iSubsetY + l))*m_iWidth+int(m_dPXY[i][j][1] - m_iSubsetX + m)];
 					m_dSubAveR += (m_dSubsetR[l][m] / (m_iSubsetH * m_iSubsetW));
 
 					// Evaluate the Jacbian dW/dp at (x, 0);
@@ -745,7 +748,7 @@ void CPiDICDlg::OnBnClickedOk()
 					// Compute the steepest descent image DealtR*dW/dp
 					for (k = 0; k < 6; k++)
 					{
-						m_dRDescent[l][m][k] = m_dRx[int(m_dPXY[i][j][0] - m_iSubsetY + l)*m_iWidth+/*][*/int(m_dPXY[i][j][1] - m_iSubsetX + m)] * m_dJacobian[l][m][0][k] + m_dRy[int(m_dPXY[i][j][0] - m_iSubsetY + l)*m_iWidth+/*][*/int(m_dPXY[i][j][1] - m_iSubsetX + m)] * m_dJacobian[l][m][1][k];
+						m_dRDescent[l][m][k] = m_dRx[(int(m_dPXY[i][j][0] - m_iSubsetY + l))*m_iWidth+int(m_dPXY[i][j][1] - m_iSubsetX + m)] * m_dJacobian[l][m][0][k] + m_dRy[(int(m_dPXY[i][j][0] - m_iSubsetY + l))*m_iWidth+int(m_dPXY[i][j][1] - m_iSubsetX + m)] * m_dJacobian[l][m][1][k];
 					}
 
 					// Compute the Hessian matrix
@@ -797,7 +800,7 @@ void CPiDICDlg::OnBnClickedOk()
 						m_iTemp = m;
 					}
 				}
-				if (fabs(m_dHessian[m_iTemp][l]) <= 0.000000000000001)
+				if (fabs(m_dHessian[m_iTemp][l]) == 0.0)
 				{
 					MessageBox(_T("Too small element for matrix inverse!"), NULL, MB_OK);
 					return;
@@ -874,7 +877,7 @@ void CPiDICDlg::OnBnClickedOk()
 							// if it is integer-pixel location, feed the gray intensity of T into the subset T
 							if ((m_dTempX == 0) && (m_dTempY == 0))
 							{
-								m_dSubsetT[l][m] = m_dT[m_iTempY*m_iWidth+/*][*/m_iTempX];
+								m_dSubsetT[l][m] = m_dT[m_iTempY*m_iWidth+m_iTempX];
 							}
 							else
 							{
@@ -993,13 +996,13 @@ void CPiDICDlg::OnBnClickedOk()
 			m_iIterationNum[i][j] = m_iIteration; // save iteration steps taken at this POI
 
 			// Stop the timer for IC-GN algorithm and calculate the time consumed
-			QueryPerformanceCounter(&m_Stop2);
-			m_dICGNTime += 1000 * (m_Stop2.QuadPart - m_Start2.QuadPart) / double(m_Freq.QuadPart); //unit: millisec
+			icgn.stop();//QueryPerformanceCounter(&m_Stop2);
+			m_dICGNTime += icgn.getTime(); //unit: millisec
 		}
 	}
 	// Stop the timer for FFT-CC algorithm + IC-GN algorithm and calculate the time consumed
-	QueryPerformanceCounter(&m_End);
-	m_dConsumedTime = 1000 * (m_End.QuadPart - m_Begin.QuadPart) / double(m_Freq.QuadPart) + m_dPrecomputeTime; //unit: millisec
+	total.stop();//QueryPerformanceCounter(&m_End);
+	m_dConsumedTime = total.getTime(); //unit: millisec
 
 	//Output data as two text files in the diretory of target image
 	CString m_sTextPath;
@@ -1036,6 +1039,32 @@ void CPiDICDlg::OnBnClickedOk()
 
 	m_TextFile.close();
 
+	m_sTextPath = m_sOutputFilePath + _T("\\\\") + _T("Results_Bicubic.txt");
+	m_TextFile.open(m_sTextPath, ios::out | ios::trunc);
+
+	m_TextFile <<"i"<<"\t"<<"j"<<"\t"<<endl;
+	for(int ii=0; ii<m_iHeight; ii++){
+		for(int jj=0; jj<m_iWidth; jj++){
+			m_TextFile<<ii<<"\t"<<jj<<endl;
+			for(int pp=0; pp<4; pp++){
+				for(int qq=0; qq<4; qq++){
+					m_TextFile<<m_dTBicubic[((ii*m_iWidth+jj)*4+pp)*4+qq]<<"\t";
+				}
+				m_TextFile<<endl;
+			}
+			m_TextFile<<endl;
+		}
+	}
+	m_TextFile.close();
+
+	m_sTextPath = m_sOutputFilePath + _T("\\\\") + _T("Results_Bicubic.txt");
+	m_TextFile.open(m_sTextPath, ios::out | ios::trunc);
+	for(int ii=0; ii<m_iHeight; ii++){
+		for(int jj=0; jj<m_iWidth; jj++){
+			m_TextFile<<m_dR[ii*m_iWidth+jj]<<"\t"<<m_dRx[ii*m_iWidth+jj]<<"\t"<<m_dRy[ii*m_iWidth+jj]<<"\t"<<m_dT[ii*m_iWidth+jj]<<endl;
+		}
+	}
+	m_TextFile.close();
 	//Destroy the created matrices
 	for (i = 0; i < m_iSubsetH; i++)
 	{
