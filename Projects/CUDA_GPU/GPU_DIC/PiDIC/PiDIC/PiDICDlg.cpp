@@ -167,6 +167,7 @@ void CPiDICDlg::OnPaint()
 	{
 		CDialogEx::OnPaint();
 	}
+	initialize_CUDA();
 }
 // The system calls this function to obtain the cursor to display while the user drags
 //  the minimized window.
@@ -326,9 +327,9 @@ void CPiDICDlg::OnBnClickedOk()
 	m_dRx	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
 	m_dRy	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
 	m_dT	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
-	m_dTx	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
+	/*m_dTx	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
 	m_dTy	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
-	m_dTxy	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
+	m_dTxy	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));*/
 	m_dTBicubic=(double*)malloc(m_iHeight*m_iWidth*4*4*sizeof(double));
 	/*
 	double **m_dT = new double *[m_iHeight];
@@ -385,13 +386,13 @@ void CPiDICDlg::OnBnClickedOk()
 	double *m_dAlphaT = new double[16];
 	*/
 	//Start the timer for pre-computation
-	
+	QueryPerformanceFrequency(&m_Freq);
 	//QueryPerformanceCounter(&m_Start);
 
 	//Compute the gradient of R and the biubic interpolation coefficents of T
 	/*--------------Calling CUDA kernel to do the computation--------------------*/
-	precompute_kernel(m_dImg1,m_dImg2,m_dR,m_dT,m_dRx,m_dRy,m_dTx,m_dTy,m_dTxy,m_dTBicubic,m_iWidth,m_iHeight, m_dPrecomputeTime);
-	QueryPerformanceFrequency(&m_Freq);
+	precompute_kernel(m_dImg1,m_dImg2,m_dR,m_dT,m_dRx,m_dRy,/*m_dTx,m_dTy,m_dTxy,m_dTBicubic,m_iWidth,*/m_dTBicubic,m_iWidth,m_iHeight, m_dPrecomputeTime);
+	
 	/*for (i = 0; i < m_iHeight; i++)
 	{
 		for (j = 0; j < m_iWidth; j++)
@@ -1030,6 +1031,7 @@ void CPiDICDlg::OnBnClickedOk()
 	m_TextFile << "Time for Pre-computation: " << m_dPrecomputeTime << " [millisec]" << endl;
 	m_TextFile << "Time for integral-pixel registration: " << m_dFFTTime / (m_iNumberY*m_iNumberX) << " [millisec]" << endl;
 	m_TextFile << "Time for sub-pixel registration: " << m_dICGNTime / (m_iNumberY*m_iNumberX) << " [millisec]" << " for average iteration steps of " << double(m_iIteration) / (m_iNumberY*m_iNumberX) << endl;
+	m_TextFile << m_dFFTTime << "\t"<<m_dICGNTime<<endl;
 	m_TextFile << m_iWidth << ", " << m_iHeight << ", " << m_iGridSpaceX << ", " << m_iGridSpaceY << ", " << endl;
 
 	m_TextFile.close();
@@ -1114,9 +1116,6 @@ void CPiDICDlg::OnBnClickedOk()
 	free(m_dR);
 	free(m_dRx);
 	free(m_dRy);
-	free(m_dTx);
-	free(m_dTy);
-	free(m_dTxy);
 	/*delete[]m_dTaoT;
 	delete[]m_dAlphaT;
 

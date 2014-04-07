@@ -4,6 +4,8 @@
 
 #include "helper_cuda.h"
 #include "helper_functions.h"
+#include "thrust/device_vector.h"
+#include "thrust/host_vector.h"
 
 
 #include <stdio.h>
@@ -99,10 +101,14 @@ __global__ void RGradient_kernel(const double *d_InputIMGR, const double *d_Inpu
 
 }
 
+void initialize_CUDA()
+{
+	cudaFree(0);
+}
 void precompute_kernel(const double *h_InputIMGR, const double *h_InputIMGT,
 								 double *h_OutputIMGR, double *h_OutputIMGT, 
 								 double *h_OutputIMGRx, double *h_OutputIMGRy,
-								 double *h_OutputIMGTx, double *h_OutputIMGTy, double *h_OutputIMGTxy, double *h_OutputdTBicubic,
+								 /*double *h_OutputIMGTx, double *h_OutputIMGTy, double *h_OutputIMGTxy,*/ double *h_OutputdTBicubic,
 								 int width, int height, float& time)
 {
 	StopWatchWin precompute;
@@ -111,25 +117,25 @@ void precompute_kernel(const double *h_InputIMGR, const double *h_InputIMGT,
 	double *d_OutputdTBicubic;
 	
 	const static double h_InputBicubicMatrix[16*16] = {  
-													1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-													0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,
-													-3, 3, 0, 0, -2, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-													2, -2, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-													0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 
-													0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 ,
-													0, 0, 0, 0, 0, 0, 0, 0, -3, 3, 0, 0, -2, -1, 0, 0,
-													0, 0, 0, 0, 0, 0, 0, 0, 2, -2, 0, 0, 1, 1, 0, 0 , 
-													-3, 0, 3, 0, 0, 0, 0, 0, -2, 0, -1, 0, 0, 0, 0, 0, 
-													0, 0, 0, 0, -3, 0, 3, 0, 0, 0, 0, 0, -2, 0, -1, 0,  
-													9, -9, -9, 9, 6, 3, -6, -3, 6, -6, 3, -3, 4, 2, 2, 1 , 
-													-6, 6, 6, -6, -3, -3, 3, 3, -4, 4, -2, 2, -2, -2, -1, -1, 
-													2, 0, -2, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0 , 
-													0, 0, 0, 0, 2, 0, -2, 0, 0, 0, 0, 0, 1, 0, 1, 0 , 
-													-6, 6, 6, -6, -4, -2, 4, 2, -3, 3, -3, 3, -2, -1, -2, -1,
-													4, -4, -4, 4, 2, 2, -2, -2, 2, -2, 2, -2, 1, 1, 1, 1 
+													1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+													0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ,
+													-3.0, 3.0, 0.0, 0.0, -2.0, -1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 
+													2.0, -2.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 
+													0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 
+													0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0 ,
+													0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -3.0, 3.0, 0.0, 0.0, -2.0, -1.0, 0.0, 0.0,
+													0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0, -2.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0 , 
+													-3.0, 0.0, 3.0, 0.0, 0.0, 0.0, 0.0, 0.0, -2.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 
+													0.0, 0.0, 0.0, 0.0, -3.0, 0.0, 3.0, 0.0, 0.0, 0.0, 0.0, 0.0, -2.0, 0.0, -1.0, 0.0,  
+													9.0, -9.0, -9.0, 9.0, 6.0, 3.0, -6.0, -3.0, 6.0, -6.0, 3.0, -3.0, 4.0, 2.0, 2.0, 1.0 , 
+													-6.0, 6.0, 6.0, -6.0, -3.0, -3.0, 3.0, 3.0, -4.0, 4.0, -2.0, 2.0, -2.0, -2.0, -1.0, -1.0, 
+													2.0, 0.0, -2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0 , 
+													0.0, 0.0, 0.0, 0.0, 2.0, 0.0, -2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0 , 
+													-6.0, 6.0, 6.0, -6.0, -4.0, -2.0, 4.0, 2.0, -3.0, 3.0, -3.0, 3.0, -2.0, -1.0, -2.0, -1.0,
+													4.0, -4.0, -4.0, 4.0, 2.0, 2,.0 -2.0, -2.0, 2.0, -2.0, 2.0, -2.0, 1.0, 1.0, 1.0, 1.0
 												   };
-	(cudaMalloc((void**)&d_InputIMGR, (width+2)*(height+2)*sizeof(double)));
 	precompute.start();
+	(cudaMalloc((void**)&d_InputIMGR, (width+2)*(height+2)*sizeof(double)));
 	(cudaMalloc((void**)&d_InputIMGT, (width+2)*(height+2)*sizeof(double)));
 	(cudaMalloc((void**)&d_InputBiubicMatrix, 16*16*sizeof(double)));
 
@@ -155,16 +161,10 @@ void precompute_kernel(const double *h_InputIMGR, const double *h_InputIMGT,
 								 d_OutputIMGTx, d_OutputIMGTy, d_OutputIMGTxy,d_OutputdTBicubic,
 								 width, height);
 
-	cudaDeviceSynchronize();
-	precompute.stop();
-	time = precompute.getTime();
 	(cudaMemcpy(h_OutputIMGR,d_OutputIMGR,width*height*sizeof(double),cudaMemcpyDeviceToHost));
 	(cudaMemcpy(h_OutputIMGT,d_OutputIMGT,width*height*sizeof(double),cudaMemcpyDeviceToHost));
 	(cudaMemcpy(h_OutputIMGRx,d_OutputIMGRx,width*height*sizeof(double),cudaMemcpyDeviceToHost));
 	(cudaMemcpy(h_OutputIMGRy,d_OutputIMGRy,width*height*sizeof(double),cudaMemcpyDeviceToHost));
-	(cudaMemcpy(h_OutputIMGTx,d_OutputIMGTx,width*height*sizeof(double),cudaMemcpyDeviceToHost));
-	(cudaMemcpy(h_OutputIMGTy,d_OutputIMGTy,width*height*sizeof(double),cudaMemcpyDeviceToHost));
-	(cudaMemcpy(h_OutputIMGTxy,d_OutputIMGTxy,width*height*sizeof(double),cudaMemcpyDeviceToHost));
 	(cudaMemcpy(h_OutputdTBicubic,d_OutputdTBicubic,width*height*4*4*sizeof(double),cudaMemcpyDeviceToHost));
 
 	(cudaFree(d_OutputIMGR));
@@ -175,6 +175,8 @@ void precompute_kernel(const double *h_InputIMGR, const double *h_InputIMGT,
 	(cudaFree(d_OutputIMGTy));
 	(cudaFree(d_OutputIMGTxy));
 	(cudaFree(d_OutputdTBicubic));
-
+	
+	precompute.stop();
+	time = precompute.getTime();
 }
 
