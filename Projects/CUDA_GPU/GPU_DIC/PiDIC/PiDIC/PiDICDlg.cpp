@@ -797,7 +797,7 @@ void CPiDICDlg::OnBnClickedOk()
 						m_iTemp = m;
 					}
 				}
-				if (fabs(m_dHessian[m_iTemp][l]) == 0)
+				if (fabs(m_dHessian[m_iTemp][l]) <= 0.000000000000001)
 				{
 					MessageBox(_T("Too small element for matrix inverse!"), NULL, MB_OK);
 					return;
