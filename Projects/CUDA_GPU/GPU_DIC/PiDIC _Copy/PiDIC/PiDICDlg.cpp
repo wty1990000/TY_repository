@@ -6,7 +6,7 @@
 #include "PiDIC.h"
 #include "PiDICDlg.h"
 #include "afxdialogex.h"
-#include "precomputation.cuh"
+#include "combination.cuh"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -312,24 +312,30 @@ void CPiDICDlg::OnBnClickedOk()
 	int m_iWidth = m_iImgWidth - 2; // set margin = 1 column
 	int m_iHeight = m_iImgHeight - 2; // set margin = 1 row
 
+	//----------------For FFT-CC outputs--------------------
+	double* m_dZNCC;
+
+	//----------------For ICGN outputs----------------------
+	double* m_iU, m_iV;
+
 	//R: reference image, T: target image, TBicubic: the interpolatino matrix
 	/*------------Linearlize--------------------*/
-	double *m_dR;	//=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
-	double *m_dRx;	//=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
-	double *m_dRy;	//=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
-	double *m_dT;	//=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
-	double *m_dTx;	//=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
-	double *m_dTy;	//=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
-	double *m_dTxy;//	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
-	double *m_dTBicubic;
-	m_dR	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
-	m_dRx	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
-	m_dRy	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
-	m_dT	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
-	m_dTx	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
-	m_dTy	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
-	m_dTxy	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
-	m_dTBicubic=(double*)malloc(m_iHeight*m_iWidth*4*4*sizeof(double));
+	//double *m_dR;	//=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
+	//double *m_dRx;	//=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
+	//double *m_dRy;	//=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
+	//double *m_dT;	//=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
+	//double *m_dTx;	//=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
+	//double *m_dTy;	//=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
+	//double *m_dTxy;//	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
+	//double *m_dTBicubic;
+	//m_dR	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
+	//m_dRx	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
+	//m_dRy	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
+	//m_dT	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
+	//m_dTx	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
+	//m_dTy	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
+	//m_dTxy	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
+	//m_dTBicubic=(double*)malloc(m_iHeight*m_iWidth*4*4*sizeof(double));
 	/*
 	double **m_dT = new double *[m_iHeight];
 	double **m_dTx = new double *[m_iHeight];
@@ -390,7 +396,9 @@ void CPiDICDlg::OnBnClickedOk()
 
 	//Compute the gradient of R and the biubic interpolation coefficents of T
 	/*--------------Calling CUDA kernel to do the computation--------------------*/
-	precompute_kernel(m_dImg1,m_dImg2,m_dR,m_dT,m_dRx,m_dRy,m_dTx,m_dTy,m_dTxy,m_dTBicubic,m_iWidth,m_iHeight, m_dPrecomputeTime);
+	//precompute_kernel(m_dImg1,m_dImg2,m_dR,m_dT,m_dRx,m_dRy,m_dTx,m_dTy,m_dTxy,m_dTBicubic,m_iWidth,m_iHeight, m_dPrecomputeTime);
+	combined_functions(m_dImg1, m_dImg2, m_iWidth, m_iHeight,
+					);
 	QueryPerformanceFrequency(&m_Freq);
 	/*for (i = 0; i < m_iHeight; i++)
 	{

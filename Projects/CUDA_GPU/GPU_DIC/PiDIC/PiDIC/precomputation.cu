@@ -5,6 +5,7 @@
 #include "helper_cuda.h"
 #include "helper_functions.h"
 
+
 #include <stdio.h>
 
 #include "precomputation.cuh"
@@ -77,22 +78,22 @@ __global__ void RGradient_kernel(const double *d_InputIMGR, const double *d_Inpu
 		d_OutputdtBicubic[((row*(width)+col)*4+3)*4+3] = d_AlphaT[15];
 	}
 	else {
-		d_OutputdtBicubic[((row*(width)+col)*4+0)*4+0] = 0;
-		d_OutputdtBicubic[((row*(width)+col)*4+0)*4+1] = 0;
-		d_OutputdtBicubic[((row*(width)+col)*4+0)*4+2] = 0;
-		d_OutputdtBicubic[((row*(width)+col)*4+0)*4+3] = 0;
-		d_OutputdtBicubic[((row*(width)+col)*4+1)*4+0] = 0;
-		d_OutputdtBicubic[((row*(width)+col)*4+1)*4+1] = 0;
-		d_OutputdtBicubic[((row*(width)+col)*4+1)*4+2] = 0;
-		d_OutputdtBicubic[((row*(width)+col)*4+1)*4+3] = 0;
-		d_OutputdtBicubic[((row*(width)+col)*4+2)*4+0] = 0;
-		d_OutputdtBicubic[((row*(width)+col)*4+2)*4+1] = 0;
-		d_OutputdtBicubic[((row*(width)+col)*4+2)*4+2] = 0;
-		d_OutputdtBicubic[((row*(width)+col)*4+2)*4+3] = 0;
-		d_OutputdtBicubic[((row*(width)+col)*4+3)*4+0] = 0;
-		d_OutputdtBicubic[((row*(width)+col)*4+3)*4+1] = 0;
-		d_OutputdtBicubic[((row*(width)+col)*4+3)*4+2] = 0;
-		d_OutputdtBicubic[((row*(width)+col)*4+3)*4+3] = 0;
+		d_OutputdtBicubic[((row*(width)+col)*4+0)*4+0] = 0.0;
+		d_OutputdtBicubic[((row*(width)+col)*4+0)*4+1] = 0.0;
+		d_OutputdtBicubic[((row*(width)+col)*4+0)*4+2] = 0.0;
+		d_OutputdtBicubic[((row*(width)+col)*4+0)*4+3] = 0.0;
+		d_OutputdtBicubic[((row*(width)+col)*4+1)*4+0] = 0.0;
+		d_OutputdtBicubic[((row*(width)+col)*4+1)*4+1] = 0.0;
+		d_OutputdtBicubic[((row*(width)+col)*4+1)*4+2] = 0.0;
+		d_OutputdtBicubic[((row*(width)+col)*4+1)*4+3] = 0.0;
+		d_OutputdtBicubic[((row*(width)+col)*4+2)*4+0] = 0.0;
+		d_OutputdtBicubic[((row*(width)+col)*4+2)*4+1] = 0.0;
+		d_OutputdtBicubic[((row*(width)+col)*4+2)*4+2] = 0.0;
+		d_OutputdtBicubic[((row*(width)+col)*4+2)*4+3] = 0.0;
+		d_OutputdtBicubic[((row*(width)+col)*4+3)*4+0] = 0.0;
+		d_OutputdtBicubic[((row*(width)+col)*4+3)*4+1] = 0.0;
+		d_OutputdtBicubic[((row*(width)+col)*4+3)*4+2] = 0.0;
+		d_OutputdtBicubic[((row*(width)+col)*4+3)*4+3] = 0.0;
 	}
 	
 
@@ -102,8 +103,9 @@ void precompute_kernel(const double *h_InputIMGR, const double *h_InputIMGT,
 								 double *h_OutputIMGR, double *h_OutputIMGT, 
 								 double *h_OutputIMGRx, double *h_OutputIMGRy,
 								 double *h_OutputIMGTx, double *h_OutputIMGTy, double *h_OutputIMGTxy, double *h_OutputdTBicubic,
-								 int width, int height)
+								 int width, int height, float& time)
 {
+	StopWatchWin precompute;
 	double *d_InputIMGR, *d_InputIMGT, *d_InputBiubicMatrix;
 	double *d_OutputIMGR, *d_OutputIMGT, *d_OutputIMGRx, *d_OutputIMGRy, *d_OutputIMGTx, *d_OutputIMGTy, *d_OutputIMGTxy;
 	double *d_OutputdTBicubic;
@@ -126,8 +128,8 @@ void precompute_kernel(const double *h_InputIMGR, const double *h_InputIMGT,
 													-6, 6, 6, -6, -4, -2, 4, 2, -3, 3, -3, 3, -2, -1, -2, -1,
 													4, -4, -4, 4, 2, 2, -2, -2, 2, -2, 2, -2, 1, 1, 1, 1 
 												   };
-
 	(cudaMalloc((void**)&d_InputIMGR, (width+2)*(height+2)*sizeof(double)));
+	precompute.start();
 	(cudaMalloc((void**)&d_InputIMGT, (width+2)*(height+2)*sizeof(double)));
 	(cudaMalloc((void**)&d_InputBiubicMatrix, 16*16*sizeof(double)));
 
@@ -154,7 +156,8 @@ void precompute_kernel(const double *h_InputIMGR, const double *h_InputIMGT,
 								 width, height);
 
 	cudaDeviceSynchronize();
-
+	precompute.stop();
+	time = precompute.getTime();
 	(cudaMemcpy(h_OutputIMGR,d_OutputIMGR,width*height*sizeof(double),cudaMemcpyDeviceToHost));
 	(cudaMemcpy(h_OutputIMGT,d_OutputIMGT,width*height*sizeof(double),cudaMemcpyDeviceToHost));
 	(cudaMemcpy(h_OutputIMGRx,d_OutputIMGRx,width*height*sizeof(double),cudaMemcpyDeviceToHost));
@@ -172,5 +175,6 @@ void precompute_kernel(const double *h_InputIMGR, const double *h_InputIMGT,
 	(cudaFree(d_OutputIMGTy));
 	(cudaFree(d_OutputIMGTxy));
 	(cudaFree(d_OutputdTBicubic));
+
 }
 
