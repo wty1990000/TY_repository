@@ -40,6 +40,8 @@ int main()
 	h_OutputIMGTxy = (double*)malloc(254*254*sizeof(double));
 	h_OutputdTBicubic = (double*)malloc((254)*(254)*4*4*sizeof(double));
 
+	initialize_CUDA();
+
 	launch_kernel(h_InputIMGR,h_InputIMGT,h_OutputIMGR,h_OutputIMGT,
 				  h_OutputIMGRx, h_OutputIMGRy,h_OutputIMGTx,h_OutputIMGTy,h_OutputIMGTxy,h_OutputdTBicubic,254,254);
 

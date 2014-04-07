@@ -131,9 +131,6 @@ void launch_kernel(const double *h_InputIMGR, const double *h_InputIMGT,
 												   };
 	totalp.start();
 	checkCudaErrors(cudaMalloc((void**)&d_InputIMGR, (width+2)*(height+2)*sizeof(double)));
-	totalp.stop();
-	totalp_time = totalp.getTime();
-	total.start();
 	checkCudaErrors(cudaMalloc((void**)&d_InputIMGT, (width+2)*(height+2)*sizeof(double)));
 	checkCudaErrors(cudaMalloc((void**)&d_InputBiubicMatrix, 16*16*sizeof(double)));
 
@@ -162,18 +159,17 @@ void launch_kernel(const double *h_InputIMGR, const double *h_InputIMGT,
 	compute.stop();
 	compute_time = compute.getTime();
 	
-	
+	total.start();
 	checkCudaErrors(cudaMemcpy(h_OutputIMGR,d_OutputIMGR,width*height*sizeof(double),cudaMemcpyDeviceToHost));
 	checkCudaErrors(cudaMemcpy(h_OutputIMGT,d_OutputIMGT,width*height*sizeof(double),cudaMemcpyDeviceToHost));
-	total.stop();
-	total_time = total.getTime();
 	checkCudaErrors(cudaMemcpy(h_OutputIMGRx,d_OutputIMGRx,width*height*sizeof(double),cudaMemcpyDeviceToHost));
 	checkCudaErrors(cudaMemcpy(h_OutputIMGRy,d_OutputIMGRy,width*height*sizeof(double),cudaMemcpyDeviceToHost));
 	checkCudaErrors(cudaMemcpy(h_OutputIMGTx,d_OutputIMGTx,width*height*sizeof(double),cudaMemcpyDeviceToHost));
 	checkCudaErrors(cudaMemcpy(h_OutputIMGTy,d_OutputIMGTy,width*height*sizeof(double),cudaMemcpyDeviceToHost));
 	checkCudaErrors(cudaMemcpy(h_OutputIMGTxy,d_OutputIMGTxy,width*height*sizeof(double),cudaMemcpyDeviceToHost));
 	checkCudaErrors(cudaMemcpy(h_OutputdTBicubic,d_OutputdTBicubic,width*height*4*4*sizeof(double),cudaMemcpyDeviceToHost));
-	
+	total.stop();
+	total_time = total.getTime();
 	cudaFree(d_InputIMGR);
 	cudaFree(d_InputIMGT);
 	cudaFree(d_InputBiubicMatrix);
@@ -186,10 +182,14 @@ void launch_kernel(const double *h_InputIMGR, const double *h_InputIMGT,
 	checkCudaErrors(cudaFree(d_OutputIMGTxy));
 	checkCudaErrors(cudaFree(d_OutputdTBicubic));
 
-	
+	totalp.stop();
+	totalp_time = totalp.getTime();
 
 	printf("Total total time: %f\n",totalp_time);
 	printf("\nTotal time: %f\n",total_time);
 	printf("Compute time: %f\n",compute_time);
 }
-
+void initialize_CUDA()
+{
+	cudaFree(0);
+}
