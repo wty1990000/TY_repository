@@ -160,7 +160,8 @@ void precompute_kernel(const double *h_InputIMGR, const double *h_InputIMGT,
 								 d_OutputIMGRx, d_OutputIMGRy,
 								 d_OutputIMGTx, d_OutputIMGTy, d_OutputIMGTxy,d_OutputdTBicubic,
 								 width, height);
-
+	precompute.stop();
+	time = precompute.getTime();
 	(cudaMemcpy(h_OutputIMGR,d_OutputIMGR,width*height*sizeof(double),cudaMemcpyDeviceToHost));
 	(cudaMemcpy(h_OutputIMGT,d_OutputIMGT,width*height*sizeof(double),cudaMemcpyDeviceToHost));
 	(cudaMemcpy(h_OutputIMGRx,d_OutputIMGRx,width*height*sizeof(double),cudaMemcpyDeviceToHost));
@@ -176,7 +177,6 @@ void precompute_kernel(const double *h_InputIMGR, const double *h_InputIMGT,
 	(cudaFree(d_OutputIMGTxy));
 	(cudaFree(d_OutputdTBicubic));
 	
-	precompute.stop();
-	time = precompute.getTime();
+	
 }
 
