@@ -7,6 +7,13 @@
 
 #include "precomputation.cuh"
 
+void initialize()
+/*Purpose: Initialize GPU with CPU
+*/
+{
+	cudaFree(0);
+}
+
 void combined_functions(const double* h_InputIMGR, const double* h_InputIMGT, const int& m_iWidth, const int& m_iHeight, 
 						const int& m_iSubsetX, const int& m_iSubsetY, double* m_dZNCC, double* m_dP,
 						double* m_iU, double *m_iV,
@@ -18,10 +25,11 @@ void combined_functions(const double* h_InputIMGR, const double* h_InputIMGT, co
 	double* d_OutputIMGR, *d_OutputIMGT, *d_OutputIMGRx, *d_OutputIMGRy, *d_OutputIMGT, *d_OutputBicubic;
 
 	//Variables of FFT-CC
-	
+
+
+	totalT.start();
 	//-----Start pre-computation------
 	cudaMalloc((void**)&d_OutputIMGR, (m_iWidth*m_iHeight)*sizeof(double));
-	totalT.start();
 	cudaMalloc((void**)&d_OutputIMGRx, (m_iWidth*m_iHeight)*sizeof(double));
 	cudaMalloc((void**)&d_OutputIMGRy, (m_iWidth*m_iHeight)*sizeof(double));
 	cudaMalloc((void**)&d_OutputIMGT, (m_iWidth*m_iHeight)*sizeof(double));

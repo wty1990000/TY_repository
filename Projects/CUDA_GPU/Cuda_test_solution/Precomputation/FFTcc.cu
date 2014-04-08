@@ -82,16 +82,17 @@ Purpose: Complex multiplication for "size" points, done in parallel
 }
 
 void FFTCC_kernel(const double* dInput_mdR, const double* dInput_mdT, int m_iWidth, int m_iHeight,
-				  double* dOutputm_dPXY,  double* dOutput_dZNCC, int* dOutput_iFlag1,
+				  double* dOutputm_dPXY, int* dOutput_iFlag1, double* dm_SubsetC,
 				  int m_iMarginX, int m_iMarginY, int m_iGridSpaceY, int m_iGridSapceX,
-				  int m_iSubsetX, int m_iSubsetY, int m_iNumberX, int m_iNumberY,int m_iFFTSubW, int m_iFFTSubH)
+				  int m_iSubsetX, int m_iSubsetY, int m_iNumberX, int m_iNumberY,int m_iFFTSubW, int m_iFFTSubH, float& time)
 /*Input: mdR, mdT, other m_* single variables
  Output: dOutput_dZNCC, dOutput_iFlag1, dOutputm_dPXY, dOutputm_dP(No need to allocate memory here, allocate them in combination.cu.)
 Purpose: Do the FFTCC, get ZNCC for the last output, get m_dPXY, m_iFlag1 to be used in ICGN.
 */
 {
+	StopWatchWin FFTtime;
 	//Parameters for cuFFT
-	cufftDoubleReal *dm_Subset1, *dm_Subset2, *dm_SubsetC;
+	cufftDoubleReal *dm_Subset1, *dm_Subset2;
 	cufftDoubleComplex *dm_FreqDom1, *dm_FreqDom2, *dm_FreqDomfg;
 	cufftHandle plan, rplan;
 	int n[] = {m_iFFTSubW,m_iFFTSubH};
@@ -104,15 +105,15 @@ Purpose: Do the FFTCC, get ZNCC for the last output, get m_dPXY, m_iFlag1 to be 
 	dim3 dimBlock(BLOCK_SIZE,BLOCK_SIZE,1);
 	dim3 dimGrid((m_iNumberY-1)/BLOCK_SIZE+1, (m_iNumberX-1)/BLOCK_SIZE+1,1);
 
+	FFTtime.start();
 	//Allocate the memory for FFTs
 	cudaMalloc((void**)&dm_Subset1, m_iNumberY*m_iNumberX*m_iFFTSubH*m_iFFTSubW*sizeof(cufftDoubleReal));
 	cudaMalloc((void**)&dm_Subset2, m_iNumberY*m_iNumberX*m_iFFTSubH*m_iFFTSubW*sizeof(cufftDoubleReal));
-	cudaMalloc((void**)&dm_SubsetC, m_iNumberY*m_iNumberX*m_iFFTSubH*m_iFFTSubW*sizeof(cufftDoubleReal));
 	//Fill in the values to dm_Subset1, dm_Subset2
-	FFTCC_kernel<<<dimGrid, dimBlock>>>(dInput_mdR, dInput_mdT, m_iWidth, m_iHeight, 
-										dOutputm_dPXY, dOutput_iFlag1, dm_Subset1, dm_Subset2, 
-										m_iMarginX, m_iMarginY, m_iGridSpaceY, m_iGridSpaceX,
-										m_iSubsetX, m_iSubsetY, m_iNumberX, m_iNumberY, m_iFFTSubW, m_iFFTSubH);
+	FFTCC_pre_kernel<<<dimGrid, dimBlock>>>(dInput_mdR,dInput_mdT,m_iWidth,m_iHeight,
+										dOutputm_dPXY,dOutput_iFlag1,dm_Subset1,dm_Subset2,
+										m_iMarginX,m_iMarginY,m_iGridSpaceY,m_iGridSapceX,
+										m_iSubsetX,m_iSubsetY,m_iNumberX, m_iNumberY,m_iFFTSubW,m_iFFTSubH);
 	
 	//Allocate the memory for thr frequency domain
 	cudaMalloc((void**)&dm_FreqDom1, m_iNumberY*m_iNumberX*m_iFFTSubW*(m_iFFTSubH/2+1)*sizeof(cufftDoubleComplex));
@@ -130,4 +131,17 @@ Purpose: Do the FFTCC, get ZNCC for the last output, get m_dPXY, m_iFlag1 to be 
 	pointwiseMul<<<dimGrid,dimBlock>>>(dm_FreqDom1, dm_FreqDom2, dm_FreqDomfg, m_iFFTSubW*(m_iFFTSubH/2+1),m_iNumberX,m_iNumberY);
 	//Execute the reverse FFT
 	cufftExecZ2D(rplan,dm_FreqDomfg,dm_SubsetC);
+
+
+	cufftDestroy(plan);
+	cufftDestroy(rplan);
+
+	cudaFree(dm_Subset1);
+	cudaFree(dm_Subset2);
+	cudaFree(dm_FreqDom1);
+	cudaFree(dm_FreqDom2);
+	cudaFree(dm_FreqDomfg);
+
+	FFTtime.stop();
+	time = FFTtime.getTime();
 }

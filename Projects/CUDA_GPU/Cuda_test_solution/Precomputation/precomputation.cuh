@@ -1,13 +1,12 @@
 #ifndef _KERNEL_CUH_
 #define _KERNEL_CUH_
 
-const int BLOCK_SIZE = 16;
+#define BLOCK_SIZE1 16
 
-
-void launch_kernel(const double *h_InputIMGR, const double *h_InputIMGT,
-								 double *h_OutputIMGR, double *h_OutputIMGT, 
-								 double *h_OutputIMGRx, double *h_OutputIMGRy,
-								 double *h_OutputIMGTx, double *h_OutputIMGTy, double *h_OutputIMGTxy,double *h_OutputdTBicubic,
-								 int width, int height);
+void precompute_kernel(const double *h_InputIMGR, const double *h_InputIMGT,
+								 double *d_OutputIMGR, double *d_OutputIMGT, 
+								 double *d_OutputIMGRx, double *d_OutputIMGRy,
+								 double *d_OutputdTBicubic,
+								 int width, int height, float& time);
 
 #endif // !_KENEL_CUH_

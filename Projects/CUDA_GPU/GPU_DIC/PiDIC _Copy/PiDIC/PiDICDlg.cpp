@@ -167,6 +167,7 @@ void CPiDICDlg::OnPaint()
 	{
 		CDialogEx::OnPaint();
 	}
+	initialize();
 }
 // The system calls this function to obtain the cursor to display while the user drags
 //  the minimized window.
