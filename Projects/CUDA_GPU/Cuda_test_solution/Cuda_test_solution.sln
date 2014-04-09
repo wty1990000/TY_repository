@@ -15,6 +15,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DIC_CUDA_FFT", "DIC_CUDA_FF
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zero_copying_test", "zero_copying_test\zero_copying_test.vcxproj", "{5FBC9678-4B03-4B8C-98BC-B0C2798E0D9A}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DIC_FFTW_FFT", "DIC_FFTW_FFT\DIC_FFTW_FFT.vcxproj", "{84A8C500-AE85-4B5C-9C76-334A51A96D4A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -79,6 +81,12 @@ Global
 		{5FBC9678-4B03-4B8C-98BC-B0C2798E0D9A}.Release|Win32.Build.0 = Release|Win32
 		{5FBC9678-4B03-4B8C-98BC-B0C2798E0D9A}.Release|x64.ActiveCfg = Release|x64
 		{5FBC9678-4B03-4B8C-98BC-B0C2798E0D9A}.Release|x64.Build.0 = Release|x64
+		{84A8C500-AE85-4B5C-9C76-334A51A96D4A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{84A8C500-AE85-4B5C-9C76-334A51A96D4A}.Debug|Win32.Build.0 = Debug|Win32
+		{84A8C500-AE85-4B5C-9C76-334A51A96D4A}.Debug|x64.ActiveCfg = Debug|Win32
+		{84A8C500-AE85-4B5C-9C76-334A51A96D4A}.Release|Win32.ActiveCfg = Release|Win32
+		{84A8C500-AE85-4B5C-9C76-334A51A96D4A}.Release|Win32.Build.0 = Release|Win32
+		{84A8C500-AE85-4B5C-9C76-334A51A96D4A}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

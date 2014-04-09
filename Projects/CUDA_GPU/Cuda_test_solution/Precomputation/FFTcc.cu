@@ -105,16 +105,16 @@ Purpose: Do the FFTCC, get ZNCC for the last output, get m_dPXY, m_iFlag1 to be 
 	dim3 dimBlock(BLOCK_SIZE,BLOCK_SIZE,1);
 	dim3 dimGrid((m_iNumberY-1)/BLOCK_SIZE+1, (m_iNumberX-1)/BLOCK_SIZE+1,1);
 
-	FFTtime.start();
+	
 	//Allocate the memory for FFTs
 	cudaMalloc((void**)&dm_Subset1, m_iNumberY*m_iNumberX*m_iFFTSubH*m_iFFTSubW*sizeof(cufftDoubleReal));
 	cudaMalloc((void**)&dm_Subset2, m_iNumberY*m_iNumberX*m_iFFTSubH*m_iFFTSubW*sizeof(cufftDoubleReal));
 	//Fill in the values to dm_Subset1, dm_Subset2
+	
 	FFTCC_pre_kernel<<<dimGrid, dimBlock>>>(dInput_mdR,dInput_mdT,m_iWidth,m_iHeight,
 										dOutputm_dPXY,dOutput_iFlag1,dm_Subset1,dm_Subset2,
 										m_iMarginX,m_iMarginY,m_iGridSpaceY,m_iGridSapceX,
 										m_iSubsetX,m_iSubsetY,m_iNumberX, m_iNumberY,m_iFFTSubW,m_iFFTSubH);
-	
 	//Allocate the memory for thr frequency domain
 	cudaMalloc((void**)&dm_FreqDom1, m_iNumberY*m_iNumberX*m_iFFTSubW*(m_iFFTSubH/2+1)*sizeof(cufftDoubleComplex));
 	cudaMalloc((void**)&dm_FreqDom2, m_iNumberY*m_iNumberX*m_iFFTSubW*(m_iFFTSubH/2+1)*sizeof(cufftDoubleComplex));
@@ -124,6 +124,9 @@ Purpose: Do the FFTCC, get ZNCC for the last output, get m_dPXY, m_iFlag1 to be 
 	cufftPlanMany(&plan,2,n,inembed,1,m_iFFTSubH*m_iFFTSubW,onembed,1,m_iFFTSubW*(m_iFFTSubH/2+1),CUFFT_D2Z,m_iNumberY*m_iNumberX);
 	cufftPlanMany(&rplan,2,nr,onembed,1,m_iFFTSubW*(m_iFFTSubH/2+1),inembed,1,m_iFFTSubH*m_iFFTSubW,CUFFT_Z2D,m_iNumberY*m_iNumberX);
 	//Execute the plan
+	cufftSetCompatibilityMode(plan,CUFFT_COMPATIBILITY_NATIVE);
+	cufftSetCompatibilityMode(rplan, CUFFT_COMPATIBILITY_NATIVE);
+
 	cufftExecD2Z(plan, dm_Subset1, dm_FreqDom1);
 	cufftExecD2Z(plan, dm_Subset2, dm_FreqDom2);
 
@@ -141,7 +144,7 @@ Purpose: Do the FFTCC, get ZNCC for the last output, get m_dPXY, m_iFlag1 to be 
 	cudaFree(dm_FreqDom1);
 	cudaFree(dm_FreqDom2);
 	cudaFree(dm_FreqDomfg);
-
 	FFTtime.stop();
 	time = FFTtime.getTime();
+	
 }
