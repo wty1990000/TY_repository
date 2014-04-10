@@ -25,27 +25,31 @@ void loopplan(float &t)
 	fftw_plan Plan2 = fftw_plan_dft_r2c_2d(SubW,SubH,data2,freq2,FFTW_ESTIMATE);
 	fftw_plan rPlan = fftw_plan_dft_c2r_2d(SubW,SubH,freqfg,result,FFTW_ESTIMATE);
 
+	
+#pragma omp parallel for
 	for(int i=0; i<batch; i++){
 		for(int j=0; j<batch; j++){
 			for(int l=0; l<SubH; l++){
 				for(int m=0; m<SubW; m++){
+					ti.start();
 					data1[l*SubW+m] = double(r.random_integer(0,255));
 					data2[l*SubW+m] = double(r.random_integer(0,255));
 				}
 			}
-			ti.start();
+			
 			fftw_execute(Plan1);
 			fftw_execute(Plan2);
-			ti.stop();
-			t=ti.getTime();
+		
 			for(int n=0; n<SubW*(SubH/2+1); n++){
 				freqfg[n][0] = (freq1[n][0]*freq2[n][0])+(freq1[n][1]*freq2[n][1]);
 				freqfg[n][1] = (freq1[n][0]*freq2[n][1])-(freq1[n][1]*freq2[n][0]);
 			}
 			fftw_execute(rPlan);
 		}
+		
 	}
-
+	ti.stop();
+	t=ti.getTime();
 	delete data1;
 	delete data2;
 	delete result;

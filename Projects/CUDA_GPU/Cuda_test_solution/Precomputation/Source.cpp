@@ -13,11 +13,11 @@ int main()
 
 	h_InputIMGR = (double*)malloc(256*256*sizeof(double));
 	h_InputIMGT = (double*)malloc(256*256*sizeof(double));
-	h_OutputFFTcc = (double*)malloc(21*21*32*32*sizeof(double));
+	h_OutputFFTcc = (double*)malloc(254*254*4*4*sizeof(double));
 	
 	for(int i=0; i<256*256; i++){
-		h_InputIMGR[i] = double(1);
-		h_InputIMGT[i] = double(1);
+		h_InputIMGR[i] = double(r.random_integer(0,255));
+		h_InputIMGT[i] = double(r.random_integer(0,255));
 	}
 
 	initialize_CUDA();
@@ -29,9 +29,9 @@ int main()
 	cout<<endl;
 
 
-	for(int k=0; k<32; k++){
-				for(int l=0; l<32; l++){
-					cout<<h_OutputFFTcc[(((2*21+1)*32)+k)*32+l]/double(32*32)<<",\t";
+	for(int k=0; k<4; k++){
+				for(int l=0; l<4; l++){
+					cout<<h_OutputFFTcc[k*4+l]<<",\t";
 				}
 				cout<<endl;
 	}

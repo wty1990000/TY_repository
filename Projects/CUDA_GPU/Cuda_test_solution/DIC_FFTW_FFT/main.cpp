@@ -14,12 +14,12 @@ int main()
 	loop_plan.start();
 		loopplan(ttother);
 	loop_plan.stop();
-	loop_time =ttother;
+	loop_time =loop_plan.getTime();
 	
 	batch_plan.start();
 		batchedplan(tother);
 	batch_plan.stop();
-	batch_time = tother;
+	batch_time = batch_plan.getTime();
 
 
 	std::cout<<"Loop FFTs consume:"<<loop_time<<std::endl;

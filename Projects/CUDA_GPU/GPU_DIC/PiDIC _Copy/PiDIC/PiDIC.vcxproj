@@ -61,7 +61,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>CUFFT.lib;CUFFTW.lib</AdditionalDependencies>
+      <AdditionalDependencies>uafxcwd.lib;cudart.lib;libfftw3-3.lib;libfftw3f-3.lib;libfftw3l-3.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <Midl>
@@ -96,7 +96,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>CUFFT.lib;CUFFTW.lib</AdditionalDependencies>
+      <AdditionalDependencies>uafxcw.lib;cudart.lib;libfftw3-3.lib;libfftw3f-3.lib;libfftw3l-3.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
@@ -119,6 +119,8 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="FFT-CC.h" />
+    <ClInclude Include="fftw3.h" />
     <ClInclude Include="PiDIC.h" />
     <ClInclude Include="PiDICDlg.h" />
     <ClInclude Include="Resource.h" />
@@ -126,6 +128,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="FFT-CC.cpp" />
     <ClCompile Include="PiDIC.cpp" />
     <ClCompile Include="PiDICDlg.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -138,7 +141,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="combination.cuh" />
-    <None Include="FFTcc.cuh" />
     <None Include="precomputation.cuh" />
     <None Include="res\PiDIC.rc2" />
   </ItemGroup>
@@ -147,7 +149,6 @@
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="combination.cu" />
-    <CudaCompile Include="FFTcc.cu" />
     <CudaCompile Include="precomputation.cu" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

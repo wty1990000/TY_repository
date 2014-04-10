@@ -304,183 +304,25 @@ void CPiDICDlg::OnBnClickedOk()
 	// Pop up a dialog when the two images are successfully loaded
 	MessageBox(_T("Images loaded. Start computation."), NULL, MB_OK);
 
-
-	//Calculate the coefficients of bicubic spline Interpolation (natural boundary condition) in the target image
-	/*-------------move to the kernel------------------------
-	//static double m_dBicubicMatrix[16][16] = { { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { -3, 3, 0, 0, -2, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 2, -2, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, -3, 3, 0, 0, -2, -1, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 2, -2, 0, 0, 1, 1, 0, 0 }, { -3, 0, 3, 0, 0, 0, 0, 0, -2, 0, -1, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, -3, 0, 3, 0, 0, 0, 0, 0, -2, 0, -1, 0 }, { 9, -9, -9, 9, 6, 3, -6, -3, 6, -6, 3, -3, 4, 2, 2, 1 }, { -6, 6, 6, -6, -3, -3, 3, 3, -4, 4, -2, 2, -2, -2, -1, -1 }, { 2, 0, -2, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 2, 0, -2, 0, 0, 0, 0, 0, 1, 0, 1, 0 }, { -6, 6, 6, -6, -4, -2, 4, 2, -3, 3, -3, 3, -2, -1, -2, -1 }, { 4, -4, -4, 4, 2, 2, -2, -2, 2, -2, 2, -2, 1, 1, 1, 1 } };
-	*/
-	//Define the size of region of interest (ROI)
+	//-------------All the parameters need to use------------------
 	int m_iWidth = m_iImgWidth - 2; // set margin = 1 column
 	int m_iHeight = m_iImgHeight - 2; // set margin = 1 row
-
-	//----------------For FFT-CC outputs--------------------
-	double* m_dZNCC;
-
-	//----------------For ICGN outputs----------------------
-	double* m_iU, m_iV;
-
-	//R: reference image, T: target image, TBicubic: the interpolatino matrix
-	/*------------Linearlize--------------------*/
-	//double *m_dR;	//=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
-	//double *m_dRx;	//=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
-	//double *m_dRy;	//=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
-	//double *m_dT;	//=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
-	//double *m_dTx;	//=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
-	//double *m_dTy;	//=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
-	//double *m_dTxy;//	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
-	//double *m_dTBicubic;
-	//m_dR	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
-	//m_dRx	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
-	//m_dRy	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
-	//m_dT	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
-	//m_dTx	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
-	//m_dTy	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
-	//m_dTxy	=	(double*)malloc(m_iHeight*m_iWidth*sizeof(double));
-	//m_dTBicubic=(double*)malloc(m_iHeight*m_iWidth*4*4*sizeof(double));
-	/*
-	double **m_dT = new double *[m_iHeight];
-	double **m_dTx = new double *[m_iHeight];
-	double **m_dTy = new double *[m_iHeight];
-	double **m_dTxy = new double *[m_iHeight];
-	double ****m_dTBicubic = new double ***[m_iHeight];
-
-	double **m_dR = new double *[m_iHeight];
-	double **m_dRx = new double *[m_iHeight];
-	double **m_dRy = new double *[m_iHeight];
-	for (i = 0; i < m_iHeight; i++)
-	{
-		m_dTBicubic[i] = new double **[m_iWidth];
-		for (j = 0; j < m_iWidth; j++)
-		{
-			m_dTBicubic[i][j] = new double *[4];
-			for (k = 0; k < 4; k++)
-			{
-				m_dTBicubic[i][j][k] = new double[4];
-				for (l = 0; l < 4; l++)
-				{
-					m_dTBicubic[i][j][k][l] = 0;
-				}
-			}
-		}
-	}
-
-	for (i = 0; i < m_iHeight; i++)
-	{
-		m_dR[i] = new double[m_iWidth];
-		m_dRx[i] = new double[m_iWidth];
-		m_dRy[i] = new double[m_iWidth];
-
-		m_dT[i] = new double[m_iWidth];
-		m_dTx[i] = new double[m_iWidth];
-		m_dTy[i] = new double[m_iWidth];
-		m_dTxy[i] = new double[m_iWidth];
-
-		for (j = 1; j < m_iWidth; j++)
-		{
-			m_dR[i][j] = 0;
-			m_dRx[i][j] = 0;
-			m_dRy[i][j] = 0;
-
-			m_dT[i][j] = 0;
-			m_dTx[i][j] = 0;
-			m_dTy[i][j] = 0;
-			m_dTxy[i][j] = 0;
-		}
-	}
-
-	double *m_dTaoT = new double[16];
-	double *m_dAlphaT = new double[16];
-	*/
-	//Start the timer for pre-computation
-	
-	//QueryPerformanceCounter(&m_Start);
-
-	//Compute the gradient of R and the biubic interpolation coefficents of T
-	/*--------------Calling CUDA kernel to do the computation--------------------*/
-	//precompute_kernel(m_dImg1,m_dImg2,m_dR,m_dT,m_dRx,m_dRy,m_dTx,m_dTy,m_dTxy,m_dTBicubic,m_iWidth,m_iHeight, m_dPrecomputeTime);
-	combined_functions(m_dImg1, m_dImg2, m_iWidth, m_iHeight,
-					);
-	QueryPerformanceFrequency(&m_Freq);
-	/*for (i = 0; i < m_iHeight; i++)
-	{
-		for (j = 0; j < m_iWidth; j++)
-		{
-			m_dR[i][j] = m_dImg1[i + 1][j + 1];
-			m_dRx[i][j] = 0.5*(m_dImg1[i + 1][j + 2] - m_dImg1[i + 1][j]);
-			m_dRy[i][j] = 0.5*(m_dImg1[i + 2][j + 1] - m_dImg1[i][j + 1]);
-
-			m_dT[i][j] = m_dImg2[i + 1][j + 1];
-			m_dTx[i][j] = 0.5*(m_dImg2[i + 1][j + 2] - m_dImg2[i + 1][j]);
-			m_dTy[i][j] = 0.5*(m_dImg2[i + 2][j + 1] - m_dImg2[i][j + 1]);
-			m_dTxy[i][j] = 0.25*(m_dImg2[i + 2][j + 2] - m_dImg2[i][j + 2] - m_dImg2[i + 2][j] + m_dImg2[i][j]);
-		}
-	}
-
-	for (i = 0; i < m_iHeight - 1; i++)
-	{
-		for (j = 0; j < m_iWidth - 1; j++)
-		{
-			m_dTaoT[0] = m_dT[i][j];
-			m_dTaoT[1] = m_dT[i][j + 1];
-			m_dTaoT[2] = m_dT[i + 1][j];
-			m_dTaoT[3] = m_dT[i + 1][j + 1];
-			m_dTaoT[4] = m_dTx[i][j];
-			m_dTaoT[5] = m_dTx[i][j + 1];
-			m_dTaoT[6] = m_dTx[i + 1][j];
-			m_dTaoT[7] = m_dTx[i + 1][j + 1];
-			m_dTaoT[8] = m_dTy[i][j];
-			m_dTaoT[9] = m_dTy[i][j + 1];
-			m_dTaoT[10] = m_dTy[i + 1][j];
-			m_dTaoT[11] = m_dTy[i + 1][j + 1];
-			m_dTaoT[12] = m_dTxy[i][j];
-			m_dTaoT[13] = m_dTxy[i][j + 1];
-			m_dTaoT[14] = m_dTxy[i + 1][j];
-			m_dTaoT[15] = m_dTxy[i + 1][j + 1];
-
-			for (k = 0; k < 16; k++)
-			{
-				m_dAlphaT[k] = 0;
-				for (l = 0; l < 16; l++)
-				{
-					m_dAlphaT[k] += (m_dBicubicMatrix[k][l] * m_dTaoT[l]);
-				}
-			}
-
-			m_dTBicubic[i][j][0][0] = m_dAlphaT[0];
-			m_dTBicubic[i][j][0][1] = m_dAlphaT[1];
-			m_dTBicubic[i][j][0][2] = m_dAlphaT[2];
-			m_dTBicubic[i][j][0][3] = m_dAlphaT[3];
-			m_dTBicubic[i][j][1][0] = m_dAlphaT[4];
-			m_dTBicubic[i][j][1][1] = m_dAlphaT[5];
-			m_dTBicubic[i][j][1][2] = m_dAlphaT[6];
-			m_dTBicubic[i][j][1][3] = m_dAlphaT[7];
-			m_dTBicubic[i][j][2][0] = m_dAlphaT[8];
-			m_dTBicubic[i][j][2][1] = m_dAlphaT[9];
-			m_dTBicubic[i][j][2][2] = m_dAlphaT[10];
-			m_dTBicubic[i][j][2][3] = m_dAlphaT[11];
-			m_dTBicubic[i][j][3][0] = m_dAlphaT[12];
-			m_dTBicubic[i][j][3][1] = m_dAlphaT[13];
-			m_dTBicubic[i][j][3][2] = m_dAlphaT[14];
-			m_dTBicubic[i][j][3][3] = m_dAlphaT[15];
-		}
-	}
-	*/
-	//Stop the timer for pre-computation and calculate the time consumed
-	//QueryPerformanceCounter(&m_Stop);
-	//m_dPrecomputeTime = 1000 * (m_Stop.QuadPart - m_Start.QuadPart) / double(m_Freq.QuadPart); //unit: millisec
-
 	//Define the size of subset window for IC-GN algorithm
 	int m_iSubsetW = m_iSubsetX * 2 + 1;
 	int m_iSubsetH = m_iSubsetY * 2 + 1;
 	int m_iBlackSubsetFlag, m_iOutofBoundaryFlag; //Flag parameters
-
 	//Define the size of subset window for FFT-CC algorithm
 	int m_iFFTSubW = m_iSubsetX * 2;
 	int m_iFFTSubH = m_iSubsetY * 2;
-
 	//Estimate the number of points of interest(POIs)
 	int m_iNumberX = int(floor((m_iWidth - m_iSubsetX * 2 - m_iMarginX * 2) / double(m_iGridSpaceX))) + 1;
 	int m_iNumberY = int(floor((m_iHeight - m_iSubsetY * 2 - m_iMarginY * 2) / double(m_iGridSpaceY))) + 1;
+
+	//----------------For FFT-CC Inputs/outputs--------------------
+	double *m_dZNCC;
+
+	//----------------For ICGN outputs----------------------
+	double* m_iU, m_iV;	
 
 	//Initialize the parameters for IC-GN algorithm
 	int **m_iIterationNum = new int *[m_iNumberY]; // iteration step taken at each POI

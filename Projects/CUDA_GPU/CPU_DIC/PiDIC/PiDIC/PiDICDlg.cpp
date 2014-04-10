@@ -414,7 +414,6 @@ void CPiDICDlg::OnBnClickedOk()
 			m_dTxy[i][j] = 0.25*(m_dImg2[i + 2][j + 2] - m_dImg2[i][j + 2] - m_dImg2[i + 2][j] + m_dImg2[i][j]);
 		}
 	}
-
 	for (i = 0; i < m_iHeight - 1; i++)
 	{
 		for (j = 0; j < m_iWidth - 1; j++)
@@ -1040,31 +1039,6 @@ void CPiDICDlg::OnBnClickedOk()
 	m_TextFile <<"Time for computing every FFT:"<<m_dFFTTime<<"[miliseconds]"<<endl;
 	m_TextFile <<"Time for ICGN:"<<m_dICGNTime<<endl;
 
-	m_TextFile.close();
-	m_sTextPath = m_sOutputFilePath + _T("\\\\") + _T("Results_Bicubic.txt");
-	m_TextFile.open(m_sTextPath, ios::out | ios::trunc);
-
-	m_TextFile <<"i"<<"\t"<<"j"<<"\t"<<endl;
-	for(int ii=0; ii<m_iHeight; ii++){
-		for(int jj=0; jj<m_iWidth; jj++){
-			m_TextFile<<ii<<"\t"<<jj<<endl;
-			for(int pp=0; pp<4; pp++){
-				for(int qq=0; qq<4; qq++){
-					m_TextFile<<m_dTBicubic[ii][jj][pp][qq]<<"\t";
-				}
-				m_TextFile<<endl;
-			}
-			m_TextFile<<endl;
-		}
-	}
-	m_TextFile.close();
-	m_sTextPath = m_sOutputFilePath + _T("\\\\") + _T("Results_Bicubic.txt");
-	m_TextFile.open(m_sTextPath, ios::out | ios::trunc);
-	for(int ii=0; ii<m_iHeight; ii++){
-		for(int jj=0; jj<m_iWidth; jj++){
-			m_TextFile<<m_dR[ii][jj]<<"\t"<<m_dRx[ii][jj]<<"\t"<<m_dRy[ii][jj]<<"\t"<<m_dT[ii][jj]<<endl;
-		}
-	}
 	m_TextFile.close();
 	//Destroy the created matrices
 	for (i = 0; i < m_iSubsetH; i++)

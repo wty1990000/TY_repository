@@ -29,7 +29,7 @@ void batchedplan(float &t)
 	fftw_plan Plan2 = fftw_plan_many_dft_r2c(2,n,batch*batch,data2,inembed,batch*batch,1,freq2,onembed,batch*batch,1,FFTW_ESTIMATE);
 	fftw_plan rPlan = fftw_plan_many_dft_c2r(2,n,batch*batch,freqfg,onembed,batch*batch,1,result,inembed,batch*batch,1,FFTW_ESTIMATE);
 
-
+//#pragma omp parallel for
 	for(int i=0; i<batch; i++){
 		for(int j=0; j<batch; j++){
 			for(int l=0; l<SubH; l++){
@@ -47,6 +47,7 @@ void batchedplan(float &t)
 	ti.stop();
 	t = ti.getTime();
 	
+//#pragma omp parallel for
 	for(int i=0; i<batch; i++){
 		for(int j=0; j<batch; j++){
 			for(int n=0; n<SubW*(SubH/2+1); n++){

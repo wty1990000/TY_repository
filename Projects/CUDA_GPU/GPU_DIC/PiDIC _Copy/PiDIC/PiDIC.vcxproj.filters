@@ -36,6 +36,12 @@
     <ClInclude Include="Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FFT-CC.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fftw3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PiDIC.cpp">
@@ -45,6 +51,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FFT-CC.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -60,9 +69,6 @@
     <None Include="precomputation.cuh">
       <Filter>CUDA</Filter>
     </None>
-    <None Include="FFTcc.cuh">
-      <Filter>CUDA</Filter>
-    </None>
     <None Include="combination.cuh">
       <Filter>CUDA</Filter>
     </None>
@@ -74,9 +80,6 @@
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="precomputation.cu">
-      <Filter>CUDA</Filter>
-    </CudaCompile>
-    <CudaCompile Include="FFTcc.cu">
       <Filter>CUDA</Filter>
     </CudaCompile>
     <CudaCompile Include="combination.cu">

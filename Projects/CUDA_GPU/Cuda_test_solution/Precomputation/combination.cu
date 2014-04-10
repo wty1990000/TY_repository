@@ -15,7 +15,7 @@ void initialize_CUDA()
 	cudaFree(0);
 }
 
-void combined_functions(const double* h_InputIMGR, const double* h_InputIMGT, double* h_OutputFFTcc)
+void combined_functions(const double* h_InputIMGR, const double* h_InputIMGT, double* h_OutputBicubic)
 {
 	//Total timer
 	float FFTtime=0.0, precomputetime=0.0;
@@ -43,8 +43,8 @@ void combined_functions(const double* h_InputIMGR, const double* h_InputIMGT, do
 
 
 	//----Start FFT-CC ---------------
-	FFTCC_kernel(d_OutputIMGR,d_OutputIMGT,254,254,dOutputm_dPXY,dm_iFlag1,dm_SubsetC,10,10,10,10,16,16,21,21,32,32, FFTtime);
-	cudaMemcpy(h_OutputFFTcc,dm_SubsetC,21*21*32*32*sizeof(double),cudaMemcpyDeviceToHost);
+	/*FFTCC_kernel(d_OutputIMGR,d_OutputIMGT,254,254,dOutputm_dPXY,dm_iFlag1,dm_SubsetC,10,10,10,10,16,16,21,21,32,32, FFTtime);*/
+	cudaMemcpy(h_OutputBicubic,d_OutputBicubic,254*254*4*4*sizeof(double),cudaMemcpyDeviceToHost);
 
 	//Free the memory
 	cudaFree(d_OutputIMGR);
