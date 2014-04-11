@@ -277,27 +277,27 @@ void CPiDICDlg::OnBnClickedOk()
 	m_dFFTTime = 0;
 	m_dICGNTime = 0;
 
-	//Read images and convert the gray value of intensity to double precision number
+	//Read images and convert the gray value of intensity to float precision number
 	/*----------------Linearlize---------------------*/
-	double *m_dImg1 = (double*)malloc(m_iImgHeight*m_iImgWidth*sizeof(double));
-	double *m_dImg2 = (double*)malloc(m_iImgHeight*m_iImgWidth*sizeof(double));
-	//double **m_dImg1 = new double *[m_iImgHeight];
-	//double **m_dImg2 = new double *[m_iImgHeight];
+	float *m_dImg1 = (float*)malloc(m_iImgHeight*m_iImgWidth*sizeof(float));
+	float *m_dImg2 = (float*)malloc(m_iImgHeight*m_iImgWidth*sizeof(float));
+	//float **m_dImg1 = new float *[m_iImgHeight];
+	//float **m_dImg2 = new float *[m_iImgHeight];
 	/*for (i = 0; i < m_iImgHeight; i++){
-		m_dImg1[i] = new double[m_iImgWidth];
-		m_dImg2[i] = new double[m_iImgWidth];
+		m_dImg1[i] = new float[m_iImgWidth];
+		m_dImg2[i] = new float[m_iImgWidth];
 	}*/
 
-	double m_dTemp, m_dTempX, m_dTempY;
+	float m_dTemp, m_dTempX, m_dTempY;
 	COLORREF m_PixelColor;
 
 	for (i = 0; i < m_iImgHeight; i++){
 		for (j = 0; j < m_iImgWidth; j++){
 			m_PixelColor = m_Image1.GetPixel(j, i);
-			m_dTemp = double((GetRValue(m_PixelColor) + GetGValue(m_PixelColor) + GetBValue(m_PixelColor)) / 3);
+			m_dTemp = float((GetRValue(m_PixelColor) + GetGValue(m_PixelColor) + GetBValue(m_PixelColor)) / 3);
 			m_dImg1[i*m_iImgWidth+j] = m_dTemp;
 			m_PixelColor = m_Image2.GetPixel(j, i);
-			m_dTemp = double((GetRValue(m_PixelColor) + GetGValue(m_PixelColor) + GetBValue(m_PixelColor)) / 3);
+			m_dTemp = float((GetRValue(m_PixelColor) + GetGValue(m_PixelColor) + GetBValue(m_PixelColor)) / 3);
 			m_dImg2[i*m_iImgWidth+j] = m_dTemp;
 		}
 	}
@@ -315,23 +315,23 @@ void CPiDICDlg::OnBnClickedOk()
 	int m_iFFTSubW = m_iSubsetX * 2;
 	int m_iFFTSubH = m_iSubsetY * 2;
 	//Estimate the number of points of interest(POIs)
-	int m_iNumberX = int(floor((m_iWidth - m_iSubsetX * 2 - m_iMarginX * 2) / double(m_iGridSpaceX))) + 1;
-	int m_iNumberY = int(floor((m_iHeight - m_iSubsetY * 2 - m_iMarginY * 2) / double(m_iGridSpaceY))) + 1;
+	int m_iNumberX = int(floor((m_iWidth - m_iSubsetX * 2 - m_iMarginX * 2) / float(m_iGridSpaceX))) + 1;
+	int m_iNumberY = int(floor((m_iHeight - m_iSubsetY * 2 - m_iMarginY * 2) / float(m_iGridSpaceY))) + 1;
 
 	//----------------For FFT-CC Inputs/outputs--------------------
-	double *m_dZNCC;
+	float *m_dZNCC;
 
 	//----------------For ICGN outputs----------------------
-	double* m_iU, m_iV;	
+	float* m_iU, m_iV;	
 
 	//Initialize the parameters for IC-GN algorithm
 	int **m_iIterationNum = new int *[m_iNumberY]; // iteration step taken at each POI
-	double **m_dZNCC = new double *[m_iNumberY]; // ZNCC at each POI
+	float **m_dZNCC = new float *[m_iNumberY]; // ZNCC at each POI
 	int **m_iU = new int *[m_iNumberY]; // initial guess u
 	int **m_iV = new int *[m_iNumberY]; // initial guess v
-	double ***m_dPXY = new double **[m_iNumberY]; //location of each POI in the global coordinate system
-	double ***m_dP = new double **[m_iNumberY]; // parameter of deformation p
-	double ***m_dDP = new double **[m_iNumberY]; // increment of p
+	float ***m_dPXY = new float **[m_iNumberY]; //location of each POI in the global coordinate system
+	float ***m_dP = new float **[m_iNumberY]; // parameter of deformation p
+	float ***m_dDP = new float **[m_iNumberY]; // increment of p
 	int **m_iFlag1 = new int *[m_iNumberY]; // flag matrix for all black subset at each POI
 	int **m_iFlag2 = new int *[m_iNumberY]; // flag matrix for out of bundary issue when construct the target subset at each POI
 
@@ -339,70 +339,70 @@ void CPiDICDlg::OnBnClickedOk()
 	for (i = 0; i < m_iNumberY; i++)
 	{
 		m_iIterationNum[i] = new int[m_iNumberX];
-		m_dZNCC[i] = new double[m_iNumberX];
+		m_dZNCC[i] = new float[m_iNumberX];
 		m_iU[i] = new int[m_iNumberX];
 		m_iV[i] = new int[m_iNumberX];
-		m_dP[i] = new double *[m_iNumberX];
-		m_dDP[i] = new double *[m_iNumberX];
-		m_dPXY[i] = new double *[m_iNumberX];
+		m_dP[i] = new float *[m_iNumberX];
+		m_dDP[i] = new float *[m_iNumberX];
+		m_dPXY[i] = new float *[m_iNumberX];
 		m_iFlag1[i] = new int[m_iNumberX];
 		m_iFlag2[i] = new int[m_iNumberX];
 		for (j = 0; j < m_iNumberX; j++)
 		{
 			m_iIterationNum[i][j] = 0;
 			m_dZNCC[i][j] = 0;
-			m_dP[i][j] = new double[6];
-			m_dDP[i][j] = new double[6];
-			m_dPXY[i][j] = new double[2];
+			m_dP[i][j] = new float[6];
+			m_dDP[i][j] = new float[6];
+			m_dPXY[i][j] = new float[2];
 			m_iFlag1[i][j] = 0;
 			m_iFlag2[i][j] = 0;
 
-			m_dPXY[i][j][0] = double(m_iMarginX + m_iSubsetY + i * m_iGridSpaceY);
-			m_dPXY[i][j][1] = double(m_iMarginY + m_iSubsetX + j * m_iGridSpaceX);
+			m_dPXY[i][j][0] = float(m_iMarginX + m_iSubsetY + i * m_iGridSpaceY);
+			m_dPXY[i][j][1] = float(m_iMarginY + m_iSubsetX + j * m_iGridSpaceX);
 		}
 	}
 
 	// Warp matrix
-	static double m_dWarp[3][3] = { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } };
+	static float m_dWarp[3][3] = { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } };
 	// Hessian matrix
-	static double m_dHessian[6][6] = { { 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0 } };
+	static float m_dHessian[6][6] = { { 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0 } };
 	// Inverse of the Hessian matrix
-	static double m_dInvHessian[6][6] = { { 1, 0, 0, 0, 0, 0 }, { 0, 1, 0, 0, 0, 0 }, { 0, 0, 1, 0, 0, 0 }, { 0, 0, 0, 1, 0, 0 }, { 0, 0, 0, 0, 1, 0 }, { 0, 0, 0, 0, 0, 1 } };
+	static float m_dInvHessian[6][6] = { { 1, 0, 0, 0, 0, 0 }, { 0, 1, 0, 0, 0, 0 }, { 0, 0, 1, 0, 0, 0 }, { 0, 0, 0, 1, 0, 0 }, { 0, 0, 0, 0, 1, 0 }, { 0, 0, 0, 0, 0, 1 } };
 	// The item to be divided by the Hessian matrix
-	static double m_dNumerator[6] = { 0, 0, 0, 0, 0, 0 };
+	static float m_dNumerator[6] = { 0, 0, 0, 0, 0, 0 };
 
-	double **m_dSubsetR = new double *[m_iSubsetH]; //subset window in R
-	double **m_dSubsetT = new double *[m_iSubsetH]; // subset window in T
-	double ***m_dRDescent = new double **[m_iSubsetH]; // the steepest descent image DealtR*dW/dp
-	double ****m_dHessianXY = new double ***[m_iSubsetH]; // Hessian matrix at each point in subset R
-	double m_dSubAveR, m_dSubAveT, m_dSubNorR, m_dSubNorT;
-	double **m_dSubsetAveR = new double *[m_iSubsetH]; // (R_i - R_m) / sqrt (Sigma(R_i - R_m)^2)
-	double **m_dSubsetAveT = new double *[m_iSubsetH]; // (T_i - T_m) / sqrt (Sigma(T_i - T_m)^2)
-	double **m_dError = new double *[m_iSubsetH]; // Error matrix in subset R
-	double ****m_dJacobian = new double ***[m_iSubsetH]; // Jacobian matrix dW/dp in subset R
+	float **m_dSubsetR = new float *[m_iSubsetH]; //subset window in R
+	float **m_dSubsetT = new float *[m_iSubsetH]; // subset window in T
+	float ***m_dRDescent = new float **[m_iSubsetH]; // the steepest descent image DealtR*dW/dp
+	float ****m_dHessianXY = new float ***[m_iSubsetH]; // Hessian matrix at each point in subset R
+	float m_dSubAveR, m_dSubAveT, m_dSubNorR, m_dSubNorT;
+	float **m_dSubsetAveR = new float *[m_iSubsetH]; // (R_i - R_m) / sqrt (Sigma(R_i - R_m)^2)
+	float **m_dSubsetAveT = new float *[m_iSubsetH]; // (T_i - T_m) / sqrt (Sigma(T_i - T_m)^2)
+	float **m_dError = new float *[m_iSubsetH]; // Error matrix in subset R
+	float ****m_dJacobian = new float ***[m_iSubsetH]; // Jacobian matrix dW/dp in subset R
 
 	for (i = 0; i < m_iSubsetH; i++)
 	{
-		m_dSubsetR[i] = new double[m_iSubsetW];
-		m_dSubsetT[i] = new double[m_iSubsetW];
-		m_dSubsetAveR[i] = new double[m_iSubsetW];
-		m_dSubsetAveT[i] = new double[m_iSubsetW];
-		m_dError[i] = new double[m_iSubsetW];
-		m_dRDescent[i] = new double *[m_iSubsetW];
-		m_dHessianXY[i] = new double **[m_iSubsetW];
-		m_dJacobian[i] = new double **[m_iSubsetW];
+		m_dSubsetR[i] = new float[m_iSubsetW];
+		m_dSubsetT[i] = new float[m_iSubsetW];
+		m_dSubsetAveR[i] = new float[m_iSubsetW];
+		m_dSubsetAveT[i] = new float[m_iSubsetW];
+		m_dError[i] = new float[m_iSubsetW];
+		m_dRDescent[i] = new float *[m_iSubsetW];
+		m_dHessianXY[i] = new float **[m_iSubsetW];
+		m_dJacobian[i] = new float **[m_iSubsetW];
 		for (j = 0; j < m_iSubsetW; j++)
 		{
-			m_dRDescent[i][j] = new double[6];
-			m_dHessianXY[i][j] = new double *[6];
-			m_dJacobian[i][j] = new double *[2];
+			m_dRDescent[i][j] = new float[6];
+			m_dHessianXY[i][j] = new float *[6];
+			m_dJacobian[i][j] = new float *[2];
 			for (l = 0; l < 6; l++)
 			{
-				m_dHessianXY[i][j][l] = new double[6];
+				m_dHessianXY[i][j][l] = new float[6];
 			}
 			for (k = 0; k < 2; k++)
 			{
-				m_dJacobian[i][j][k] = new double[6];
+				m_dJacobian[i][j][k] = new float[6];
 				for (l = 0; l < 6; l++)
 				{
 					m_dJacobian[i][j][k][l] = 0;
@@ -412,9 +412,9 @@ void CPiDICDlg::OnBnClickedOk()
 	}
 
 	// Initialize the data structure for FFTW
-	double *m_Subset1 = new double[m_iFFTSubW * m_iFFTSubH]; // subset R
-	double *m_Subset2 = new double[m_iFFTSubW * m_iFFTSubH]; // subset T
-	double *m_SubsetC = new double[m_iFFTSubW * m_iFFTSubH]; // matrix C
+	float *m_Subset1 = new float[m_iFFTSubW * m_iFFTSubH]; // subset R
+	float *m_Subset2 = new float[m_iFFTSubW * m_iFFTSubH]; // subset T
+	float *m_SubsetC = new float[m_iFFTSubW * m_iFFTSubH]; // matrix C
 
 	fftw_complex *m_FreqDom1 = (fftw_complex*)fftw_malloc(sizeof(fftw_complex)* m_iFFTSubW * (m_iFFTSubH / 2 + 1));
 	fftw_complex *m_FreqDom2 = (fftw_complex*)fftw_malloc(sizeof(fftw_complex)* m_iFFTSubW * (m_iFFTSubH / 2 + 1));
@@ -424,11 +424,11 @@ void CPiDICDlg::OnBnClickedOk()
 	fftw_plan m_fftwPlan2 = fftw_plan_dft_r2c_2d(m_iFFTSubW, m_iFFTSubH, m_Subset2, m_FreqDom2, FFTW_ESTIMATE);
 	fftw_plan m_rfftwPlan = fftw_plan_dft_c2r_2d(m_iFFTSubW, m_iFFTSubH, m_FreqDomfg, m_SubsetC, FFTW_ESTIMATE);
 
-	double m_dAvef, m_dAveg, m_dModf, m_dModg, m_dCorrPeak;
+	float m_dAvef, m_dAveg, m_dModf, m_dModg, m_dCorrPeak;
 	int m_iCorrPeakXY, m_iCorrPeakX, m_iCorrPeakY;
-	double m_dU, m_dUx, m_dUy, m_dV, m_dVx, m_dVy;
-	double m_dDU, m_dDUx, m_dDUy, m_dDV, m_dDVx, m_dDVy;
-	double m_dWarpX, m_dWarpY;
+	float m_dU, m_dUx, m_dUy, m_dV, m_dVx, m_dVy;
+	float m_dDU, m_dDUx, m_dDUy, m_dDV, m_dDVx, m_dDVy;
+	float m_dWarpX, m_dWarpY;
 	int m_iIteration, m_iTemp, m_iTempX, m_iTempY;
 
 	//Start timer for FFT-CC algorithm + IC-GN algorithm
@@ -524,7 +524,7 @@ void CPiDICDlg::OnBnClickedOk()
 			m_dZNCC[i][j] = m_dCorrPeak; // save the ZNCC
 			// Stop the timer for FFT-CC algorithm and calculate the time consumed
 			QueryPerformanceCounter(&m_Stop1);
-			m_dFFTTime += 1000 * (m_Stop1.QuadPart - m_Start1.QuadPart) / double(m_Freq.QuadPart); //unit: millisec
+			m_dFFTTime += 1000 * (m_Stop1.QuadPart - m_Start1.QuadPart) / float(m_Freq.QuadPart); //unit: millisec
 
 			// Stop the timer for IC-GN algorithm
 			QueryPerformanceCounter(&m_Start2);
@@ -844,12 +844,12 @@ void CPiDICDlg::OnBnClickedOk()
 
 			// Stop the timer for IC-GN algorithm and calculate the time consumed
 			QueryPerformanceCounter(&m_Stop2);
-			m_dICGNTime += 1000 * (m_Stop2.QuadPart - m_Start2.QuadPart) / double(m_Freq.QuadPart); //unit: millisec
+			m_dICGNTime += 1000 * (m_Stop2.QuadPart - m_Start2.QuadPart) / float(m_Freq.QuadPart); //unit: millisec
 		}
 	}
 	// Stop the timer for FFT-CC algorithm + IC-GN algorithm and calculate the time consumed
 	QueryPerformanceCounter(&m_End);
-	m_dConsumedTime = 1000 * (m_End.QuadPart - m_Begin.QuadPart) / double(m_Freq.QuadPart) + m_dPrecomputeTime; //unit: millisec
+	m_dConsumedTime = 1000 * (m_End.QuadPart - m_Begin.QuadPart) / float(m_Freq.QuadPart) + m_dPrecomputeTime; //unit: millisec
 
 	//Output data as two text files in the diretory of target image
 	CString m_sTextPath;
@@ -880,7 +880,7 @@ void CPiDICDlg::OnBnClickedOk()
 	m_TextFile << "Time comsumed: " << m_dConsumedTime << " [millisec]" << endl;
 	m_TextFile << "Time for Pre-computation: " << m_dPrecomputeTime << " [millisec]" << endl;
 	m_TextFile << "Time for integral-pixel registration: " << m_dFFTTime / (m_iNumberY*m_iNumberX) << " [millisec]" << endl;
-	m_TextFile << "Time for sub-pixel registration: " << m_dICGNTime / (m_iNumberY*m_iNumberX) << " [millisec]" << " for average iteration steps of " << double(m_iIteration) / (m_iNumberY*m_iNumberX) << endl;
+	m_TextFile << "Time for sub-pixel registration: " << m_dICGNTime / (m_iNumberY*m_iNumberX) << " [millisec]" << " for average iteration steps of " << float(m_iIteration) / (m_iNumberY*m_iNumberX) << endl;
 	m_TextFile << m_iWidth << ", " << m_iHeight << ", " << m_iGridSpaceX << ", " << m_iGridSpaceY << ", " << endl;
 
 	m_TextFile.close();

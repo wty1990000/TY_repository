@@ -42,7 +42,7 @@ public:
 	int m_iGridSpaceY;
 	int m_iSubsetX;
 	int m_iSubsetY;
-	double m_dNormDeltaP;
+	float m_dNormDeltaP;
 	int m_iMaxIteration;
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedSelecttarbtn();

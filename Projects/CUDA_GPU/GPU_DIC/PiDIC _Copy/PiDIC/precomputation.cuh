@@ -3,9 +3,9 @@
 
 const int BLOCK_SIZE = 16;
 
-void precompute_kernel(const double *h_InputIMGR, const double *h_InputIMGT,
-								 double *d_OutputIMGR, double *d_OutputIMGT, 
-								 double *d_OutputIMGRx, double *d_OutputIMGRy,
-								 double *d_OutputdTBicubic,
+void precompute_kernel(const float *h_InputIMGR, const float *h_InputIMGT,
+								 float *d_OutputIMGR, float *d_OutputIMGT, 
+								 float *d_OutputIMGRx, float *d_OutputIMGRy,
+								 float *d_OutputdTBicubic,
 								 int width, int height, float& time);
 #endif // !_KENEL_CUH_

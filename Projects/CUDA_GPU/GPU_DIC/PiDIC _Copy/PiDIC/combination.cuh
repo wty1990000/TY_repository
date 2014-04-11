@@ -3,9 +3,9 @@
 
 void initialize();
 
-void combined_functions(const double* h_InputIMGR, const double* h_InputIMGT, int m_iWidth, int m_iHeight, 
-						double* m_dZNCC,
-						double* m_iU, double *m_iV,
+void combined_functions(const float* h_InputIMGR, const float* h_InputIMGT, const float* m_dPXY, const int& m_iWidth, const int& m_iHeight, const int& m_iSubsetH, const int& m_iSubsetW,
+						const int& m_iSubsetX, const int& m_iSubsetY, const int& m_iNumberX, const int& m_iNumberY, const int& m_iFFTSubH, const int& m_iFFTSubW,
+						int* m_iU, int *m_iV, float* m_dZNCC, float* m_dP, int* m_iFlag1,
 						float& precompute_tme, float& fft_time, float& icgn_time, float& total_time);
 
 #endif // !_COMBINATION_H_

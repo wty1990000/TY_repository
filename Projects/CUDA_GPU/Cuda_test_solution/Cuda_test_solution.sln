@@ -17,6 +17,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zero_copying_test", "zero_c
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DIC_FFTW_FFT", "DIC_FFTW_FFT\DIC_FFTW_FFT.vcxproj", "{84A8C500-AE85-4B5C-9C76-334A51A96D4A}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Atomic_add", "Atomic_add\Atomic_add.vcxproj", "{A866BB1C-F4CD-4008-AE4C-F047CF5782C4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -87,6 +89,14 @@ Global
 		{84A8C500-AE85-4B5C-9C76-334A51A96D4A}.Release|Win32.ActiveCfg = Release|Win32
 		{84A8C500-AE85-4B5C-9C76-334A51A96D4A}.Release|Win32.Build.0 = Release|Win32
 		{84A8C500-AE85-4B5C-9C76-334A51A96D4A}.Release|x64.ActiveCfg = Release|Win32
+		{A866BB1C-F4CD-4008-AE4C-F047CF5782C4}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A866BB1C-F4CD-4008-AE4C-F047CF5782C4}.Debug|Win32.Build.0 = Debug|Win32
+		{A866BB1C-F4CD-4008-AE4C-F047CF5782C4}.Debug|x64.ActiveCfg = Debug|x64
+		{A866BB1C-F4CD-4008-AE4C-F047CF5782C4}.Debug|x64.Build.0 = Debug|x64
+		{A866BB1C-F4CD-4008-AE4C-F047CF5782C4}.Release|Win32.ActiveCfg = Release|Win32
+		{A866BB1C-F4CD-4008-AE4C-F047CF5782C4}.Release|Win32.Build.0 = Release|Win32
+		{A866BB1C-F4CD-4008-AE4C-F047CF5782C4}.Release|x64.ActiveCfg = Release|x64
+		{A866BB1C-F4CD-4008-AE4C-F047CF5782C4}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

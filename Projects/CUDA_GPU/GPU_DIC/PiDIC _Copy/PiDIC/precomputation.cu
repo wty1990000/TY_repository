@@ -11,18 +11,18 @@
 #include "precomputation.cuh"
 
 
-__global__ void RGradient_kernel(const double *d_InputIMGR, const double *d_InputIMGT, const double* __restrict__ d_InputBiubicMatrix,
-								 double *d_OutputIMGR, double *d_OutputIMGT, 
-								 double *d_OutputIMGRx, double *d_OutputIMGRy,
-								 double *d_OutputIMGTx, double *d_OutputIMGTy, double *d_OutputIMGTxy, double *d_OutputdtBicubic,
+__global__ void RGradient_kernel(const float *d_InputIMGR, const float *d_InputIMGT, const float* __restrict__ d_InputBiubicMatrix,
+								 float *d_OutputIMGR, float *d_OutputIMGT, 
+								 float *d_OutputIMGRx, float *d_OutputIMGRy,
+								 float *d_OutputIMGTx, float *d_OutputIMGTy, float *d_OutputIMGTxy, float *d_OutputdtBicubic,
 								 int width, int height)
 {
 	//The size of input images
 	int row = blockIdx.y * blockDim.y + threadIdx.y;
 	int col = blockIdx.x * blockDim.x + threadIdx.x;
 	//Temp arrays
-	double d_TaoT[16];
-	double d_AlphaT[16];
+	float d_TaoT[16];
+	float d_AlphaT[16];
 
 	//The rows and cols of output matrix.
 
@@ -99,17 +99,17 @@ __global__ void RGradient_kernel(const double *d_InputIMGR, const double *d_Inpu
 
 }
 
-void precompute_kernel(const double *h_InputIMGR, const double *h_InputIMGT,
-								 double *d_OutputIMGR, double *d_OutputIMGT, 
-								 double *d_OutputIMGRx, double *d_OutputIMGRy,
-								 double *d_OutputdTBicubic,
+void precompute_kernel(const float *h_InputIMGR, const float *h_InputIMGT,
+								 float *d_OutputIMGR, float *d_OutputIMGT, 
+								 float *d_OutputIMGRx, float *d_OutputIMGRy,
+								 float *d_OutputdTBicubic,
 								 int width, int height, float& time)
 {
 	StopWatchWin precompute;
-	double *d_InputIMGR, *d_InputIMGT,*d_InputBiubicMatrix;
-	double *d_OutputIMGTx, *d_OutputIMGTy, *d_OutputIMGTxy;
+	float *d_InputIMGR, *d_InputIMGT,*d_InputBiubicMatrix;
+	float *d_OutputIMGTx, *d_OutputIMGTy, *d_OutputIMGTxy;
 	
-	const static double h_InputBicubicMatrix[16*16] = {  
+	const static float h_InputBicubicMatrix[16*16] = {  
 													1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 													0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,
 													-3, 3, 0, 0, -2, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
@@ -127,18 +127,18 @@ void precompute_kernel(const double *h_InputIMGR, const double *h_InputIMGT,
 													-6, 6, 6, -6, -4, -2, 4, 2, -3, 3, -3, 3, -2, -1, -2, -1,
 													4, -4, -4, 4, 2, 2, -2, -2, 2, -2, 2, -2, 1, 1, 1, 1 
 												   };
-	(cudaMalloc((void**)&d_InputIMGR, (width+2)*(height+2)*sizeof(double)));
+	(cudaMalloc((void**)&d_InputIMGR, (width+2)*(height+2)*sizeof(float)));
 	precompute.start();
-	(cudaMalloc((void**)&d_InputIMGT, (width+2)*(height+2)*sizeof(double)));
-	(cudaMalloc((void**)&d_InputBiubicMatrix, 16*16*sizeof(double)));
+	(cudaMalloc((void**)&d_InputIMGT, (width+2)*(height+2)*sizeof(float)));
+	(cudaMalloc((void**)&d_InputBiubicMatrix, 16*16*sizeof(float)));
 
-	(cudaMemcpy(d_InputIMGR,h_InputIMGR,(width+2)*(height+2)*sizeof(double),cudaMemcpyHostToDevice));
-	(cudaMemcpy(d_InputIMGT,h_InputIMGT,(width+2)*(height+2)*sizeof(double),cudaMemcpyHostToDevice));
-	(cudaMemcpy(d_InputBiubicMatrix,h_InputBicubicMatrix,16*16*sizeof(double),cudaMemcpyHostToDevice));
+	(cudaMemcpy(d_InputIMGR,h_InputIMGR,(width+2)*(height+2)*sizeof(float),cudaMemcpyHostToDevice));
+	(cudaMemcpy(d_InputIMGT,h_InputIMGT,(width+2)*(height+2)*sizeof(float),cudaMemcpyHostToDevice));
+	(cudaMemcpy(d_InputBiubicMatrix,h_InputBicubicMatrix,16*16*sizeof(float),cudaMemcpyHostToDevice));
 	
-	(cudaMalloc((void**)&d_OutputIMGTx, width*height*sizeof(double)));
-	(cudaMalloc((void**)&d_OutputIMGTy, width*height*sizeof(double)));
-	(cudaMalloc((void**)&d_OutputIMGTxy, width*height*sizeof(double)));
+	(cudaMalloc((void**)&d_OutputIMGTx, width*height*sizeof(float)));
+	(cudaMalloc((void**)&d_OutputIMGTy, width*height*sizeof(float)));
+	(cudaMalloc((void**)&d_OutputIMGTxy, width*height*sizeof(float)));
 
 	dim3 dimB(BLOCK_SIZE,BLOCK_SIZE,1);
 	dim3 dimG((width-1)/BLOCK_SIZE+1,(height-1)/BLOCK_SIZE+1,1);

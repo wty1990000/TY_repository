@@ -141,6 +141,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="combination.cuh" />
+    <None Include="IC_GN.cuh" />
     <None Include="precomputation.cuh" />
     <None Include="res\PiDIC.rc2" />
   </ItemGroup>
@@ -149,6 +150,7 @@
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="combination.cu" />
+    <CudaCompile Include="IC_GN.cu" />
     <CudaCompile Include="precomputation.cu" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
