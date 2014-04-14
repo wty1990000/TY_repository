@@ -271,9 +271,8 @@ void CPiDICDlg::OnBnClickedOk()
 	CString m_strMessage; 	//message for pop-out dialog
 	//Read images and convert the gray value of intensity to float precision number
 	/*----------------Linearlize---------------------*/
-	float *m_dImg1, *m_dImg2;
-	m_dImg1 = (float*)malloc(m_iImgHeight*m_iImgWidth*sizeof(float));
-	m_dImg2 = (float*)malloc(m_iImgHeight*m_iImgWidth*sizeof(float));
+	float *m_dImg1 = (float*)malloc(m_iImgHeight*m_iImgWidth*sizeof(float));
+	float *m_dImg2 = (float*)malloc(m_iImgHeight*m_iImgWidth*sizeof(float));
 
 	float m_dTemp;
 	COLORREF m_PixelColor;
@@ -309,22 +308,16 @@ void CPiDICDlg::OnBnClickedOk()
 	//Timer
 	float precompute_time, fft_time, icgn_time, total_time;
 	precompute_time = fft_time = icgn_time = total_time=0.0;
-	
 
 	//----------------For FFT-CC Inputs/outputs--------------------
-	float *m_dZNCC;
-	m_dZNCC = (float*)malloc(m_iNumberX*m_iNumberY*sizeof(float)); // ZNCC at each POI
+	float *m_dZNCC = (float*)malloc(m_iNumberX*m_iNumberY*sizeof(float)); // ZNCC at each POI
 
 	//----------------For ICGN outputs----------------------
-	int *m_iU,*m_iV, *m_IterationNum;
-	float *m_dPXY,*m_dP;
-
-	m_iU = (int*)malloc(m_iNumberX*m_iNumberY*sizeof(int)); // initial guess u
-	m_iV = (int*)malloc(m_iNumberX*m_iNumberY*sizeof(int)); // initial guess v
-
-	m_dPXY = (float*)malloc(m_iNumberX*m_iNumberY*2*sizeof(float)); //location of each POI in the global coordinate system
-	m_dP = (float*)malloc(m_iNumberX*m_iNumberY*6*sizeof(float)); // parameter of deformation p	
-	m_IterationNum = (int*)malloc(m_iNumberX*m_iNumberY*sizeof(int));
+	int *m_iU = (int*)malloc(m_iNumberX*m_iNumberY*sizeof(float)); // initial guess u
+	int *m_iV = (int*)malloc(m_iNumberX*m_iNumberY*sizeof(float)); // initial guess v
+	float *m_dPXY = (float*)malloc(m_iNumberX*m_iNumberY*2*sizeof(float)); //location of each POI in the global coordinate system
+	float *m_dP = (float*)malloc(m_iNumberX*m_iNumberY*6*sizeof(float)); // parameter of deformation p	
+	int *m_IterationNum = (int*)malloc(m_iNumberX*m_iNumberY*sizeof(float));
 
 	//Fill int the values of m_dPXY
 	for (int i = 0; i < m_iNumberY; i++)
@@ -336,10 +329,10 @@ void CPiDICDlg::OnBnClickedOk()
 		}
 	}
 
-	combined_functions(m_dImg1,m_dImg2, m_dPXY,m_iWidth, m_iHeight, m_iSubsetH, m_iSubsetW, m_dNormDeltaP, 
-		m_iSubsetX, m_iSubsetY, m_iNumberX, m_iNumberY, m_iFFTSubH, m_iFFTSubW, m_iMaxIteration,
-		m_iU, m_iV, m_dZNCC, m_dP, m_IterationNum, 
-		precompute_time, fft_time, icgn_time, total_time);
+	combined_functions(m_dImg1, m_dImg2, m_dPXY, m_iWidth, m_iHeight, m_iSubsetH, m_iSubsetW, m_dNormDeltaP,
+						m_iSubsetX, m_iSubsetY, m_iNumberX, m_iNumberY, m_iFFTSubH, m_iFFTSubW, m_iMaxIteration,
+						m_iU, m_iV,  m_dZNCC, m_dP,m_IterationNum,
+						precompute_time, fft_time, icgn_time, total_time);
 	
 	//Output data as two text files in the diretory of target image
 	CString m_sTextPath;
@@ -371,19 +364,6 @@ void CPiDICDlg::OnBnClickedOk()
 	m_TextFile << "Time for sub-pixel registration: " << icgn_time / (m_iNumberY*m_iNumberX) << " [millisec]" << " for iteration steps of " << m_iMaxIteration << endl;
 	m_TextFile << m_iWidth << ", " << m_iHeight << ", " << m_iGridSpaceX << ", " << m_iGridSpaceY << ", " << endl;
 
-	m_TextFile.close();
-
-	m_sTextPath = m_sOutputFilePath + _T("\\\\") + _T("m_i.txt");
-	m_TextFile.open(m_sTextPath, ios::out | ios::trunc);
-	// Write detailed data into Results_data.txt
-	m_TextFile << "m_iU" << ", " << "m_iV" << endl;
-	for (int i = 0; i < m_iNumberY; i++)
-	{
-		for (int j = 0; j < m_iNumberX; j++)
-		{
-			m_TextFile << m_iU[i*m_iNumberX+j]<<","<<m_iV[i*m_iNumberX+j]<<","<<m_dP[(i*m_iNumberX+j)*2+0]<<","<<m_dP[(i*m_iNumberX+j)*2+1]<<endl;
-		}
-	}
 	m_TextFile.close();
 
 	//Free parameters

@@ -19,7 +19,7 @@ Purpose: FFT-CC computation, only needs to transfre m_dR and m_dT from GPU
 	float m_dAveg = 0.0f; // T_m
 	float m_dModf = 0.0f; // sqrt (Sigma(R_i - R_m)^2)
 	float m_dModg = 0.0f; // sqrt (Sigma(T_i - T_m)^2)
-	float m_dCorrPeak = -2.0; // maximum C
+	float m_dCorrPeak = -2; // maximum C
 	int m_iCorrPeakXY = 0; // loacatoin of maximum C
 	float m_dTemp;//parameter for normalization
 

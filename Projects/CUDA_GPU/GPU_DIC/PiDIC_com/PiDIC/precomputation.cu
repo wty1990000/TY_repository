@@ -127,8 +127,8 @@ void precompute_kernel(const float *h_InputIMGR, const float *h_InputIMGT,
 													-6, 6, 6, -6, -4, -2, 4, 2, -3, 3, -3, 3, -2, -1, -2, -1,
 													4, -4, -4, 4, 2, 2, -2, -2, 2, -2, 2, -2, 1, 1, 1, 1 
 												   };
-	precompute.start();
 	(cudaMalloc((void**)&d_InputIMGR, (width+2)*(height+2)*sizeof(float)));
+	precompute.start();
 	(cudaMalloc((void**)&d_InputIMGT, (width+2)*(height+2)*sizeof(float)));
 	(cudaMalloc((void**)&d_InputBiubicMatrix, 16*16*sizeof(float)));
 

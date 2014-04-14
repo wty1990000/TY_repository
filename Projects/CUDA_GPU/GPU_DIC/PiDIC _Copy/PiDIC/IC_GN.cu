@@ -2,13 +2,15 @@
 #include "device_launch_parameters.h"
 #include "helper_cuda.h"
 #include "helper_functions.h"
+
+#include "IC_GN.cuh"
+
 #include <stdio.h>
 
-__global__ void computeICGN(const float* input_dPXY, const float* input_mdR, const float* input_mdRx, const float* input_mdRy, 
+__global__ void computeICGN(const float* input_dPXY, const float* input_mdR, const float* input_mdRx, const float* input_mdRy, float m_dNormDeltaP,
 							const float* input_mdT, const float* input_mBicubic, const int* input_iU, const int* input_iV,
-							const int& m_iNumberY, const int& m_iNumberX, const int& m_iFFTSubH, const int& m_iSubsetH, const int& m_iSubsetW,
-							const int& m_iFFTSubW, const int& m_iWidth, const int& m_iHeight, const int& m_iSubsetY, const int& m_iSubsetX, const int& m_iMaxiteration,
-							float* output_dP)
+							int m_iNumberY, int m_iNumberX, int m_iSubsetH, int m_iSubsetW,	int m_iWidth, int m_iHeight, int m_iSubsetY, int m_iSubsetX, int m_iMaxiteration,
+							float* output_dP, int* m_iIterationNum)
 /*Input: all the const variables
  Output: deformation P matrix
 Strategy: Each block compute one of the 21*21 POIs, and within each block 32*32 threads compute other needed computations
@@ -25,14 +27,16 @@ Strategy: Each block compute one of the 21*21 POIs, and within each block 32*32 
 	__shared__ float m_dP[6], m_dDP[6], m_dPXY[2], m_dNumerator[6];
 	__shared__ float m_dWarp[3][3]; 
 	__shared__ float m_dHessian[6][6], m_dInvHessian[6][6];
-
+	__shared__ float m_dTemp;
+	//__shared__ int m_iIteration;
 	// Local memory for each thread use
-	float m_dSubsetR, m_dSubsetAveR, m_dTemp, m_dSubsetT, m_dSubsetAveT;
+	float m_dSubsetR, m_dSubsetAveR, m_dSubsetT, m_dSubsetAveT;
 	float m_dJacobian[2][6], m_dRDescent[6], m_dHessianXY[6][6];
 	int m_iTemp, m_iTempX, m_iTempY;
 	float m_dTempX, m_dTempY;
 	float m_dWarpX, m_dWarpY;
 	float m_dError;
+	
 
 	//Load the shared variables to shared memory
 	if(tx ==0 && ty==0){
@@ -57,7 +61,7 @@ Strategy: Each block compute one of the 21*21 POIs, and within each block 32*32 
 	}
 	if(tx<6 && ty<6){
 		if(tx == ty){
-			m_dInvHessian[ty][tx] == 1.0;
+			m_dInvHessian[ty][tx] = 1.0;
 
 			m_dHessian[ty][tx] = 0.0;
 			m_dNumerator[tx] = 0.0;
@@ -108,7 +112,7 @@ Strategy: Each block compute one of the 21*21 POIs, and within each block 32*32 
 	__syncthreads();
 	atomicAdd(&m_dSubNorR, pow(m_dSubsetAveR,2));
 	__syncthreads();
-	
+
 	//Invert the Hessian matrix using the first 36 threads
 	if(tx ==0 && ty ==0){
 		m_dSubNorR = sqrt(m_dSubNorR);
@@ -178,21 +182,26 @@ Strategy: Each block compute one of the 21*21 POIs, and within each block 32*32 
 				}
 			}
 		}
-		__syncthreads();
-		atomicAdd(&m_dSubAveT, m_dSubsetT/float(m_iSubsetH*m_iSubsetW));
-		__syncthreads();
-		m_dSubsetAveT = m_dSubsetT - m_dSubAveT;
-		__syncthreads();
-		atomicAdd(&m_dSubNorT, pow(m_dSubsetAveT,2));
-		__syncthreads();
+		
+			__syncthreads();
+			atomicAdd(&m_dSubAveT, m_dSubsetT/float(m_iSubsetH*m_iSubsetW));
+			__syncthreads();
+			m_dSubsetAveT = m_dSubsetT - m_dSubAveT;
+			__syncthreads();
+			atomicAdd(&m_dSubNorT, pow(m_dSubsetAveT,2));
+			__syncthreads();
 
 		if(tx==0 && ty==0){
 			m_dSubNorT = sqrt(m_dSubNorT);
 		}
+		//Compute the error image
 		m_dError = (m_dSubNorR / m_dSubNorT) * m_dSubsetAveT - m_dSubsetAveR;
-		for(int k=0; k<6; k++){
-			m_dNumerator[k] += (m_dRDescent[k] * m_dError);
+		__syncthreads();
+
+		if(tx<6 && ty==0){
+			atomicAdd(&(m_dNumerator[tx]),(m_dRDescent[tx] * m_dError));
 		}
+		__syncthreads();
 		//Compute DeltaP
 		if(tx==0 && ty==0){
 			for(int k=0; k<6; k++){
@@ -201,6 +210,7 @@ Strategy: Each block compute one of the 21*21 POIs, and within each block 32*32 
 					m_dDP[k] += (m_dInvHessian[k][n] * m_dNumerator[n]);
 				}
 			}
+			__syncthreads();
 			m_dDU  = m_dDP[0];
 			m_dDUx = m_dDP[1]; 
 			m_dDUy = m_dDP[2];
@@ -235,11 +245,18 @@ Strategy: Each block compute one of the 21*21 POIs, and within each block 32*32 
 			m_dV = m_dP[3];
 			m_dVx = m_dP[4];
 			m_dVy = m_dP[5];
+			__syncthreads();
 
+			/*if(sqrt(pow(m_dDP[blockID*6+0],2)+pow(m_dDP[blockID*6+1]*m_iSubsetX,2)+pow(m_dDP[blockID*6+2] * m_iSubsetY,2) 
+				+pow(m_dDP[blockID*6+3],2)+pow(m_dDP[blockID*6+4]*m_iSubsetX,2)+pow(m_dDP[blockID*6+5]*m_iSubsetY,2))<m_dNormDeltaP){
+					break;
+			}*/
 		}
 	}
 	__syncthreads();
+
 	if(tx==0 && ty==0){
+		m_iIterationNum[blockID] = 20;
 		output_dP[blockID*6+0] = m_dP[0];
 		output_dP[blockID*6+1] = m_dP[1];
 		output_dP[blockID*6+2] = m_dP[2];
@@ -249,11 +266,10 @@ Strategy: Each block compute one of the 21*21 POIs, and within each block 32*32 
 	}
 }
 
-void launch_ICGN(const float* input_dPXY, const float* input_mdR, const float* input_mdRx, const float* input_mdRy, 
+void launch_ICGN(const float* input_dPXY, const float* input_mdR, const float* input_mdRx, const float* input_mdRy, const float& m_dNormDeltaP,
 				 const float* input_mdT, const float* input_mBicubic, const int* input_iU, const int* input_iV,
-				 const int& m_iNumberY, const int& m_iNumberX, const int& m_iFFTSubH, const int& m_iSubsetH, const int& m_iSubsetW,
-				 const int& m_iFFTSubW, const int& m_iWidth, const int& m_iHeight, const int& m_iSubsetY, const int& m_iSubsetX, const int& m_iMaxiteration,
-				 float* output_dP, float& time)
+				 const int& m_iNumberY, const int& m_iNumberX, const int& m_iSubsetH, const int& m_iSubsetW, const int& m_iWidth, const int& m_iHeight, const int& m_iSubsetY, const int& m_iSubsetX, const int& m_iMaxiteration,
+				 float* output_dP, int* m_iIterationNum, float& time)
 {
 	StopWatchWin icgn;
 
@@ -261,7 +277,12 @@ void launch_ICGN(const float* input_dPXY, const float* input_mdR, const float* i
 	dim3 dimBlock(m_iSubsetH, m_iSubsetW,1);
 
 	icgn.start();
-	computeICGN<<<dimGrid,dimBlock>>>(input_dPXY, input_mdR, intpu_mdRx, input_mdRy, 
-									  input_mdT, input_mBicubic, input_iU,
+	computeICGN<<<dimGrid,dimBlock>>>(input_dPXY, input_mdR, input_mdRx, input_mdRy, m_dNormDeltaP,
+									  input_mdT, input_mBicubic, input_iU, input_iV, 
+									  m_iNumberY, m_iNumberX, m_iSubsetH, m_iSubsetW, m_iWidth, m_iHeight, m_iSubsetY, m_iSubsetX, m_iMaxiteration,
+									  output_dP,m_iIterationNum);
+
+	icgn.stop();
+	time = icgn.getTime();
 
 }
