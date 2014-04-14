@@ -79,7 +79,7 @@ __global__ void RGradient_kernel(const double *d_InputIMGR, const double *d_Inpu
 		d_OutputdtBicubic[((row*(width)+col)*4+3)*4+2] = d_AlphaT[14];
 		d_OutputdtBicubic[((row*(width)+col)*4+3)*4+3] = d_AlphaT[15];
 	}
-	else {
+	else if(((row >=height-1)&&(row < height)) && ((col >= width-1)&&(col<width))){
 		d_OutputdtBicubic[((row*(width)+col)*4+0)*4+0] = 0.0;
 		d_OutputdtBicubic[((row*(width)+col)*4+0)*4+1] = 0.0;
 		d_OutputdtBicubic[((row*(width)+col)*4+0)*4+2] = 0.0;

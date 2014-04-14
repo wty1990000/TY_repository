@@ -19,6 +19,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DIC_FFTW_FFT", "DIC_FFTW_FF
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Atomic_add", "Atomic_add\Atomic_add.vcxproj", "{A866BB1C-F4CD-4008-AE4C-F047CF5782C4}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test_Block", "Test_Block\Test_Block.vcxproj", "{932C2720-21BA-482C-A03E-75AF2FA6C452}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -97,6 +99,14 @@ Global
 		{A866BB1C-F4CD-4008-AE4C-F047CF5782C4}.Release|Win32.Build.0 = Release|Win32
 		{A866BB1C-F4CD-4008-AE4C-F047CF5782C4}.Release|x64.ActiveCfg = Release|x64
 		{A866BB1C-F4CD-4008-AE4C-F047CF5782C4}.Release|x64.Build.0 = Release|x64
+		{932C2720-21BA-482C-A03E-75AF2FA6C452}.Debug|Win32.ActiveCfg = Debug|Win32
+		{932C2720-21BA-482C-A03E-75AF2FA6C452}.Debug|Win32.Build.0 = Debug|Win32
+		{932C2720-21BA-482C-A03E-75AF2FA6C452}.Debug|x64.ActiveCfg = Debug|x64
+		{932C2720-21BA-482C-A03E-75AF2FA6C452}.Debug|x64.Build.0 = Debug|x64
+		{932C2720-21BA-482C-A03E-75AF2FA6C452}.Release|Win32.ActiveCfg = Release|Win32
+		{932C2720-21BA-482C-A03E-75AF2FA6C452}.Release|Win32.Build.0 = Release|Win32
+		{932C2720-21BA-482C-A03E-75AF2FA6C452}.Release|x64.ActiveCfg = Release|x64
+		{932C2720-21BA-482C-A03E-75AF2FA6C452}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

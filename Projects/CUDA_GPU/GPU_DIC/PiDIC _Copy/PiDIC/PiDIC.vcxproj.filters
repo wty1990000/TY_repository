@@ -72,7 +72,7 @@
     <None Include="combination.cuh">
       <Filter>CUDA</Filter>
     </None>
-    <None Include="IC_GN.cuh">
+    <None Include="ICGN.cuh">
       <Filter>CUDA</Filter>
     </None>
   </ItemGroup>
@@ -88,7 +88,7 @@
     <CudaCompile Include="combination.cu">
       <Filter>CUDA</Filter>
     </CudaCompile>
-    <CudaCompile Include="IC_GN.cu">
+    <CudaCompile Include="ICGN.cu">
       <Filter>CUDA</Filter>
     </CudaCompile>
   </ItemGroup>

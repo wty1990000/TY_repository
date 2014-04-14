@@ -1,4 +1,3 @@
-
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
@@ -37,7 +36,7 @@ __global__ void RGradient_kernel(const float *d_InputIMGR, const float *d_InputI
 		d_OutputIMGTxy[row*width+col]= 0.25 * (d_InputIMGT[(row+2)*(width+2)+col+2]  - d_InputIMGT[(row)*(width+2)+col+2] -d_InputIMGT[(row+2)*(width+2)+col] + d_InputIMGT[(row)*(width+2)+col]);
 	}
 	__syncthreads();
-		if((row < height-1) && (col < width-1)){
+	if((row < height-1) && (col < width-1)){
 		d_TaoT[0] = d_OutputIMGT[row*(width)+col];
 		d_TaoT[1] = d_OutputIMGT[row*(width)+col+1];
 		d_TaoT[2] = d_OutputIMGT[(row+1)*(width)+col];
@@ -77,7 +76,7 @@ __global__ void RGradient_kernel(const float *d_InputIMGR, const float *d_InputI
 		d_OutputdtBicubic[((row*(width)+col)*4+3)*4+2] = d_AlphaT[14];
 		d_OutputdtBicubic[((row*(width)+col)*4+3)*4+3] = d_AlphaT[15];
 	}
-	else {
+	else if(((row >=height-1)&&(row < height)) && ((col >= width-1)&&(col<width))){
 		d_OutputdtBicubic[((row*(width)+col)*4+0)*4+0] = 0.0;
 		d_OutputdtBicubic[((row*(width)+col)*4+0)*4+1] = 0.0;
 		d_OutputdtBicubic[((row*(width)+col)*4+0)*4+2] = 0.0;
@@ -127,18 +126,21 @@ void precompute_kernel(const float *h_InputIMGR, const float *h_InputIMGT,
 													-6, 6, 6, -6, -4, -2, 4, 2, -3, 3, -3, 3, -2, -1, -2, -1,
 													4, -4, -4, 4, 2, 2, -2, -2, 2, -2, 2, -2, 1, 1, 1, 1 
 												   };
+	
 	precompute.start();
 	(cudaMalloc((void**)&d_InputIMGR, (width+2)*(height+2)*sizeof(float)));
 	(cudaMalloc((void**)&d_InputIMGT, (width+2)*(height+2)*sizeof(float)));
 	(cudaMalloc((void**)&d_InputBiubicMatrix, 16*16*sizeof(float)));
+	(cudaMalloc((void**)&d_OutputIMGTx, width*height*sizeof(float)));
+	(cudaMalloc((void**)&d_OutputIMGTy, width*height*sizeof(float)));
+	(cudaMalloc((void**)&d_OutputIMGTxy, width*height*sizeof(float)));
 
+	
 	(cudaMemcpy(d_InputIMGR,h_InputIMGR,(width+2)*(height+2)*sizeof(float),cudaMemcpyHostToDevice));
 	(cudaMemcpy(d_InputIMGT,h_InputIMGT,(width+2)*(height+2)*sizeof(float),cudaMemcpyHostToDevice));
 	(cudaMemcpy(d_InputBiubicMatrix,h_InputBicubicMatrix,16*16*sizeof(float),cudaMemcpyHostToDevice));
 	
-	(cudaMalloc((void**)&d_OutputIMGTx, width*height*sizeof(float)));
-	(cudaMalloc((void**)&d_OutputIMGTy, width*height*sizeof(float)));
-	(cudaMalloc((void**)&d_OutputIMGTxy, width*height*sizeof(float)));
+	
 
 	dim3 dimB(BLOCK_SIZE,BLOCK_SIZE,1);
 	dim3 dimG((width-1)/BLOCK_SIZE+1,(height-1)/BLOCK_SIZE+1,1);
@@ -149,14 +151,15 @@ void precompute_kernel(const float *h_InputIMGR, const float *h_InputIMGT,
 								 d_OutputIMGTx, d_OutputIMGTy, d_OutputIMGTxy,d_OutputdTBicubic,
 								 width, height);
 
+	
+	precompute.stop();
+	time = precompute.getTime();
+
 	cudaFree(d_OutputIMGTx);
 	cudaFree(d_OutputIMGTy);
 	cudaFree(d_OutputIMGTxy);
 	cudaFree(d_InputIMGR);
 	cudaFree(d_InputIMGT);
 	cudaFree(d_InputBiubicMatrix);
-
-	precompute.stop();
-	time = precompute.getTime();
 }
 

@@ -23,7 +23,7 @@
 #include <afxdisp.h>        // MFC Automation classes
 
 #include <atlimage.h>
-//#include "fftw3.h"
+#include "fftw3.h"
 #include <math.h>
 #include <iostream>
 #include <stdio.h>

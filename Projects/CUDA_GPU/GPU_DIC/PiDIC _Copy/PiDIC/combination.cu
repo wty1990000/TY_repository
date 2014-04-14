@@ -1,5 +1,3 @@
-#include "combination.cuh"
-
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 #include "helper_cuda.h"
@@ -7,7 +5,8 @@
 
 #include "precomputation.cuh"
 #include "FFT-CC.h"
-#include "IC_GN.cuh"
+#include "ICGN.cuh"
+#include "combination.cuh"
 
 void initialize()
 /*Purpose: Initialize GPU with CPU
@@ -34,8 +33,10 @@ void combined_functions(const float* h_InputIMGR, const float* h_InputIMGT, cons
 	int* dInput_miV;
 	float* dInput_mdPXY;
 	float* dOutput_mdP;
-	int* dOutput_miIterationNum;
 
+	int* dOutput_miIterationNum;
+	int* hmIteration = (int*)malloc(m_iNumberX* m_iNumberY*sizeof(int));
+	
 	cudaMalloc((void**)&d_OutputIMGR, (m_iWidth*m_iHeight)*sizeof(float));
 	cudaMalloc((void**)&d_OutputIMGRx, (m_iWidth*m_iHeight)*sizeof(float));
 	cudaMalloc((void**)&d_OutputIMGRy, (m_iWidth*m_iHeight)*sizeof(float));
@@ -46,6 +47,7 @@ void combined_functions(const float* h_InputIMGR, const float* h_InputIMGT, cons
 	cudaMalloc((void**)&dInput_miU, (m_iNumberX*m_iNumberY)*sizeof(int));
 	cudaMalloc((void**)&dInput_miV, (m_iNumberY*m_iNumberX)*sizeof(int));
 	cudaMalloc((void**)&dOutput_miIterationNum, (m_iNumberY*m_iNumberX)*sizeof(int));
+	
 	cudaMalloc((void**)&dInput_mdPXY,(m_iNumberY*m_iNumberX)*2*sizeof(float));
 	cudaMalloc((void**)&dOutput_mdP, (m_iNumberY*m_iNumberX)*6*sizeof(float));
 
@@ -55,6 +57,8 @@ void combined_functions(const float* h_InputIMGR, const float* h_InputIMGT, cons
 	totalT.start();
 	precompute_kernel(h_InputIMGR, h_InputIMGT, d_OutputIMGR, d_OutputIMGT, 
 		d_OutputIMGRx, d_OutputIMGRy, d_OutputBicubic,m_iWidth,m_iHeight, precompute_tme);
+
+	cudaThreadSynchronize();
 
 	hInputm_dR = (float*)malloc(m_iWidth*m_iHeight*sizeof(float));
 	hInputm_dT = (float*)malloc(m_iWidth*m_iHeight*sizeof(float));
@@ -75,18 +79,25 @@ void combined_functions(const float* h_InputIMGR, const float* h_InputIMGT, cons
 
 
 	//-----Start IC-GN algorithm------
-	launch_ICGN(dInput_mdPXY, d_OutputIMGR,d_OutputIMGRx, d_OutputIMGRy, m_dNormDeltaP,d_OutputIMGT, d_OutputBicubic,
-		dInput_miU, dInput_miV, m_iNumberY, m_iNumberX, m_iSubsetH,m_iSubsetW,m_iWidth,m_iHeight,m_iSubsetY,m_iSubsetX,m_maxIteration,dOutput_mdP,dOutput_miIterationNum,icgn_time);
+	launch_ICGN(dInput_mdPXY, d_OutputIMGR,d_OutputIMGRx, d_OutputIMGRy, m_dNormDeltaP,
+		d_OutputIMGT, d_OutputBicubic, dInput_miU, dInput_miV, 
+		m_iNumberY, m_iNumberX, m_iSubsetH,m_iSubsetW,m_iWidth,m_iHeight,m_iSubsetY,m_iSubsetX,m_maxIteration,
+		dOutput_mdP,dOutput_miIterationNum,icgn_time);
 	
+	cudaThreadSynchronize();
+
 	cudaMemcpy(m_dP, dOutput_mdP, (m_iNumberY*m_iNumberX)*6*sizeof(float), cudaMemcpyDeviceToHost);
+	cudaMemcpy(hmIteration, dOutput_miIterationNum, (m_iNumberY*m_iNumberX)*sizeof(int), cudaMemcpyDeviceToHost);
 	cudaMemcpy(m_iIterationNum, dOutput_miIterationNum, (m_iNumberY*m_iNumberX)*sizeof(int), cudaMemcpyDeviceToHost);
+
+
 
 	totalT.stop();
 	total_time = totalT.getTime();
 
 
 
-
+	free(hmIteration);
 	cudaFree(d_OutputIMGR);
 	cudaFree(d_OutputIMGRx);
 	cudaFree(d_OutputIMGRy);
