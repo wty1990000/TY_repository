@@ -38,7 +38,7 @@ void launch_ICGN(const float* input_dPXY, const float* input_mdR, const float* i
 	StopWatchWin icgn;
 
 	dim3 dimGrid(m_iNumberY, m_iNumberX,1);
-	dim3 dimBlock(m_iSubsetH, m_iSubsetW,1);
+	dim3 dimBlock(32, 32,1);
 
 	icgn.start();
 	computeICGN<<<dimGrid,dimBlock>>>(input_dPXY, input_mdR, input_mdRx, input_mdRy, m_dNormDeltaP,
