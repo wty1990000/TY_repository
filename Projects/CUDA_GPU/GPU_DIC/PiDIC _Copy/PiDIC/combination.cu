@@ -5,7 +5,7 @@
 
 #include "precomputation.cuh"
 #include "FFT-CC.h"
-#include "ICGN.cuh"
+#include "IC_GN.cuh"
 #include "combination.cuh"
 
 void initialize()

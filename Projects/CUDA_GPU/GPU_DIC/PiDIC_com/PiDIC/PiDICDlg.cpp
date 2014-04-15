@@ -123,7 +123,7 @@ BOOL CPiDICDlg::OnInitDialog()
 	m_iSubsetX = 16;
 	m_iSubsetY = 16;
 	m_dNormDeltaP = 0.001f;
-	m_iMaxIteration = 5;
+	m_iMaxIteration = 20;
 
 	UpdateData(FALSE);
 
@@ -313,11 +313,11 @@ void CPiDICDlg::OnBnClickedOk()
 	float *m_dZNCC = (float*)malloc(m_iNumberX*m_iNumberY*sizeof(float)); // ZNCC at each POI
 
 	//----------------For ICGN outputs----------------------
-	int *m_iU = (int*)malloc(m_iNumberX*m_iNumberY*sizeof(float)); // initial guess u
-	int *m_iV = (int*)malloc(m_iNumberX*m_iNumberY*sizeof(float)); // initial guess v
+	int *m_iU = (int*)malloc(m_iNumberX*m_iNumberY*sizeof(int)); // initial guess u
+	int *m_iV = (int*)malloc(m_iNumberX*m_iNumberY*sizeof(int)); // initial guess v
 	float *m_dPXY = (float*)malloc(m_iNumberX*m_iNumberY*2*sizeof(float)); //location of each POI in the global coordinate system
 	float *m_dP = (float*)malloc(m_iNumberX*m_iNumberY*6*sizeof(float)); // parameter of deformation p	
-	int *m_IterationNum = (int*)malloc(m_iNumberX*m_iNumberY*sizeof(float));
+	int *m_IterationNum = (int*)malloc(m_iNumberX*m_iNumberY*sizeof(int));
 
 	//Fill int the values of m_dPXY
 	for (int i = 0; i < m_iNumberY; i++)

@@ -5,9 +5,9 @@
 #include "helper_cuda.h"
 #include "helper_functions.h"
 
-#include "precomputation.cuh"
 #include "FFT-CC.h"
-#include "IC_GN.cuh"
+
+#define BLOCK_SIZE 16
 
 __global__ void computeICGN(const float* input_dPXY, const float* input_mdR, const float* input_mdRx, const float* input_mdRy, float m_dNormDeltaP,
 							const float* input_mdT, const float* input_mBicubic, const int* input_iU, const int* input_iV, 
@@ -215,26 +215,32 @@ Strategy: Each thread computes one of the 21*21 POIs
 					m_iTempX = int(m_dWarpX);
 					m_iTempY = int(m_dWarpY);
 
-					m_dTempX = m_dWarpX - m_iTempX;
-					m_dTempY = m_dWarpY - m_iTempY;
-					// if it is integer-pixel location, feed the gray intensity of T into the subset T
-					if ((m_dTempX == 0) && (m_dTempY == 0))
-					{
-						m_dSubsetT[l*m_iSubsetW+m] = input_mdT[m_iTempY*m_iSubsetW+m_iTempX];
-					}
-					else
-					{
-						// If it is sub-pixel location, estimate the gary intensity using interpolation
-						m_dSubsetT[l*m_iSubsetW+m] = 0;
-						for (int k = 0; k < 4; k++)
+
+					if((m_iTempX >=0) && ( m_iTempY >=0) && (m_iTempX<m_iWidth) && (m_iTempY<m_iHeight)){
+						m_dTempX = m_dWarpX - m_iTempX;
+						m_dTempY = m_dWarpY - m_iTempY;
+						// if it is integer-pixel location, feed the gray intensity of T into the subset T
+						if ((m_dTempX == 0) && (m_dTempY == 0))
 						{
-							for (int n = 0; n < 4; n++)
+							m_dSubsetT[l*m_iSubsetW+m] = input_mdT[m_iTempY*m_iSubsetW+m_iTempX];
+						}
+						else
+						{
+							// If it is sub-pixel location, estimate the gary intensity using interpolation
+							m_dSubsetT[l*m_iSubsetW+m] = 0;
+							for (int k = 0; k < 4; k++)
 							{
-								m_dSubsetT[l*m_iSubsetW+m] += input_mBicubic[((m_iTempY*m_iWidth+m_iTempX)*4+k)*4+n] * pow(m_dTempY, k) * pow(m_dTempX, n); 
+								for (int n = 0; n < 4; n++)
+								{
+									m_dSubsetT[l*m_iSubsetW+m] += input_mBicubic[((m_iTempY*m_iWidth+m_iTempX)*4+k)*4+n] * pow(m_dTempY, k) * pow(m_dTempX, n); 
+								}
 							}
 						}
+						m_dSubAveT += (m_dSubsetT[l*m_iSubsetW+m] / (m_iSubsetH * m_iSubsetW));
 					}
-					m_dSubAveT += (m_dSubsetT[l*m_iWidth+m] / (m_iSubsetH * m_iSubsetW));
+					else{
+						break;
+					}
 				}
 			}
 			for (int l = 0; l < m_iSubsetH; l++)
@@ -386,7 +392,7 @@ __global__ void RGradient_kernel(const float *d_InputIMGR, const float *d_InputI
 		d_OutputdtBicubic[((row*(width)+col)*4+3)*4+2] = d_AlphaT[14];
 		d_OutputdtBicubic[((row*(width)+col)*4+3)*4+3] = d_AlphaT[15];
 	}
-	else {
+	else if(((row >=height-1)&&(row < height)) && ((col >= width-1)&&(col<width))){
 		d_OutputdtBicubic[((row*(width)+col)*4+0)*4+0] = 0.0;
 		d_OutputdtBicubic[((row*(width)+col)*4+0)*4+1] = 0.0;
 		d_OutputdtBicubic[((row*(width)+col)*4+0)*4+2] = 0.0;
@@ -448,6 +454,7 @@ void combined_functions(const float* h_InputIMGR, const float* h_InputIMGT, cons
 													-6, 6, 6, -6, -4, -2, 4, 2, -3, 3, -3, 3, -2, -1, -2, -1,
 													4, -4, -4, 4, 2, 2, -2, -2, 2, -2, 2, -2, 1, 1, 1, 1 
 												   };
+	totalT.start();
 	precompute.start();
 	(cudaMalloc((void**)&d_InputIMGR, (m_iWidth+2)*(m_iHeight+2)*sizeof(float)));
 	(cudaMalloc((void**)&d_InputIMGT, (m_iWidth+2)*(m_iHeight+2)*sizeof(float)));
