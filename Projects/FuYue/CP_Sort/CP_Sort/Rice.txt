@@ -1,0 +1,750 @@
+"1961": {
+	"China": 20787,
+	"India": 15419,
+	"Indonesia": 17623,
+	"Japan": 48793,
+	"Korea": 41481,
+	"Lao": 8710,
+	"Malaysia": 21086,
+	"Myanmar": 16066,
+	"Philippines": 12299,
+	"SriLanka": 18626,
+	"Thailand": 16585,
+	"VietNam": 18966
+},
+
+"1962": {
+	"China": 23700,
+	"India": 13959,
+	"Indonesia": 17855,
+	"Japan": 51372,
+	"Korea": 35768,
+	"Lao": 8644,
+	"Malaysia": 20678,
+	"Myanmar": 16469,
+	"Philippines": 12548,
+	"SriLanka": 19539,
+	"Thailand": 17202,
+	"VietNam": 19937
+},
+
+"1963": {
+	"China": 26833,
+	"India": 15498,
+	"Indonesia": 17226,
+	"Japan": 50821,
+	"Korea": 43974,
+	"Lao": 8667,
+	"Malaysia": 21525,
+	"Myanmar": 15957,
+	"Philippines": 12447,
+	"SriLanka": 19547,
+	"Thailand": 18725,
+	"VietNam": 21400
+},
+
+"1964": {
+	"China": 28289,
+	"India": 16171,
+	"Indonesia": 17630,
+	"Japan": 50111,
+	"Korea": 44720,
+	"Lao": 8024,
+	"Malaysia": 19968,
+	"Myanmar": 17097,
+	"Philippines": 12478,
+	"SriLanka": 19962,
+	"Thailand": 18384,
+	"VietNam": 19442
+},
+
+"1965": {
+	"China": 29667,
+	"India": 12936,
+	"Indonesia": 17708,
+	"Japan": 49489,
+	"Korea": 39634,
+	"Lao": 8079,
+	"Malaysia": 21578,
+	"Myanmar": 16614,
+	"Philippines": 13099,
+	"SriLanka": 17696,
+	"Thailand": 17805,
+	"VietNam": 19414
+},
+
+"1966": {
+	"China": 31445,
+	"India": 12952,
+	"Indonesia": 17748,
+	"Japan": 50841,
+	"Korea": 44257,
+	"Lao": 8108,
+	"Malaysia": 21408,
+	"Myanmar": 14694,
+	"Philippines": 13223,
+	"SriLanka": 18365,
+	"Thailand": 18360,
+	"VietNam": 18079
+},
+
+"1967": {
+	"China": 31006,
+	"India": 15484,
+	"Indonesia": 17592,
+	"Japan": 57490,
+	"Korea": 40551,
+	"Lao": 8448,
+	"Malaysia": 20165,
+	"Myanmar": 16510,
+	"Philippines": 13804,
+	"SriLanka": 21259,
+	"Thailand": 17497,
+	"VietNam": 19159
+},
+
+"1968": {
+	"China": 31868,
+	"India": 16134,
+	"Indonesia": 21398,
+	"Japan": 57183,
+	"Korea": 38593,
+	"Lao": 11753,
+	"Malaysia": 21714,
+	"Myanmar": 16843,
+	"Philippines": 13339,
+	"SriLanka": 23968,
+	"Thailand": 17882,
+	"VietNam": 17095
+},
+
+"1969": {
+	"China": 31415,
+	"India": 16094,
+	"Indonesia": 22487,
+	"Japan": 55505,
+	"Korea": 46623,
+	"Lao": 13471,
+	"Malaysia": 23246,
+	"Myanmar": 17092,
+	"Philippines": 17098,
+	"SriLanka": 25654,
+	"Thailand": 18474,
+	"VietNam": 17880
+},
+
+"1970": {
+	"China": 34162,
+	"India": 16849,
+	"Indonesia": 23763,
+	"Japan": 56348,
+	"Korea": 45520,
+	"Lao": 13589,
+	"Malaysia": 23858,
+	"Myanmar": 16973,
+	"Philippines": 17460,
+	"SriLanka": 22485,
+	"Thailand": 20207,
+	"VietNam": 21534
+},
+
+"1971": {
+	"China": 33145,
+	"India": 17110,
+	"Indonesia": 24254,
+	"Japan": 52439,
+	"Korea": 46697,
+	"Lao": 12204,
+	"Malaysia": 24736,
+	"Myanmar": 17161,
+	"Philippines": 15980,
+	"SriLanka": 20119,
+	"Thailand": 19369,
+	"VietNam": 22265
+},
+
+"1972": {
+	"China": 32475,
+	"India": 16046,
+	"Indonesia": 24556,
+	"Japan": 58458,
+	"Korea": 46146,
+	"Lao": 12287,
+	"Malaysia": 23980,
+	"Myanmar": 16247,
+	"Philippines": 14431,
+	"SriLanka": 20540,
+	"Thailand": 18308,
+	"VietNam": 21935
+},
+
+"1973": {
+	"China": 34818,
+	"India": 17259,
+	"Indonesia": 25572,
+	"Japan": 60175,
+	"Korea": 49504,
+	"Lao": 13290,
+	"Malaysia": 26342,
+	"Myanmar": 17629,
+	"Philippines": 14624,
+	"SriLanka": 19539,
+	"Thailand": 19242,
+	"VietNam": 22117
+},
+
+"1974": {
+	"China": 35033,
+	"India": 15744,
+	"Indonesia": 26412,
+	"Japan": 58605,
+	"Korea": 51257,
+	"Lao": 13190,
+	"Malaysia": 28311,
+	"Myanmar": 17574,
+	"Philippines": 15458,
+	"SriLanka": 20104,
+	"Thailand": 18254,
+	"VietNam": 21564
+},
+
+"1975": {
+	"China": 35283,
+	"India": 18582,
+	"Indonesia": 26297,
+	"Japan": 61856,
+	"Korea": 53243,
+	"Lao": 13382,
+	"Malaysia": 26615,
+	"Myanmar": 18307,
+	"Philippines": 16636,
+	"SriLanka": 19325,
+	"Thailand": 18308,
+	"VietNam": 21198
+},
+
+"1976": {
+	"China": 34957,
+	"India": 16372,
+	"Indonesia": 27843,
+	"Japan": 55013,
+	"Korea": 59667,
+	"Lao": 12600,
+	"Malaysia": 27217,
+	"Myanmar": 18974,
+	"Philippines": 17967,
+	"SriLanka": 19712,
+	"Thailand": 18450,
+	"VietNam": 22327
+},
+
+"1977": {
+	"China": 36373,
+	"India": 19613,
+	"Indonesia": 27929,
+	"Japan": 61683,
+	"Korea": 67868,
+	"Lao": 12345,
+	"Malaysia": 26252,
+	"Myanmar": 19453,
+	"Philippines": 20142,
+	"SriLanka": 21441,
+	"Thailand": 15910,
+	"VietNam": 19378
+},
+
+"1978": {
+	"China": 39809,
+	"India": 19912,
+	"Indonesia": 28862,
+	"Japan": 61758,
+	"Korea": 69380,
+	"Lao": 12512,
+	"Malaysia": 25695,
+	"Myanmar": 21012,
+	"Philippines": 20253,
+	"SriLanka": 22521,
+	"Thailand": 19552,
+	"VietNam": 17922
+},
+
+"1979": {
+	"China": 42491,
+	"India": 16105,
+	"Indonesia": 29855,
+	"Japan": 59864,
+	"Korea": 63905,
+	"Lao": 12577,
+	"Malaysia": 28388,
+	"Myanmar": 23521,
+	"Philippines": 21131,
+	"SriLanka": 24282,
+	"Thailand": 18209,
+	"VietNam": 20716
+},
+
+"1980": {
+	"China": 41435,
+	"India": 20002,
+	"Indonesia": 32928,
+	"Japan": 51279,
+	"Korea": 43076,
+	"Lao": 14386,
+	"Malaysia": 28524,
+	"Myanmar": 27739,
+	"Philippines": 22105,
+	"SriLanka": 25897,
+	"Thailand": 18878,
+	"VietNam": 20798
+},
+
+"1981": {
+	"China": 43315,
+	"India": 19623,
+	"Indonesia": 34934,
+	"Japan": 56295,
+	"Korea": 58410,
+	"Lao": 15498,
+	"Malaysia": 28409,
+	"Myanmar": 29419,
+	"Philippines": 22977,
+	"SriLanka": 26462,
+	"Thailand": 19521,
+	"VietNam": 21966
+},
+
+"1982": {
+	"China": 48888,
+	"India": 18497,
+	"Indonesia": 37363,
+	"Japan": 56881,
+	"Korea": 61510,
+	"Lao": 14825,
+	"Malaysia": 27619,
+	"Myanmar": 31505,
+	"Philippines": 26342,
+	"SriLanka": 28896,
+	"Thailand": 18880,
+	"VietNam": 25194
+},
+
+"1983": {
+	"China": 50918,
+	"India": 21833,
+	"Indonesia": 38530,
+	"Japan": 57008,
+	"Korea": 61926,
+	"Lao": 15851,
+	"Malaysia": 26041,
+	"Myanmar": 30666,
+	"Philippines": 23227,
+	"SriLanka": 31977,
+	"Thailand": 20351,
+	"VietNam": 26272
+},
+
+"1984": {
+	"China": 53634,
+	"India": 21272,
+	"Indonesia": 39060,
+	"Japan": 64138,
+	"Korea": 64754,
+	"Lao": 20167,
+	"Malaysia": 25187,
+	"Myanmar": 30981,
+	"Philippines": 24300,
+	"SriLanka": 27316,
+	"Thailand": 20670,
+	"VietNam": 27323
+},
+
+"1985": {
+	"China": 52498,
+	"India": 23292,
+	"Indonesia": 39418,
+	"Japan": 62246,
+	"Korea": 63514,
+	"Lao": 21028,
+	"Malaysia": 26648,
+	"Myanmar": 30718,
+	"Philippines": 25879,
+	"SriLanka": 30777,
+	"Thailand": 20608,
+	"VietNam": 27761
+},
+
+"1986": {
+	"China": 53272,
+	"India": 22052,
+	"Indonesia": 39773,
+	"Japan": 63218,
+	"Korea": 63688,
+	"Lao": 22588,
+	"Malaysia": 26399,
+	"Myanmar": 30279,
+	"Philippines": 27173,
+	"SriLanka": 30944,
+	"Thailand": 20522,
+	"VietNam": 28060
+},
+
+"1987": {
+	"China": 54035,
+	"India": 21991,
+	"Indonesia": 40391,
+	"Japan": 61901,
+	"Korea": 60173,
+	"Lao": 22272,
+	"Malaysia": 24686,
+	"Myanmar": 30424,
+	"Philippines": 26229,
+	"SriLanka": 31318,
+	"Thailand": 20147,
+	"VietNam": 26954
+},
+
+"1988": {
+	"China": 52819,
+	"India": 25486,
+	"Indonesia": 41108,
+	"Japan": 58858,
+	"Korea": 65550,
+	"Lao": 19118,
+	"Malaysia": 25251,
+	"Myanmar": 29084,
+	"Philippines": 26442,
+	"SriLanka": 30367,
+	"Thailand": 21465,
+	"VietNam": 29613
+},
+
+"1989": {
+	"China": 55005,
+	"India": 26161,
+	"Indonesia": 42470,
+	"Japan": 61679,
+	"Korea": 64456,
+	"Lao": 23552,
+	"Malaysia": 26251,
+	"Myanmar": 29174,
+	"Philippines": 27046,
+	"SriLanka": 29916,
+	"Thailand": 20853,
+	"VietNam": 32136
+},
+
+"1990": {
+	"China": 57166,
+	"India": 26125,
+	"Indonesia": 43018,
+	"Japan": 63279,
+	"Korea": 62057,
+	"Lao": 22936,
+	"Malaysia": 27694,
+	"Myanmar": 29353,
+	"Philippines": 29786,
+	"SriLanka": 30643,
+	"Thailand": 19556,
+	"VietNam": 31815
+},
+
+"1991": {
+	"China": 56238,
+	"India": 26271,
+	"Indonesia": 43465,
+	"Japan": 58590,
+	"Korea": 60346,
+	"Lao": 21977,
+	"Malaysia": 28178,
+	"Myanmar": 28862,
+	"Philippines": 28243,
+	"SriLanka": 30215,
+	"Thailand": 22534,
+	"VietNam": 31133
+},
+
+"1992": {
+	"China": 57959,
+	"India": 26092,
+	"Indonesia": 43447,
+	"Japan": 62754,
+	"Korea": 63120,
+	"Lao": 26555,
+	"Malaysia": 29918,
+	"Myanmar": 29351,
+	"Philippines": 29388,
+	"SriLanka": 30544,
+	"Thailand": 21744,
+	"VietNam": 33342
+},
+
+"1993": {
+	"China": 58462,
+	"India": 28303,
+	"Indonesia": 43750,
+	"Japan": 45783,
+	"Korea": 57330,
+	"Lao": 22668,
+	"Malaysia": 30348,
+	"Myanmar": 30552,
+	"Philippines": 28742,
+	"SriLanka": 31350,
+	"Thailand": 21700,
+	"VietNam": 34815
+},
+
+"1994": {
+	"China": 58288,
+	"India": 28645,
+	"Indonesia": 43453,
+	"Japan": 67703,
+	"Korea": 62393,
+	"Lao": 25812,
+	"Malaysia": 30614,
+	"Myanmar": 31690,
+	"Philippines": 28866,
+	"SriLanka": 29933,
+	"Thailand": 23521,
+	"VietNam": 35657
+},
+
+"1995": {
+	"China": 60210,
+	"India": 26972,
+	"Indonesia": 43487,
+	"Japan": 63432,
+	"Korea": 60524,
+	"Lao": 25323,
+	"Malaysia": 31619,
+	"Myanmar": 29766,
+	"Philippines": 28043,
+	"SriLanka": 31586,
+	"Thailand": 24158,
+	"VietNam": 36898
+},
+
+"1996": {
+	"China": 62050,
+	"India": 28226,
+	"Indonesia": 44168,
+	"Japan": 65402,
+	"Korea": 67888,
+	"Lao": 25526,
+	"Malaysia": 32510,
+	"Myanmar": 30649,
+	"Philippines": 28558,
+	"SriLanka": 31231,
+	"Thailand": 24097,
+	"VietNam": 37689
+},
+
+"1997": {
+	"China": 63111,
+	"India": 28457,
+	"Indonesia": 44322,
+	"Japan": 64163,
+	"Korea": 69529,
+	"Lao": 27607,
+	"Malaysia": 30676,
+	"Myanmar": 30789,
+	"Philippines": 29326,
+	"SriLanka": 32451,
+	"Thailand": 23787,
+	"VietNam": 38768
+},
+
+"1998": {
+	"China": 63529,
+	"India": 28805,
+	"Indonesia": 41974,
+	"Japan": 62188,
+	"Korea": 64169,
+	"Lao": 27116,
+	"Malaysia": 28829,
+	"Myanmar": 31286,
+	"Philippines": 26984,
+	"SriLanka": 35102,
+	"Thailand": 24654,
+	"VietNam": 39585
+},
+
+"1999": {
+	"China": 63344,
+	"India": 29782,
+	"Indonesia": 42519,
+	"Japan": 64143,
+	"Korea": 65961,
+	"Lao": 29304,
+	"Malaysia": 29415,
+	"Myanmar": 32405,
+	"Philippines": 29468,
+	"SriLanka": 32810,
+	"Thailand": 24245,
+	"VietNam": 41018
+},
+
+"2000": {
+	"China": 62642,
+	"India": 28508,
+	"Indonesia": 44007,
+	"Japan": 67023,
+	"Korea": 67110,
+	"Lao": 30606,
+	"Malaysia": 30640,
+	"Myanmar": 33834,
+	"Philippines": 30681,
+	"SriLanka": 34374,
+	"Thailand": 26128,
+	"VietNam": 42432
+},
+
+"2001": {
+	"China": 61524,
+	"India": 31158,
+	"Indonesia": 43879,
+	"Japan": 66354,
+	"Korea": 68381,
+	"Lao": 31264,
+	"Malaysia": 31102,
+	"Myanmar": 34177,
+	"Philippines": 31866,
+	"SriLanka": 35228,
+	"Thailand": 27687,
+	"VietNam": 42853
+},
+
+"2002": {
+	"China": 61855,
+	"India": 26163,
+	"Indonesia": 44691,
+	"Japan": 65823,
+	"Korea": 63495,
+	"Lao": 32739,
+	"Malaysia": 32385,
+	"Myanmar": 34172,
+	"Philippines": 32797,
+	"SriLanka": 34889,
+	"Thailand": 28996,
+	"VietNam": 45903
+},
+
+"2003": {
+	"China": 60606,
+	"India": 31177,
+	"Indonesia": 45426,
+	"Japan": 58499,
+	"Korea": 59201,
+	"Lao": 31404,
+	"Malaysia": 33596,
+	"Myanmar": 35457,
+	"Philippines": 33696,
+	"SriLanka": 33696,
+	"Thailand": 28998,
+	"VietNam": 46387
+},
+
+"2004": {
+	"China": 63085,
+	"India": 29756,
+	"Indonesia": 45365,
+	"Japan": 64151,
+	"Korea": 67291,
+	"Lao": 32831,
+	"Malaysia": 33260,
+	"Myanmar": 38175,
+	"Philippines": 35130,
+	"SriLanka": 36516,
+	"Thailand": 28559,
+	"VietNam": 48553
+},
+
+"2005": {
+	"China": 62527,
+	"India": 31537,
+	"Indonesia": 45739,
+	"Japan": 66483,
+	"Korea": 65682,
+	"Lao": 34890,
+	"Malaysia": 34221,
+	"Myanmar": 37491,
+	"Philippines": 35876,
+	"SriLanka": 35465,
+	"Thailand": 29625,
+	"VietNam": 48891
+},
+
+"2006": {
+	"China": 62763,
+	"India": 31759,
+	"Indonesia": 46201,
+	"Japan": 63359,
+	"Korea": 67114,
+	"Lao": 35855,
+	"Malaysia": 33907,
+	"Myanmar": 38301,
+	"Philippines": 36844,
+	"SriLanka": 36705,
+	"Thailand": 29160,
+	"VietNam": 48943
+},
+
+"2007": {
+	"China": 64223,
+	"India": 32924,
+	"Indonesia": 47052,
+	"Japan": 65111,
+	"Korea": 63541,
+	"Lao": 37233,
+	"Malaysia": 35277,
+	"Myanmar": 39260,
+	"Philippines": 38008,
+	"SriLanka": 38337,
+	"Thailand": 30087,
+	"VietNam": 49869
+},
+
+"2008": {
+	"China": 65535,
+	"India": 34169,
+	"Indonesia": 48948,
+	"Japan": 67786,
+	"Korea": 73942,
+	"Lao": 37772,
+	"Malaysia": 35836,
+	"Myanmar": 40323,
+	"Philippines": 37703,
+	"SriLanka": 36800,
+	"Thailand": 29626,
+	"VietNam": 52336
+},
+
+"2009": {
+	"China": 65820,
+	"India": 31947,
+	"Indonesia": 49985,
+	"Japan": 65209,
+	"Korea": 75967,
+	"Lao": 38419,
+	"Malaysia": 36591,
+	"Myanmar": 40853,
+	"Philippines": 35890,
+	"SriLanka": 37374,
+	"Thailand": 28826,
+	"VietNam": 52372
+},
+
+"2010": {
+	"China": 65482,
+	"India": 32644,
+	"Indonesia": 50144,
+	"Japan": 65111,
+	"Korea": 65062,
+	"Lao": 34552,
+	"Malaysia": 37818,
+	"Myanmar": 41239,
+	"Philippines": 36222,
+	"SriLanka": 40558,
+	"Thailand": 28751,
+	"VietNam": 53221
+},
+
