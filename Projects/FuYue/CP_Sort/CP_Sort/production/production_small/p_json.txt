@@ -1,0 +1,700 @@
+"1961": {
+	"China": 56217601,
+	"India": 53494500,
+	"Indonesia": 12084000,
+	"Japan": 16160400,
+	"Korea": 4679000,
+	"Malaysia": 1089080,
+	"Myanmar": 6834100,
+	"Philippines": 3910100,
+	"SriLanka": 923024,
+	"Thailand": 10150000,
+	"VietNam": 8997400
+},
+
+"1962": {
+	"China": 65675288,
+	"India": 49825600,
+	"Indonesia": 13004000,
+	"Japan": 16927100,
+	"Korea": 4074000,
+	"Malaysia": 1125340,
+	"Myanmar": 7664700,
+	"Philippines": 3966980,
+	"SriLanka": 1029190,
+	"Thailand": 11250000,
+	"VietNam": 9747040
+},
+
+"1963": {
+	"China": 76439280,
+	"India": 55497000,
+	"Indonesia": 11595000,
+	"Japan": 16648800,
+	"Korea": 5079000,
+	"Malaysia": 1190210,
+	"Myanmar": 7782900,
+	"Philippines": 3842860,
+	"SriLanka": 1045910,
+	"Thailand": 12171000,
+	"VietNam": 9622670
+},
+
+"1964": {
+	"China": 85853780,
+	"India": 58962000,
+	"Indonesia": 12306000,
+	"Japan": 16356100,
+	"Korea": 5344000,
+	"Malaysia": 1109780,
+	"Myanmar": 8507700,
+	"Philippines": 3992400,
+	"SriLanka": 1074050,
+	"Thailand": 11600000,
+	"VietNam": 9697030
+},
+
+"1965": {
+	"China": 90705630,
+	"India": 45883500,
+	"Indonesia": 12975000,
+	"Japan": 16126100,
+	"Korea": 4867000,
+	"Malaysia": 1255610,
+	"Myanmar": 8055100,
+	"Philippines": 4072640,
+	"SriLanka": 764158,
+	"Thailand": 11164000,
+	"VietNam": 9369700
+},
+
+"1966": {
+	"China": 98403990,
+	"India": 45657000,
+	"Indonesia": 13650000,
+	"Japan": 16564000,
+	"Korea": 5448000,
+	"Malaysia": 1226680,
+	"Myanmar": 6636400,
+	"Philippines": 4094020,
+	"SriLanka": 980746,
+	"Thailand": 13500000,
+	"VietNam": 8463500
+},
+
+"1967": {
+	"China": 96734816,
+	"India": 56418300,
+	"Indonesia": 13222000,
+	"Japan": 18782000,
+	"Korea": 5008000,
+	"Malaysia": 1205070,
+	"Myanmar": 7769400,
+	"Philippines": 4560700,
+	"SriLanka": 1158150,
+	"Thailand": 11198000,
+	"VietNam": 9188400
+},
+
+"1968": {
+	"China": 97716767,
+	"India": 59641800,
+	"Indonesia": 17162800,
+	"Japan": 18779000,
+	"Korea": 4442000,
+	"Malaysia": 1433950,
+	"Myanmar": 8022900,
+	"Philippines": 4444660,
+	"SriLanka": 1359540,
+	"Thailand": 12410000,
+	"VietNam": 8366150
+},
+
+"1969": {
+	"China": 97998492,
+	"India": 60644500,
+	"Indonesia": 18020200,
+	"Japan": 18200000,
+	"Korea": 5688000,
+	"Malaysia": 1590600,
+	"Myanmar": 7984700,
+	"Philippines": 5464080,
+	"SriLanka": 1375960,
+	"Thailand": 13410000,
+	"VietNam": 8815000
+},
+
+"1970": {
+	"China": 113101869,
+	"India": 63337800,
+	"Indonesia": 19331000,
+	"Japan": 16493000,
+	"Korea": 5476000,
+	"Malaysia": 1681420,
+	"Myanmar": 8161900,
+	"Philippines": 5578410,
+	"SriLanka": 1615930,
+	"Thailand": 13850000,
+	"VietNam": 10173300
+},
+
+"1971": {
+	"China": 118129210,
+	"India": 64602000,
+	"Indonesia": 20190000,
+	"Japan": 14148000,
+	"Korea": 5557000,
+	"Malaysia": 1816920,
+	"Myanmar": 8175000,
+	"Philippines": 5324880,
+	"SriLanka": 1395780,
+	"Thailand": 13744000,
+	"VietNam": 10447000
+},
+
+"1972": {
+	"China": 116428562,
+	"India": 58868000,
+	"Indonesia": 19393600,
+	"Japan": 15450500,
+	"Korea": 5496000,
+	"Malaysia": 1837320,
+	"Myanmar": 7356800,
+	"Philippines": 4609510,
+	"SriLanka": 1312450,
+	"Thailand": 12413000,
+	"VietNam": 10748200
+},
+
+"1973": {
+	"China": 124584090,
+	"India": 66077000,
+	"Indonesia": 21489500,
+	"Japan": 15778000,
+	"Korea": 5850000,
+	"Malaysia": 1979940,
+	"Myanmar": 8601900,
+	"Philippines": 5158900,
+	"SriLanka": 1312420,
+	"Thailand": 14899000,
+	"VietNam": 11125000
+},
+
+"1974": {
+	"China": 127010740,
+	"India": 59650000,
+	"Indonesia": 22473000,
+	"Japan": 15964000,
+	"Korea": 6174000,
+	"Malaysia": 2095000,
+	"Myanmar": 8583400,
+	"Philippines": 5615270,
+	"SriLanka": 1602310,
+	"Thailand": 13386000,
+	"VietNam": 11023300
+},
+
+"1975": {
+	"China": 128726270,
+	"India": 73352000,
+	"Indonesia": 22339200,
+	"Japan": 17097000,
+	"Korea": 6485000,
+	"Malaysia": 1997000,
+	"Myanmar": 9207700,
+	"Philippines": 6112040,
+	"SriLanka": 1154160,
+	"Thailand": 15300000,
+	"VietNam": 10293600
+},
+
+"1976": {
+	"China": 129231900,
+	"India": 63051900,
+	"Indonesia": 23300900,
+	"Japan": 15288000,
+	"Korea": 7249000,
+	"Malaysia": 1995000,
+	"Myanmar": 9319300,
+	"Philippines": 6542610,
+	"SriLanka": 1252620,
+	"Thailand": 15068000,
+	"VietNam": 11827200
+},
+
+"1977": {
+	"China": 131917520,
+	"India": 79005600,
+	"Indonesia": 23347100,
+	"Japan": 17006000,
+	"Korea": 8348000,
+	"Malaysia": 1898000,
+	"Myanmar": 9462000,
+	"Philippines": 7254390,
+	"SriLanka": 1677290,
+	"Thailand": 13921000,
+	"VietNam": 10597100
+},
+
+"1978": {
+	"China": 140023850,
+	"India": 80608500,
+	"Indonesia": 25771600,
+	"Japan": 15736000,
+	"Korea": 8532000,
+	"Malaysia": 1498000,
+	"Myanmar": 10528300,
+	"Philippines": 7211620,
+	"SriLanka": 1890490,
+	"Thailand": 17470000,
+	"VietNam": 9789900
+},
+
+"1979": {
+	"China": 146846140,
+	"India": 63475700,
+	"Indonesia": 26282700,
+	"Japan": 14948000,
+	"Korea": 7880940,
+	"Malaysia": 2095000,
+	"Myanmar": 10447900,
+	"Philippines": 7684800,
+	"SriLanka": 1917220,
+	"Thailand": 15758000,
+	"VietNam": 11362900
+},
+
+"1980": {
+	"China": 142876520,
+	"India": 80312000,
+	"Indonesia": 29651900,
+	"Japan": 12189000,
+	"Korea": 5311410,
+	"Malaysia": 2044600,
+	"Myanmar": 13317400,
+	"Philippines": 7646490,
+	"SriLanka": 2133200,
+	"Thailand": 17368100,
+	"VietNam": 11647400
+},
+
+"1981": {
+	"China": 146959840,
+	"India": 79883000,
+	"Indonesia": 32774200,
+	"Japan": 12824000,
+	"Korea": 7148700,
+	"Malaysia": 2019900,
+	"Myanmar": 14146600,
+	"Philippines": 7910740,
+	"SriLanka": 2229350,
+	"Thailand": 17774300,
+	"VietNam": 12415200
+},
+
+"1982": {
+	"China": 164741380,
+	"India": 70771700,
+	"Indonesia": 33583700,
+	"Japan": 12838000,
+	"Korea": 7307860,
+	"Malaysia": 1883600,
+	"Myanmar": 14373400,
+	"Philippines": 8533730,
+	"SriLanka": 2155630,
+	"Thailand": 16878500,
+	"VietNam": 14390200
+},
+
+"1983": {
+	"China": 172008862,
+	"India": 90048000,
+	"Indonesia": 35303000,
+	"Japan": 12958000,
+	"Korea": 7607540,
+	"Malaysia": 1734330,
+	"Myanmar": 14288100,
+	"Philippines": 7294910,
+	"SriLanka": 2483530,
+	"Thailand": 19548900,
+	"VietNam": 14743300
+},
+
+"1984": {
+	"China": 181095744,
+	"India": 87552800,
+	"Indonesia": 38136400,
+	"Japan": 14848000,
+	"Korea": 7970330,
+	"Malaysia": 1571670,
+	"Myanmar": 14255500,
+	"Philippines": 7828880,
+	"SriLanka": 2419700,
+	"Thailand": 19904800,
+	"VietNam": 15505600
+},
+
+"1985": {
+	"China": 171318865,
+	"India": 95817700,
+	"Indonesia": 39032900,
+	"Japan": 14578000,
+	"Korea": 7855260,
+	"Malaysia": 1745370,
+	"Myanmar": 14317000,
+	"Philippines": 8805600,
+	"SriLanka": 2661210,
+	"Thailand": 20263900,
+	"VietNam": 15874800
+},
+
+"1986": {
+	"China": 174720521,
+	"India": 90779400,
+	"Indonesia": 39726800,
+	"Japan": 14559000,
+	"Korea": 7871370,
+	"Malaysia": 1718220,
+	"Myanmar": 14127100,
+	"Philippines": 9246790,
+	"SriLanka": 2588180,
+	"Thailand": 18868200,
+	"VietNam": 16002900
+},
+
+"1987": {
+	"China": 15102600,
+	"India": 18428300,
+	"Indonesia": 2127830,
+	"Japan": 8539850,
+	"Korea": 13638400,
+	"Malaysia": 1626700,
+	"Myanmar": 7595760,
+	"Philippines": 13284000,
+	"SriLanka": 40078200,
+	"Thailand": 85338700,
+	"VietNam": 176662485
+},
+
+"1988": {
+	"China": 171441923,
+	"India": 106369000,
+	"Indonesia": 41676200,
+	"Japan": 12419000,
+	"Korea": 8260160,
+	"Malaysia": 1696240,
+	"Myanmar": 13167100,
+	"Philippines": 8970920,
+	"SriLanka": 2476610,
+	"Thailand": 21262900,
+	"VietNam": 17000000
+},
+
+"1989": {
+	"China": 182485243,
+	"India": 110311000,
+	"Indonesia": 44725600,
+	"Japan": 12934000,
+	"Korea": 8099950,
+	"Malaysia": 1743440,
+	"Myanmar": 13806500,
+	"Philippines": 9458770,
+	"SriLanka": 2063440,
+	"Thailand": 20601000,
+	"VietNam": 18996300
+},
+
+"1990": {
+	"China": 191614672,
+	"India": 111517000,
+	"Indonesia": 45178800,
+	"Japan": 13124000,
+	"Korea": 7721970,
+	"Malaysia": 1884980,
+	"Myanmar": 13971800,
+	"Philippines": 9885000,
+	"SriLanka": 2538000,
+	"Thailand": 17193200,
+	"VietNam": 19225100
+},
+
+"1991": {
+	"China": 185692640,
+	"India": 112042000,
+	"Indonesia": 44688200,
+	"Japan": 12005000,
+	"Korea": 7292530,
+	"Malaysia": 1926350,
+	"Myanmar": 13204200,
+	"Philippines": 9673260,
+	"SriLanka": 2389000,
+	"Thailand": 20400000,
+	"VietNam": 19621900
+},
+
+"1992": {
+	"China": 188291880,
+	"India": 109001000,
+	"Indonesia": 48240000,
+	"Japan": 13216000,
+	"Korea": 7303000,
+	"Malaysia": 2012730,
+	"Myanmar": 14840400,
+	"Philippines": 9513000,
+	"SriLanka": 2339700,
+	"Thailand": 19917000,
+	"VietNam": 21590300
+},
+
+"1993": {
+	"China": 179746930,
+	"India": 120400000,
+	"Indonesia": 48181100,
+	"Japan": 9793000,
+	"Korea": 6507000,
+	"Malaysia": 2104450,
+	"Myanmar": 16763200,
+	"Philippines": 9434210,
+	"SriLanka": 2570000,
+	"Thailand": 19530000,
+	"VietNam": 22836600
+},
+
+"1994": {
+	"China": 177994400,
+	"India": 122640000,
+	"Indonesia": 46641500,
+	"Japan": 14976000,
+	"Korea": 6882000,
+	"Malaysia": 2138790,
+	"Myanmar": 18198900,
+	"Philippines": 10540600,
+	"SriLanka": 2683690,
+	"Thailand": 21111000,
+	"VietNam": 23528300
+},
+
+"1995": {
+	"China": 187297970,
+	"India": 115440000,
+	"Indonesia": 49744100,
+	"Japan": 13435000,
+	"Korea": 6387300,
+	"Malaysia": 2127270,
+	"Myanmar": 17956900,
+	"Philippines": 10540600,
+	"SriLanka": 2809890,
+	"Thailand": 22015500,
+	"VietNam": 24963700
+},
+
+"1996": {
+	"China": 197032900,
+	"India": 122500000,
+	"Indonesia": 51101500,
+	"Japan": 12930000,
+	"Korea": 7121420,
+	"Malaysia": 2228490,
+	"Myanmar": 17679800,
+	"Philippines": 11283600,
+	"SriLanka": 2061520,
+	"Thailand": 22331600,
+	"VietNam": 26396700
+},
+
+"1997": {
+	"China": 202771840,
+	"India": 123700000,
+	"Indonesia": 49377100,
+	"Japan": 12531000,
+	"Korea": 7312100,
+	"Malaysia": 2119620,
+	"Myanmar": 16651400,
+	"Philippines": 11268000,
+	"SriLanka": 2239370,
+	"Thailand": 23580000,
+	"VietNam": 27523900
+},
+
+"1998": {
+	"China": 200571160,
+	"India": 129055000,
+	"Indonesia": 49236700,
+	"Japan": 11200000,
+	"Korea": 6779290,
+	"Malaysia": 1944240,
+	"Myanmar": 17077700,
+	"Philippines": 8554000,
+	"SriLanka": 2692340,
+	"Thailand": 23450000,
+	"VietNam": 29145500
+},
+
+"1999": {
+	"China": 200403300,
+	"India": 134496000,
+	"Indonesia": 50866400,
+	"Japan": 11468800,
+	"Korea": 7032760,
+	"Malaysia": 2036640,
+	"Myanmar": 20126000,
+	"Philippines": 11786600,
+	"SriLanka": 2857100,
+	"Thailand": 24172000,
+	"VietNam": 31393800
+},
+
+"2000": {
+	"China": 189814060,
+	"India": 127465000,
+	"Indonesia": 51898000,
+	"Japan": 11863000,
+	"Korea": 7196580,
+	"Malaysia": 2140800,
+	"Myanmar": 21323900,
+	"Philippines": 12389400,
+	"SriLanka": 2859900,
+	"Thailand": 25843900,
+	"VietNam": 32529500
+},
+
+"2001": {
+	"China": 179304900,
+	"India": 139900000,
+	"Indonesia": 50460800,
+	"Japan": 11320000,
+	"Korea": 7406520,
+	"Malaysia": 2095000,
+	"Myanmar": 21916000,
+	"Philippines": 12954900,
+	"SriLanka": 2695080,
+	"Thailand": 28033700,
+	"VietNam": 32108400
+},
+
+"2002": {
+	"China": 176342190,
+	"India": 107730000,
+	"Indonesia": 51489700,
+	"Japan": 11111000,
+	"Korea": 6687230,
+	"Malaysia": 2197350,
+	"Myanmar": 21805000,
+	"Philippines": 13270700,
+	"SriLanka": 2859480,
+	"Thailand": 27991800,
+	"VietNam": 34447200
+},
+
+"2003": {
+	"China": 162304280,
+	"India": 132789000,
+	"Indonesia": 52137600,
+	"Japan": 9740000,
+	"Korea": 6015000,
+	"Malaysia": 2257000,
+	"Myanmar": 23146300,
+	"Philippines": 13499900,
+	"SriLanka": 3071200,
+	"Thailand": 29473500,
+	"VietNam": 34568800
+},
+
+"2004": {
+	"China": 180522610,
+	"India": 124697000,
+	"Indonesia": 54088500,
+	"Japan": 10912000,
+	"Korea": 6736930,
+	"Malaysia": 2264000,
+	"Myanmar": 24939000,
+	"Philippines": 14496800,
+	"SriLanka": 2628000,
+	"Thailand": 28538200,
+	"VietNam": 36148900
+},
+
+"2005": {
+	"China": 182055140,
+	"India": 137690000,
+	"Indonesia": 54151100,
+	"Japan": 11342000,
+	"Korea": 6435000,
+	"Malaysia": 2314000,
+	"Myanmar": 27683000,
+	"Philippines": 14603000,
+	"SriLanka": 3246000,
+	"Thailand": 30291900,
+	"VietNam": 35832900
+},
+
+"2006": {
+	"China": 183276050,
+	"India": 139137000,
+	"Indonesia": 54454900,
+	"Japan": 10695000,
+	"Korea": 6410950,
+	"Malaysia": 2187000,
+	"Myanmar": 30924000,
+	"Philippines": 15326700,
+	"SriLanka": 3342000,
+	"Thailand": 29641900,
+	"VietNam": 35849500
+},
+
+"2007": {
+	"China": 187397460,
+	"India": 144570000,
+	"Indonesia": 57157400,
+	"Japan": 10893000,
+	"Korea": 6038000,
+	"Malaysia": 2375000,
+	"Myanmar": 31451000,
+	"Philippines": 16240200,
+	"SriLanka": 3131000,
+	"Thailand": 32099400,
+	"VietNam": 35942700
+},
+
+"2008": {
+	"China": 193284180,
+	"India": 148770000,
+	"Indonesia": 60251100,
+	"Japan": 11028800,
+	"Korea": 6919250,
+	"Malaysia": 2353000,
+	"Myanmar": 32573000,
+	"Philippines": 16815500,
+	"SriLanka": 3875000,
+	"Thailand": 31650600,
+	"VietNam": 38729800
+},
+
+"2009": {
+	"China": 196681170,
+	"India": 133700000,
+	"Indonesia": 64398900,
+	"Japan": 10590000,
+	"Korea": 7022970,
+	"Malaysia": 2460000,
+	"Myanmar": 32682000,
+	"Philippines": 16266400,
+	"SriLanka": 3652000,
+	"Thailand": 32116100,
+	"VietNam": 38950200
+},
+
+"2010": {
+	"China": 197212010,
+	"India": 120620000,
+	"Indonesia": 66411500,
+	"Japan": 10600000,
+	"Korea": 5804000,
+	"Malaysia": 2548000,
+	"Myanmar": 33204500,
+	"Philippines": 15771700,
+	"SriLanka": 4300620,
+	"Thailand": 31597200,
+	"VietNam": 39988900
+},
+
