@@ -147,14 +147,17 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CudaCompile Include="kernel.cu" />
+    <CudaCompile Include="CUDA_COMP.cu" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="EasyBMP.h" />
+    <ClInclude Include="EasyBMP_BMP.h" />
+    <ClInclude Include="EasyBMP_DataStructures.h" />
+    <ClInclude Include="EasyBMP_VariousBMPutilities.h" />
     <ClInclude Include="fftw3.h" />
-    <ClInclude Include="LoadBMP.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="LoadBMP.cpp" />
+    <ClCompile Include="EasyBMP.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
