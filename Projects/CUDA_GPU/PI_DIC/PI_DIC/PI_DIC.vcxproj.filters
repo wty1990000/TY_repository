@@ -41,4 +41,9 @@
       <Filter>CUDA</Filter>
     </CudaCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="CUDA_COMP.cuh">
+      <Filter>CUDA</Filter>
+    </None>
+  </ItemGroup>
 </Project>
