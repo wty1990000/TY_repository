@@ -14,8 +14,8 @@ const int iMaxIteration = 20;
 const float fDeltaP = 0.001f;
 
 //Utility functions Declaration in processing the BMP images
-bool LoadBMPs(BMP& Image1, BMP& Image2, int argc, char** argv);
-bool LoadBmpsToArray(const BMP& Image1, const BMP& Image2, std::vector<float>& Img1, std::vector<float>& Img2);
+int LoadBMPs(BMP& Image1, BMP& Image2, int argc, char** argv);
+int LoadBmpsToArray(const BMP& Image1, const BMP& Image2, std::vector<float>& Img1, std::vector<float>& Img2);
 
 
 int main(int argc, char** argv)
@@ -36,17 +36,20 @@ int main(int argc, char** argv)
 	
 	//Load the two images and get the arrays of intensity values.
 	BMP Image1, Image2;			//Images managed by BMP class
-	if(!LoadBMPs(Image2, Image2, argc, argv)){
+	if(0 == LoadBMPs(Image2, Image2, argc, argv)){
 		cout<<"Unable to load the images. Please try again."<<endl;
 		exit(0);
 	}		
 	vector<float> Img1, Img2;	//Used for storing the newly generated images with border 2 pixels.
-	if(!LoadBmpsToArray(Image1, Image2, Img1, Img2)){
+	if(0 == LoadBmpsToArray(Image1, Image2, Img1, Img2)){
 		cout<<"Error! The array size of two input images are different! Check the BMP images"<<endl;
 		exit(0);
 	}
 	else
 		cout<<"Images are successfully loaded into arrays. Starting computation..."<<endl;
+
+	//Initialize the CUDA runtime library
+	cudaInit();
 
 	/*------------------------------Real computation starts here--------------------------------
 	  Totally, there are three steps:
@@ -66,20 +69,28 @@ int main(int argc, char** argv)
 }
 
 //Utility functions implementation
-bool LoadBMPs(BMP& Image1, BMP& Image2, int argc, char** argv)
+int LoadBMPs(BMP& Image1, BMP& Image2, int argc, char** argv)
+/*Input: Command line BMP files in argv[][]
+ Output: BMP images saved in BMP class objects
+Purpose: Load BMP images.
+*/
 {
 	if(Image1.ReadFromFile(argv[1]) && Image2.ReadFromFile(argv[2])){
 		if(Image1.TellHeight() != Image2.TellHeight() ||
 			Image1.TellWidth() != Image2.TellWidth()){
 				std::cout<<"Error! The scale of the two input images should be identical!"<<std::endl;
-				return FALSE;
+				return 0;
 		}
-		return TRUE;
+		return 1;
 	}
 	else
-		return FALSE;
+		return 0;
 }
-bool LoadBmpsToArray(const BMP& Image1, const BMP& Image2, std::vector<float>& Img1, std::vector<float>& Img2)
+int LoadBmpsToArray(const BMP& Image1, const BMP& Image2, std::vector<float>& Img1, std::vector<float>& Img2)
+/*Input: Two BMP class objects that contain images' information.
+ Output: Two vector's that contain the gray level intensity values of the two images
+Purpose: Construct the arrays for the two images' intensity values. 
+*/
 {
 	RGBApixel pixelValue;
 	for(int row=0; row<Image1.TellHeight; row++){
@@ -91,8 +102,8 @@ bool LoadBmpsToArray(const BMP& Image1, const BMP& Image2, std::vector<float>& I
 		}
 	}
 	if(Img1.size() == Img2.size()){
-		return TRUE;
+		return 1;
 	}
 	else
-		return FALSE;
+		return 0;
 }
