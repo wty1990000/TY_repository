@@ -27,12 +27,18 @@
     <ClInclude Include="EasyBMP_VariousBMPutilities.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="FFT-CC.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="EasyBMP.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="FFT-CC.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
