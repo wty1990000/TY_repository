@@ -305,7 +305,12 @@ __global__ void ICGN_kernel(float* fInput_dPXY, float* fInput_dR, float* fInput_
 		}
 		fOutput_dP[(row*iNumberX+col)*2+0] = fdP[0];
 		fOutput_dP[(row*iNumberX+col)*2+1] = fdP[1];
-	}	
+	}
+	delete [] fSubsetR;
+	delete [] fSubsetT;
+	delete [] fSubsetAveR;
+	delete [] fSubsetAveT;
+	delete [] fRDescent;
 }
 
 
@@ -357,6 +362,26 @@ void combined_function(const std::vector<float>& hInput_IMGR, const std::vector<
 	checkCudaErrors(cudaMemcpy(dInput_iU, iU,(iNumberX*iNumberY)*sizeof(int), cudaMemcpyHostToDevice));
 	checkCudaErrors(cudaMemcpy(dInput_iV, iV,(iNumberX*iNumberY)*sizeof(int), cudaMemcpyHostToDevice));
 	checkCudaErrors(cudaMemcpy(dInput_fPXY, hInput_dPXY,(iNumberX*iNumberY)*2*sizeof(float), cudaMemcpyHostToDevice));
+
+	ICGN_interface(dInput_fPXY,d_OutputIMGR,d_OutputIMGRx,d_OutputIMGRy,d_OutputIMGT, d_OutputBicubic, fDeltaP, dInput_iU, dInput_iV, iNumberY, iNumberX, iSubsetH, iSubsetW,
+		width,height,iSubsetY,iSubsetX, iIterationNum, dOutput_fDP, fTimeICGN);
+	checkCudaErrors(cudaMemcpy(fdP, dOutput_fDP, iNumberY*iNumberX*6*sizeof(float), cudaMemcpyDeviceToHost));
+
+	TotalWatch.stop();
+	fTimeTotal = TotalWatch.getTime();
+
+	checkCudaErrors(cudaFree(d_OutputIMGR));
+	checkCudaErrors(cudaFree(d_OutputIMGRx));
+	checkCudaErrors(cudaFree(d_OutputIMGRy));
+	checkCudaErrors(cudaFree(d_OutputIMGT));
+	checkCudaErrors(cudaFree(d_OutputBicubic));
+	checkCudaErrors(cudaFree(dInput_iU));
+	checkCudaErrors(cudaFree(dInput_iV));
+	checkCudaErrors(cudaFree(dInput_fPXY));
+	checkCudaErrors(cudaFree(dOutput_fDP));
+
+	free(hInput_dR);
+	free(hInput_dT);
 
 }
 
@@ -433,13 +458,20 @@ Purpose: Precomputation Interface function for CPU use
 	cudaFree(d_InputBiubicMatrix);
 }
 //ICGN Interface function
-void ICGN_interface(float* dInput_dPXY, float* dInput_dR, float* dInput_dRx, float* dInput_dRy, float* dInput_dRT, float* dInput_Bicubic,
-					int* dInput_iU, int* dInput_iV, int iNumberY, int iNumberX, int iSubsetH, int iSubsetW, int width, int height, float* dOutput_dP, float& time)
+void ICGN_interface(float* dInput_dPXY, float* dInput_dR, float* dInput_dRx, float* dInput_dRy, float* dInput_dT, float* dInput_Bicubic, float fDeltaP,
+					int* dInput_iU, int* dInput_iV, int iNumberY, int iNumberX, int iSubsetH, int iSubsetW, int width, int height, int iSubsetY, int iSubsetX, int iIterationNum,
+					float* dOutput_dP, float& time)
 {
 	StopWatchWin ICGNWatch;
 	
 	dim3 dimBlock(BLOCK_SIZE, BLOCK_SIZE,1);
 	dim3 dimGrid((iNumberX-1)/BLOCK_SIZE+1, (iNumberY-1)/BLOCK_SIZE+1,1);
+
+	ICGNWatch.start();
+	ICGN_kernel<<<dimGrid, dimBlock>>>(dInput_dPXY, dInput_dR, dInput_dRx, dInput_dRy, fDeltaP, dInput_dT, dInput_Bicubic, dInput_iU, dInput_iV, 
+		iNumberY, iNumberX, iSubsetH, iSubsetW, width, height, iSubsetY, iSubsetX, iIterationNum, dOutput_dP);
+	ICGNWatch.stop();
+	time = ICGNWatch.getTime();
 }
 
 
