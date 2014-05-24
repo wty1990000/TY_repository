@@ -70,7 +70,7 @@ void FFT_CC_interface(float* hInput_dR, float* hInput_dT, float* hInput_dPXY, in
 			fftwf_execute(rfftwPlan);
 			fCorrPeak = -2; // maximum C
 			iCorrPeakXY = 0; // loacatoin of maximum C
-			iCorrPeakXY = sqrt(fModf * fModg) * float(iFFTSubW * iFFTSubH); //parameter for normalization
+			iCorrPeakXY = int(sqrt(fModf * fModg) * float(iFFTSubW * iFFTSubH)); //parameter for normalization
 
 			// Search for maximum C, meanwhile normalize C
 			for (int k = 0; k < iFFTSubW * iFFTSubH; k++)

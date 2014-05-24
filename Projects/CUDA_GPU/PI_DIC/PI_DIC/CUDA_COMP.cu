@@ -114,7 +114,7 @@ __global__ void ICGN_kernel(float* fInput_dPXY, float* fInput_dR, float* fInput_
 {
 	int row = blockIdx.y*blockDim.y+threadIdx.y;
 	int col = blockIdx.x*blockDim.x+threadIdx.x;
-	int offset = row*iNumberX + col;
+	int offset = row*iNumberX+col;
 
 	//Used variables
 	int k,l,m,n, iTemp, iTempX, iTempY;
@@ -125,9 +125,9 @@ __global__ void ICGN_kernel(float* fInput_dPXY, float* fInput_dR, float* fInput_
 	float fSubAveT, fSubNormT;
 	float fWarpX, fWarpY;
 	float fdP[6], fdWarp[3][3], fJacobian[2][6], fHessian[6][6], fHessianXY[6][6], fInvHessian[6][6], fdPXY[2], fNumerator[6];
-	float *fSubsetR = new float[iSubsetH*iSubsetW], *fSubsetT = new float[iSubsetH*iSubsetW];
-	float *fSubsetAveR = new float[iSubsetH*iSubsetW], *fSubsetAveT = new float[iSubsetH*iSubsetW];
-	float *fRDescent = new float[iSubsetH*iSubsetW*6];
+	float *fSubsetR = (float*)malloc(iSubsetH*iSubsetW*sizeof(float)), *fSubsetT = (float*)malloc(iSubsetH*iSubsetW*sizeof(float));
+	float *fSubsetAveR = (float*)malloc(iSubsetH*iSubsetW*sizeof(float)), *fSubsetAveT = (float*)malloc(iSubsetH*iSubsetW*sizeof(float));
+	float *fRDescent = (float*)malloc(iSubsetH*iSubsetW*6*sizeof(float));
 	float fError;
 
 	if((row<iNumberY) && (col<iNumberX)){
@@ -303,14 +303,21 @@ __global__ void ICGN_kernel(float* fInput_dPXY, float* fInput_dR, float* fInput_
 			fdVx = fdP[4];
 			fdVy = fdP[5];
 		}
-		fOutput_dP[(row*iNumberX+col)*2+0] = fdP[0];
-		fOutput_dP[(row*iNumberX+col)*2+1] = fdP[1];
 	}
-	delete [] fSubsetR;
-	delete [] fSubsetT;
-	delete [] fSubsetAveR;
-	delete [] fSubsetAveT;
-	delete [] fRDescent;
+	__syncthreads();
+	if((row<iNumberY) && (col<iNumberX)){
+		fOutput_dP[(row*iNumberX+col)*6+0] = fdP[0];
+		fOutput_dP[(row*iNumberX+col)*6+1] = fdP[1];
+		fOutput_dP[(row*iNumberX+col)*6+2] = fdP[2];
+		fOutput_dP[(row*iNumberX+col)*6+3] = fdP[3];
+		fOutput_dP[(row*iNumberX+col)*6+4] = fdP[4];
+		fOutput_dP[(row*iNumberX+col)*6+5] = fdP[5];
+	}
+	free(fSubsetR);
+	free(fSubsetT);
+	free(fSubsetAveR);
+	free(fSubsetAveT);
+	free(fRDescent);
 }
 
 
@@ -321,7 +328,9 @@ __global__ void ICGN_kernel(float* fInput_dPXY, float* fInput_dR, float* fInput_
 void precompoutation_interface(const std::vector<float>& h_InputIMGR, const std::vector<float>& h_InputIMGT, int width, int height,
 							  float *d_OutputIMGR, float *d_OutputIMGT, float *d_OutputIMGRx,
 							  float *d_OutputIMGRy, float *d_OutputdTBicubic, float& time);
-
+void ICGN_interface(float* dInput_dPXY, float* dInput_dR, float* dInput_dRx, float* dInput_dRy, float* dInput_dT, float* dInput_Bicubic, float fDeltaP,
+					int* dInput_iU, int* dInput_iV, int iNumberY, int iNumberX, int iSubsetH, int iSubsetW, int width, int height, int iSubsetY, int iSubsetX, int iIterationNum,
+					float* dOutput_dP, float& time);
 
 /*
 --------------Interface Function CombinedComputation for host use--------------
