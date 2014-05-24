@@ -73,8 +73,8 @@ int main(int argc, char** argv)
 	float *fZNCC = (float*)malloc(iNumberX*iNumberY*sizeof(float));
 	float *fdP	 = (float*)malloc(iNumberX*iNumberY*6*sizeof(float));
 	float *fdPXY = (float*)malloc(iNumberX*iNumberY*2*sizeof(float));
-	int *iU = (int*)malloc(iNumberX*iNumberY*sizeof(float));
-	int *iV = (int*)malloc(iNumberX*iNumberY*sizeof(float));
+	int *iU = (int*)malloc(iNumberX*iNumberY*sizeof(int));
+	int *iV = (int*)malloc(iNumberX*iNumberY*sizeof(int));
 
 	for(int i=0; i<iNumberY; i++){
 		for(int j=0; j<iNumberX; j++){

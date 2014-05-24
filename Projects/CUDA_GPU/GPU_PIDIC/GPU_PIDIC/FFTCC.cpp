@@ -1,5 +1,5 @@
 #include "fftw3.h"
-#include "FFT-CC.h"
+#include "FFTCC.h"
 #include "helper_functions.h"
 
 void FFT_CC_interface(float* hInput_dR, float* hInput_dT, float* hInput_dPXY, int iNumberY, int iNumberX, int iFFTSubH, int iFFTSubW, 
