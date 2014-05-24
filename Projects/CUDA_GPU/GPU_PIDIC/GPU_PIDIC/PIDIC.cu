@@ -116,7 +116,6 @@ __global__ void ICGN_kernel(float* fInput_dPXY, float* fInput_dR, float* fInput_
 	int offset = row*iNumberX+col;*/
 
 	int y = threadIdx.y, x = threadIdx.x;
-	int offset = y*iNumberX+x;
 
 	//Used variables
 	int iTemp, iTempX, iTempY;
@@ -135,7 +134,7 @@ __global__ void ICGN_kernel(float* fInput_dPXY, float* fInput_dR, float* fInput_
 	/*if((row<iNumberY) && (col<iNumberX)){*/
 		fdU = float(iInput_iU[y*iNumberX+x]); fdV = float(iInput_iV[y*iNumberX+x]);	fdUx = 0.0f; fdUy = 0.0f; fdVx = 0.0f; fdVy = 0.0f;
 		fdP[0] = fdU, fdP[1] = fdUx, fdP[2] = fdUy, fdP[3] = fdV, fdP[4] = fdVx, fdP[5] = fdVy;
-		fdPXY[0] = fInput_dPXY[offset*2+0], fdPXY[1] = fInput_dPXY[offset*2+1];
+		fdPXY[0] = fInput_dPXY[(y*iNumberX+x)*2+0], fdPXY[1] = fInput_dPXY[(y*iNumberX+x)*2+1];
 		fdWarp[0][0] = 1+fdUx, fdWarp[0][1] = fdUy, fdWarp[0][2] = fdU, fdWarp[1][0] = fdVx, fdWarp[1][1] = 1+fdVy, fdWarp[1][2] = fdV, fdWarp[2][0] = 0.0f, fdWarp[2][1] = 0.0f, fdWarp[2][2] = 1.0f;
 
 		//Initialize the Hessian matrix in subsetR
@@ -147,14 +146,14 @@ __global__ void ICGN_kernel(float* fInput_dPXY, float* fInput_dR, float* fInput_
 		//Fill the gray intensity value to subset R
 		for(int l=0; l<iSubsetH; l++){
 			for(int m=0; m<iSubsetW; m++){
-				fSubsetR[l*iSubsetW+m] = fInput_dR[int(fInput_dPXY[offset*2+0] - iSubsetY+l)*width+int(fInput_dPXY[offset*2+1]-iSubsetX+m)];
+				fSubsetR[l*iSubsetW+m] = fInput_dR[int(fdPXY[0] - iSubsetY+l)*width+int(fdPXY[1] - iSubsetX+m)];
 				fSubAveR += (fSubsetR[l*iSubsetW+m]/float(iSubsetH * iSubsetW));
 				//Evaluate the Jacobian dW/dp at(x,0)
 				fJacobian[0][0] = 1.0f, fJacobian[0][1] = float(m-iSubsetX), fJacobian[0][2] = float(l-iSubsetY), fJacobian[0][3] = 0.0f, fJacobian[0][4] = 0.0f, fJacobian[0][5] = 0.0f;
 				fJacobian[1][0] = 0.0f, fJacobian[1][1] = 0.0f, fJacobian[1][2] = 0.0f, fJacobian[1][3] = 1.0f, fJacobian[1][4] = float(m-iSubsetX), fJacobian[1][5] = float(l-iSubsetY);
 				for(int k=0; k<6; k++){
-					fRDescent[(l*iSubsetW+m)*6+k] = fInput_dRx[(int(fInput_dPXY[offset*2+0]) - iSubsetY+l)*width+(int(fInput_dPXY[offset*2+1]) - iSubsetX +m)]*fJacobian[0][k]
-												   +fInput_dRy[(int(fInput_dPXY[offset*2+0]) - iSubsetY+l)*width+(int(fInput_dPXY[offset*2+1]) - iSubsetX +m)]*fJacobian[1][k];
+					fRDescent[(l*iSubsetW+m)*6+k] = fInput_dRx[int(fdPXY[0] - iSubsetY+l)*width+int(fdPXY[1] - iSubsetX +m)]*fJacobian[0][k]
+												   +fInput_dRy[int(fdPXY[0] - iSubsetY+l)*width+int(fdPXY[1] - iSubsetX +m)]*fJacobian[1][k];
 				}
 				for(int k=0; k<6; k++){
 					for(int n=0; n<6; n++){
@@ -451,20 +450,8 @@ void computation(const float* ImgR, const float* ImgT, int iWidth, int iHeight)
 	WatchICGN.stop();
 	fTimeICGN = WatchICGN.getTime();
 
+	WatchTotal.stop();
 	fTimeTotal = WatchTotal.getTime();
-
-
-	checkCudaErrors(cudaFree(d_OutputIMGR));
-	checkCudaErrors(cudaFree(d_OutputIMGRx));
-	checkCudaErrors(cudaFree(d_OutputIMGRy));
-	checkCudaErrors(cudaFree(d_OutputIMGT));
-	checkCudaErrors(cudaFree(d_OutputBicubic));
-	checkCudaErrors(cudaFree(dInput_iU));
-	checkCudaErrors(cudaFree(dInput_iV));
-	checkCudaErrors(cudaFree(dInput_fPXY));
-	checkCudaErrors(cudaFree(dOutput_fDP));
-	free(hInput_dR);
-	free(hInput_dT);
 
 	ofstream OutputFile;
 	OutputFile.open("Results.txt");
@@ -492,7 +479,19 @@ void computation(const float* ImgR, const float* ImgT, int iWidth, int iHeight)
 	OutputFile <<"Time for ICGN:"<<fTimeICGN<<endl;
 
 	OutputFile.close();
-	
+
+
+	checkCudaErrors(cudaFree(d_OutputIMGR));
+	checkCudaErrors(cudaFree(d_OutputIMGRx));
+	checkCudaErrors(cudaFree(d_OutputIMGRy));
+	checkCudaErrors(cudaFree(d_OutputIMGT));
+	checkCudaErrors(cudaFree(d_OutputBicubic));
+	checkCudaErrors(cudaFree(dInput_iU));
+	checkCudaErrors(cudaFree(dInput_iV));
+	checkCudaErrors(cudaFree(dInput_fPXY));
+	checkCudaErrors(cudaFree(dOutput_fDP));
+	free(hInput_dR);
+	free(hInput_dT);
 	free(fZNCC);
 	free(fdP);
 	free(fdPXY);
