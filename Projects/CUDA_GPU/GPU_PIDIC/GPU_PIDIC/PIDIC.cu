@@ -15,7 +15,6 @@ using namespace std;
 const int iMarginX = 10,	iMarginY = 10;
 const int iGridX = 10,		iGridY = 10;
 const int iSubsetX = 16,	iSubsetY =16;
-const int iMaxIteration = 20;
 const float fDeltaP = 0.001f;
 const int iIterationNum = 5;
 
@@ -111,36 +110,34 @@ __global__ void precomputation_kernel(float *d_InputIMGR, float *d_InputIMGT, co
 __global__ void ICGN_kernel(float* fInput_dPXY, float* fInput_dR, float* fInput_dRx, float* fInput_dRy, float fDeltaP, float* fInput_dT, float* fInput_Bicubic, int* iInput_iU, int* iInput_iV,
 							int iNumberY, int iNumberX, int iSubsetH, int iSubsetW, int width, int height, int iSubsetY, int iSubsetX, int iIterationNum, float* fOutput_dP)
 {
-	/*int row = blockIdx.y*blockDim.y+threadIdx.y;
+	int row = blockIdx.y*blockDim.y+threadIdx.y;
 	int col = blockIdx.x*blockDim.x+threadIdx.x;
-	int offset = row*iNumberX+col;*/
-
-	int y = threadIdx.y, x = threadIdx.x;
+	int offset = row*iNumberX+col;
 
 	//Used variables
 	int iTemp, iTempX, iTempY;
 	float fTemp, fTempX, fTempY;
 	float fdU, fdV, fdUx, fdUy, fdVx, fdVy;
 	float fdDU, fdDUx, fdDUy, fdDV, fdDVx, fdDVy;
-	float fSubAveR = 0.0f, fSubNormR = 0.0f;
+	float fSubAveR = 0.0, fSubNormR = 0.0;
 	float fSubAveT, fSubNormT;
 	float fWarpX, fWarpY;
 	float fdP[6], fdWarp[3][3], fJacobian[2][6], fHessian[6][6], fHessianXY[6][6], fInvHessian[6][6], fdPXY[2], fNumerator[6];
-	float *fSubsetR = (float*)malloc(iSubsetH*iSubsetW*sizeof(float)), *fSubsetT = (float*)malloc(iSubsetH*iSubsetW*sizeof(float));
-	float *fSubsetAveR = (float*)malloc(iSubsetH*iSubsetW*sizeof(float)), *fSubsetAveT = (float*)malloc(iSubsetH*iSubsetW*sizeof(float));
-	float *fRDescent = (float*)malloc(iSubsetH*iSubsetW*6*sizeof(float));
+	float *fSubsetR = new float(iSubsetH*iSubsetW), *fSubsetT = new float(iSubsetH*iSubsetW);
+	float *fSubsetAveR = new float(iSubsetH*iSubsetW), *fSubsetAveT = new float(iSubsetH*iSubsetW);
+	float *fRDescent = new float(iSubsetH*iSubsetW*6);
 	float fError;
 
-	/*if((row<iNumberY) && (col<iNumberX)){*/
-		fdU = float(iInput_iU[y*iNumberX+x]); fdV = float(iInput_iV[y*iNumberX+x]);	fdUx = 0.0f; fdUy = 0.0f; fdVx = 0.0f; fdVy = 0.0f;
+	//if((row<iNumberY) && (col<iNumberX)){
+		fdU = float(iInput_iU[offset]); fdV = float(iInput_iV[offset]);	fdUx = 0.0; fdUy = 0.0; fdVx = 0.0; fdVy = 0.0;
 		fdP[0] = fdU, fdP[1] = fdUx, fdP[2] = fdUy, fdP[3] = fdV, fdP[4] = fdVx, fdP[5] = fdVy;
-		fdPXY[0] = fInput_dPXY[(y*iNumberX+x)*2+0], fdPXY[1] = fInput_dPXY[(y*iNumberX+x)*2+1];
-		fdWarp[0][0] = 1+fdUx, fdWarp[0][1] = fdUy, fdWarp[0][2] = fdU, fdWarp[1][0] = fdVx, fdWarp[1][1] = 1+fdVy, fdWarp[1][2] = fdV, fdWarp[2][0] = 0.0f, fdWarp[2][1] = 0.0f, fdWarp[2][2] = 1.0f;
+		fdPXY[0] = fInput_dPXY[(offset)*2+0], fdPXY[1] = fInput_dPXY[(offset)*2+1];
+		fdWarp[0][0] = 1+fdUx, fdWarp[0][1] = fdUy, fdWarp[0][2] = fdU, fdWarp[1][0] = fdVx, fdWarp[1][1] = 1+fdVy, fdWarp[1][2] = fdV, fdWarp[2][0] = 0.0, fdWarp[2][1] = 0.0, fdWarp[2][2] = 1.0;
 
 		//Initialize the Hessian matrix in subsetR
 		for(int k=0; k<6; k++){
 			for(int n=0; n<6; n++){
-				fHessian[k][n] = 0.0f;
+				fHessian[k][n] = 0.0;
 			}
 		}
 		//Fill the gray intensity value to subset R
@@ -149,11 +146,11 @@ __global__ void ICGN_kernel(float* fInput_dPXY, float* fInput_dR, float* fInput_
 				fSubsetR[l*iSubsetW+m] = fInput_dR[int(fdPXY[0] - iSubsetY+l)*width+int(fdPXY[1] - iSubsetX+m)];
 				fSubAveR += (fSubsetR[l*iSubsetW+m]/float(iSubsetH * iSubsetW));
 				//Evaluate the Jacobian dW/dp at(x,0)
-				fJacobian[0][0] = 1.0f, fJacobian[0][1] = float(m-iSubsetX), fJacobian[0][2] = float(l-iSubsetY), fJacobian[0][3] = 0.0f, fJacobian[0][4] = 0.0f, fJacobian[0][5] = 0.0f;
-				fJacobian[1][0] = 0.0f, fJacobian[1][1] = 0.0f, fJacobian[1][2] = 0.0f, fJacobian[1][3] = 1.0f, fJacobian[1][4] = float(m-iSubsetX), fJacobian[1][5] = float(l-iSubsetY);
+				fJacobian[0][0] = 1.0, fJacobian[0][1] = float(m-iSubsetX), fJacobian[0][2] = float(l-iSubsetY), fJacobian[0][3] = 0.0, fJacobian[0][4] = 0.0, fJacobian[0][5] = 0.0;
+				fJacobian[1][0] = 0.0, fJacobian[1][1] = 0.0, fJacobian[1][2] = 0.0, fJacobian[1][3] = 1.0, fJacobian[1][4] = float(m-iSubsetX), fJacobian[1][5] = float(l-iSubsetY);
 				for(int k=0; k<6; k++){
-					fRDescent[(l*iSubsetW+m)*6+k] = fInput_dRx[int(fdPXY[0] - iSubsetY+l)*width+int(fdPXY[1] - iSubsetX +m)]*fJacobian[0][k]
-												   +fInput_dRy[int(fdPXY[0] - iSubsetY+l)*width+int(fdPXY[1] - iSubsetX +m)]*fJacobian[1][k];
+					fRDescent[(l*iSubsetW+m)*6+k] = 0.0;/*fInput_dRx[int(fdPXY[0] - iSubsetY+l)*width+int(fdPXY[1] - iSubsetX+m)]*fJacobian[0][k]
+												   +fInput_dRy[int(fdPXY[0] - iSubsetY+l)*width+int(fdPXY[1] - iSubsetX+m)]*fJacobian[1][k];*/
 				}
 				for(int k=0; k<6; k++){
 					for(int n=0; n<6; n++){
@@ -304,18 +301,20 @@ __global__ void ICGN_kernel(float* fInput_dPXY, float* fInput_dR, float* fInput_
 			fdVx = fdP[4];
 			fdVy = fdP[5];
 		}
-		fOutput_dP[(x*iNumberX+y)*6+0] = fdP[0];
-		fOutput_dP[(x*iNumberX+y)*6+1] = fdP[1];
-		fOutput_dP[(x*iNumberX+y)*6+2] = fdP[2];
-		fOutput_dP[(x*iNumberX+y)*6+3] = fdP[3];
-		fOutput_dP[(x*iNumberX+y)*6+4] = fdP[4];
-		fOutput_dP[(x*iNumberX+y)*6+5] = fdP[5];
-	/*}
-	free(fSubsetR);
-	free(fSubsetT);
-	free(fSubsetAveR);
-	free(fSubsetAveT);
-	free(fRDescent);*/
+		fOutput_dP[(offset)*6+0] = fdP[0];
+		fOutput_dP[(offset)*6+1] = fdP[1];
+		fOutput_dP[(offset)*6+2] = fdP[2];
+		fOutput_dP[(offset)*6+3] = fdP[3];
+		fOutput_dP[(offset)*6+4] = fdP[4];
+		fOutput_dP[(offset)*6+5] = fdP[5];
+		
+		delete[] fSubsetR;
+		delete[] fSubsetT;
+		delete[] fSubsetAveR;
+		delete[] fSubsetAveT;
+		delete[] fRDescent;
+
+	//}
 }
 
 //CUDA RUNTIME Initialization
@@ -438,13 +437,13 @@ void computation(const float* ImgR, const float* ImgT, int iWidth, int iHeight)
 	checkCudaErrors(cudaMemcpy(dInput_iV, iV,(iNumberX*iNumberY)*sizeof(int), cudaMemcpyHostToDevice));
 	checkCudaErrors(cudaMemcpy(dInput_fPXY, fdPXY,(iNumberX*iNumberY)*2*sizeof(float), cudaMemcpyHostToDevice));
 
+
 	WatchICGN.start();
 	dim3 dimB(iNumberY,iNumberX,1);
 	dim3 dimG(1,1,1);
 
-	ICGN_kernel<<<dimG,dimB>>>(dInput_fPXY,d_OutputIMGR,d_OutputIMGRx,d_OutputIMGRy,fDeltaP,
-		d_OutputIMGT,d_OutputBicubic,dInput_iU,dInput_iV,iNumberY,iNumberX,iSubsetH,
-		iSubsetW,width,height,iSubsetY,iSubsetX,iIterationNum,dOutput_fDP);
+	ICGN_kernel<<<dimG,dimB>>>(dInput_fPXY,d_OutputIMGR,d_OutputIMGRx,d_OutputIMGRy,fDeltaP,d_OutputIMGT,d_OutputBicubic,dInput_iU,dInput_iV,
+		iNumberY,iNumberX,iSubsetH,iSubsetW,width,height,iSubsetY,iSubsetX,iIterationNum,dOutput_fDP);
 	float *fdP	 = (float*)malloc(iNumberX*iNumberY*6*sizeof(float));
 	checkCudaErrors(cudaMemcpy(fdP, dOutput_fDP, iNumberY*iNumberX*6*sizeof(float), cudaMemcpyDeviceToHost));
 	WatchICGN.stop();
