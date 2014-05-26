@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Sourse</Filter>
+    </ClCompile>
+    <ClCompile Include="EasyBMP.cpp">
+      <Filter>Sourse</Filter>
+    </ClCompile>
+    <ClCompile Include="FFTCC.cpp">
+      <Filter>Sourse</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="EasyBMP.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="EasyBMP_BMP.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="EasyBMP_DataStructures.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="EasyBMP_VariousBMPutilities.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="FFTCC.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="fftw3.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header">
+      <UniqueIdentifier>{5be86826-5309-4b85-9527-e7003476d180}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sourse">
+      <UniqueIdentifier>{2da5315c-d465-4d1e-aa3b-20beb0a64e31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CUDA">
+      <UniqueIdentifier>{358b0c6b-b29c-4200-b471-92db59e08a61}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="PIDIC.cu">
+      <Filter>CUDA</Filter>
+    </CudaCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PIDIC.cuh">
+      <Filter>CUDA</Filter>
+    </None>
+  </ItemGroup>
+</Project>
