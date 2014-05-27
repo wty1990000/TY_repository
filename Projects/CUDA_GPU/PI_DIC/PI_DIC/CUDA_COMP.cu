@@ -125,9 +125,9 @@ __global__ void ICGN_kernel(float* fInput_dPXY, float* fInput_dR, float* fInput_
 	float fSubAveT, fSubNormT;
 	float fWarpX, fWarpY;
 	float fdP[6], fdWarp[3][3], fJacobian[2][6], fHessian[6][6], fHessianXY[6][6], fInvHessian[6][6], fdPXY[2], fNumerator[6];
-	float *fSubsetR = (float*)malloc(iSubsetH*iSubsetW*sizeof(float)), *fSubsetT = (float*)malloc(iSubsetH*iSubsetW*sizeof(float));
-	float *fSubsetAveR = (float*)malloc(iSubsetH*iSubsetW*sizeof(float)), *fSubsetAveT = (float*)malloc(iSubsetH*iSubsetW*sizeof(float));
-	float *fRDescent = (float*)malloc(iSubsetH*iSubsetW*6*sizeof(float));
+	float fSubsetR[33*33], fSubsetT[33*33];
+	float fSubsetAveR[33*33], fSubsetAveT[33*33];
+	float fRDescent[33*33*6];
 	float fError;
 
 	if((row<iNumberY) && (col<iNumberX)){
@@ -310,11 +310,6 @@ __global__ void ICGN_kernel(float* fInput_dPXY, float* fInput_dR, float* fInput_
 		fOutput_dP[(row*iNumberX+col)*6+4] = fdP[4];
 		fOutput_dP[(row*iNumberX+col)*6+5] = fdP[5];
 	}
-	free(fSubsetR);
-	free(fSubsetT);
-	free(fSubsetAveR);
-	free(fSubsetAveT);
-	free(fRDescent);
 }
 
 

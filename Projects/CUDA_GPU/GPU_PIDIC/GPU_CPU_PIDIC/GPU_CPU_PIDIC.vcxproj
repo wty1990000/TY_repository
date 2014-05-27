@@ -152,7 +152,20 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <CudaCompile Include="PIDIC.cu" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="EasyBMP.cpp" />
+    <ClCompile Include="FFTCC.cpp" />
     <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="EasyBMP.h" />
+    <ClInclude Include="EasyBMP_BMP.h" />
+    <ClInclude Include="EasyBMP_DataStructures.h" />
+    <ClInclude Include="EasyBMP_VariousBMPutilities.h" />
+    <ClInclude Include="FFTCC.h" />
+    <ClInclude Include="fftw3.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PIDIC.cuh" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

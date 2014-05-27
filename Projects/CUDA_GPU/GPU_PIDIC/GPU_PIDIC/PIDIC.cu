@@ -123,9 +123,10 @@ __global__ void ICGN_kernel(float* fInput_dPXY, float* fInput_dR, float* fInput_
 	float fSubAveT, fSubNormT;
 	float fWarpX, fWarpY;
 	float fdP[6], fdWarp[3][3], fJacobian[2][6], fHessian[6][6], fHessianXY[6][6], fInvHessian[6][6], fdPXY[2], fNumerator[6];
-	float *fSubsetR = new float(iSubsetH*iSubsetW), *fSubsetT = new float(iSubsetH*iSubsetW);
-	float *fSubsetAveR = new float(iSubsetH*iSubsetW), *fSubsetAveT = new float(iSubsetH*iSubsetW);
-	float *fRDescent = new float(iSubsetH*iSubsetW*6);
+	
+	float fSubsetR[33*33], fSubsetT[33*33];
+	float fSubsetAveR[33*33], fSubsetAveT[33*33];
+	float fRDescent[33*33*6];
 	float fError;
 
 	//if((row<iNumberY) && (col<iNumberX)){
@@ -149,8 +150,8 @@ __global__ void ICGN_kernel(float* fInput_dPXY, float* fInput_dR, float* fInput_
 				fJacobian[0][0] = 1.0, fJacobian[0][1] = float(m-iSubsetX), fJacobian[0][2] = float(l-iSubsetY), fJacobian[0][3] = 0.0, fJacobian[0][4] = 0.0, fJacobian[0][5] = 0.0;
 				fJacobian[1][0] = 0.0, fJacobian[1][1] = 0.0, fJacobian[1][2] = 0.0, fJacobian[1][3] = 1.0, fJacobian[1][4] = float(m-iSubsetX), fJacobian[1][5] = float(l-iSubsetY);
 				for(int k=0; k<6; k++){
-					fRDescent[(l*iSubsetW+m)*6+k] = 0.0;/*fInput_dRx[int(fdPXY[0] - iSubsetY+l)*width+int(fdPXY[1] - iSubsetX+m)]*fJacobian[0][k]
-												   +fInput_dRy[int(fdPXY[0] - iSubsetY+l)*width+int(fdPXY[1] - iSubsetX+m)]*fJacobian[1][k];*/
+					fRDescent[(l*iSubsetW+m)*6+k] = fInput_dRx[int(fdPXY[0] - iSubsetY+l)*width+int(fdPXY[1] - iSubsetX+m)]*fJacobian[0][k]
+												   +fInput_dRy[int(fdPXY[0] - iSubsetY+l)*width+int(fdPXY[1] - iSubsetX+m)]*fJacobian[1][k];
 				}
 				for(int k=0; k<6; k++){
 					for(int n=0; n<6; n++){
@@ -168,7 +169,14 @@ __global__ void ICGN_kernel(float* fInput_dPXY, float* fInput_dR, float* fInput_
 		}
 		fSubNormR = sqrt(fSubNormR);
 		//Inverse the Hessian matrix
-		for(int l=0; l<6; l++){
+		fInvHessian[0][0] = 1.0f, fInvHessian[1][1] = 1.0f, fInvHessian[2][2] = 1.0f, fInvHessian[3][3] = 1.0f, fInvHessian[4][4] = 1.0f, fInvHessian[5][5] = 1.0f;
+		fInvHessian[0][1] = 0.0f, fInvHessian[0][2] = 0.0f, fInvHessian[0][3] = 0.0f, fInvHessian[0][4] = 0.0f, fInvHessian[0][5] = 0.0f;
+		fInvHessian[1][0] = 0.0f, fInvHessian[1][2] = 0.0f, fInvHessian[1][3] = 0.0f, fInvHessian[1][4] = 0.0f, fInvHessian[1][5] = 0.0f;
+		fInvHessian[2][0] = 0.0f, fInvHessian[2][1] = 0.0f, fInvHessian[2][3] = 0.0f, fInvHessian[2][4] = 0.0f, fInvHessian[2][5] = 0.0f;
+		fInvHessian[3][0] = 0.0f, fInvHessian[3][2] = 0.0f, fInvHessian[3][1] = 0.0f, fInvHessian[3][4] = 0.0f, fInvHessian[3][5] = 0.0f;
+		fInvHessian[4][0] = 0.0f, fInvHessian[4][2] = 0.0f, fInvHessian[4][1] = 0.0f, fInvHessian[4][3] = 0.0f, fInvHessian[4][5] = 0.0f;
+		fInvHessian[5][0] = 0.0f, fInvHessian[5][1] = 0.0f, fInvHessian[5][2] = 0.0f, fInvHessian[5][3] = 0.0f, fInvHessian[5][4] = 0.0f;
+		/*for(int l=0; l<6; l++){
 			for(int m=0; m<6; m++){
 				if( l==m ){
 					fInvHessian[l][m] = 1.0f;
@@ -177,7 +185,7 @@ __global__ void ICGN_kernel(float* fInput_dPXY, float* fInput_dR, float* fInput_
 					fInvHessian[l][m] = 0.0f;
 				}
 			}
-		}
+		}*/
 		for(int l=0; l<6; l++){
 			iTemp = 1;
 			for(int m=l+1; m<6; m++){
@@ -307,12 +315,6 @@ __global__ void ICGN_kernel(float* fInput_dPXY, float* fInput_dR, float* fInput_
 		fOutput_dP[(offset)*6+3] = fdP[3];
 		fOutput_dP[(offset)*6+4] = fdP[4];
 		fOutput_dP[(offset)*6+5] = fdP[5];
-		
-		delete[] fSubsetR;
-		delete[] fSubsetT;
-		delete[] fSubsetAveR;
-		delete[] fSubsetAveT;
-		delete[] fRDescent;
 
 	//}
 }
@@ -426,7 +428,11 @@ void computation(const float* ImgR, const float* ImgT, int iWidth, int iHeight)
 	FFT_CC_interface(hInput_dR, hInput_dT, fdPXY, iNumberY, iNumberX, iFFTSubH, iFFTSubW, 
 		width, height, iSubsetY, iSubsetX, fZNCC, iU, iV, fTimeFFTCC);
 
+	WatchTotal.stop();
+	fTimeTotal = WatchTotal.getTime();
+
 	//ICGN-Begins
+	WatchICGN.start();
 	int *dInput_iU, *dInput_iV;
 	float *dInput_fPXY, *dOutput_fDP;
 	checkCudaErrors(cudaMalloc((void**)&dInput_iU, (iNumberX*iNumberY)*sizeof(int)));
@@ -438,7 +444,7 @@ void computation(const float* ImgR, const float* ImgT, int iWidth, int iHeight)
 	checkCudaErrors(cudaMemcpy(dInput_fPXY, fdPXY,(iNumberX*iNumberY)*2*sizeof(float), cudaMemcpyHostToDevice));
 
 
-	WatchICGN.start();
+	
 	dim3 dimB(iNumberY,iNumberX,1);
 	dim3 dimG(1,1,1);
 
@@ -449,8 +455,7 @@ void computation(const float* ImgR, const float* ImgT, int iWidth, int iHeight)
 	WatchICGN.stop();
 	fTimeICGN = WatchICGN.getTime();
 
-	WatchTotal.stop();
-	fTimeTotal = WatchTotal.getTime();
+
 
 	ofstream OutputFile;
 	OutputFile.open("Results.txt");

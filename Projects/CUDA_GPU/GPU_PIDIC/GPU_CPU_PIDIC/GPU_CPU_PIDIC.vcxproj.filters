@@ -15,10 +15,41 @@
     <ClCompile Include="main.cpp">
       <Filter>Sourse</Filter>
     </ClCompile>
+    <ClCompile Include="EasyBMP.cpp">
+      <Filter>Sourse</Filter>
+    </ClCompile>
+    <ClCompile Include="FFTCC.cpp">
+      <Filter>Sourse</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="PIDIC.cu">
       <Filter>CUDA</Filter>
     </CudaCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="EasyBMP.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="EasyBMP_BMP.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="EasyBMP_DataStructures.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="EasyBMP_VariousBMPutilities.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="fftw3.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="FFTCC.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PIDIC.cuh">
+      <Filter>CUDA</Filter>
+    </None>
   </ItemGroup>
 </Project>
