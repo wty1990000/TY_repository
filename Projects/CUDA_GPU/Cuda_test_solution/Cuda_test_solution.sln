@@ -21,6 +21,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Atomic_add", "Atomic_add\At
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test_Block", "Test_Block\Test_Block.vcxproj", "{932C2720-21BA-482C-A03E-75AF2FA6C452}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Thrust_Test", "Thrust_Test\Thrust_Test.vcxproj", "{44E58738-3EDB-4E7C-B199-984A3A200F0D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -107,6 +109,14 @@ Global
 		{932C2720-21BA-482C-A03E-75AF2FA6C452}.Release|Win32.Build.0 = Release|Win32
 		{932C2720-21BA-482C-A03E-75AF2FA6C452}.Release|x64.ActiveCfg = Release|x64
 		{932C2720-21BA-482C-A03E-75AF2FA6C452}.Release|x64.Build.0 = Release|x64
+		{44E58738-3EDB-4E7C-B199-984A3A200F0D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{44E58738-3EDB-4E7C-B199-984A3A200F0D}.Debug|Win32.Build.0 = Debug|Win32
+		{44E58738-3EDB-4E7C-B199-984A3A200F0D}.Debug|x64.ActiveCfg = Debug|x64
+		{44E58738-3EDB-4E7C-B199-984A3A200F0D}.Debug|x64.Build.0 = Debug|x64
+		{44E58738-3EDB-4E7C-B199-984A3A200F0D}.Release|Win32.ActiveCfg = Release|Win32
+		{44E58738-3EDB-4E7C-B199-984A3A200F0D}.Release|Win32.Build.0 = Release|Win32
+		{44E58738-3EDB-4E7C-B199-984A3A200F0D}.Release|x64.ActiveCfg = Release|x64
+		{44E58738-3EDB-4E7C-B199-984A3A200F0D}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
