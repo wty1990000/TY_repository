@@ -103,52 +103,7 @@ int main(int argc, char** argv)
 	  3. A Gaussian Newton's optimization method is used to estimate the warped images.
 	*/
 	StopWatchWin WatchTotal;
-	WatchTotal.start();
-	//Start precomputation
-	precomputation_interface(Img1,Img2,width,height,fTimePrecopmute,fdR,fdT,fdRx,fdRy,fBicubic);
-	//Start FFT-CC
-	FFT_CC_interface(fdR,fdT,fdPXY,iNumberY,iNumberX,iFFTSubH,iFFTSubW,width,height,iSubsetY,iSubsetX,fZNCC,iU,iV,fTimeFFTCC);
-	//Start ICGN
-	for(int i=0; i<iNumberY; i++){
-		for(int j=0; j<iNumberX; j++){
-			fdU = float(iU[i*iNumberX+j]); fdV = float(iV[i*iNumberX+j]);	fdUx = 0.0f; fdUy = 0.0f; fdVx = 0.0f; fdVy = 0.0f;
-			fdP[0] = fdU, fdP[1] = fdUx, fdP[2] = fdUy, fdP[3] = fdV, fdP[4] = fdVx, fdP[5] = fdVy;
-			fdWarp[0][0] = 1+fdUx, fdWarp[0][1] = fdUy, fdWarp[0][2] = fdU, fdWarp[1][0] = fdVx, fdWarp[1][1] = 1+fdVy, fdWarp[1][2] = fdV, fdWarp[2][0] = 0.0f, fdWarp[2][1] = 0.0f, fdWarp[2][2] = 1.0f;
-			//Initialize the Hessian matrix in subsetR
-			for(k=0; k<6; k++){
-				for(n=0; n<6; n++){
-					fHessian[k][n] = 0.0f;
-				}
-			}
-			//Fill the gray intensity value to subset R
-			for(l=0; l<iSubsetH; l++){
-				for(m=0; m<iSubsetW; m++){
-					fSubsetR[l*iSubsetW+m] = fdR[int(fdPXY[(i*iNumberX+j)*2+0] - iSubsetY+l)*width+int(fdPXY[(i*iNumberX+j)*2+1]-iSubsetX+m)];
-					fSubAveR += (fSubsetR[l*iSubsetW+m]/(iSubsetH * iSubsetW));
-					//Evaluate the Jacobian dW/dp at(x,0)
-					fJacobian[0][0] = 1.0f, fJacobian[0][1] = float(m-iSubsetX), fJacobian[0][2] = float(l-iSubsetY), fJacobian[0][3] = 0.0f, fJacobian[0][4] = 0.0f, fJacobian[0][5] = 0.0f;
-					fJacobian[1][0] = 0.0f, fJacobian[1][1] = 0.0f, fJacobian[1][2] = 0.0f, fJacobian[1][3] = 1.0f, fJacobian[1][4] = float(m-iSubsetX), fJacobian[1][5] = float(l-iSubsetY);
-					for(k=0; k<6; k++){
-						fRDescent[(l*iSubsetW+m)*6+k] = fdRx[int(fdPXY[(i*iNumberX+j)*2+0] - iSubsetY+l)*width+int(fdPXY[(i*iNumberX+j)*2+1] - iSubsetX +m)]*fJacobian[0][k]
-													   +fdRy[int(fdPXY[(i*iNumberX+j)*2+0] - iSubsetY+l)*width+int(fdPXY[(i*iNumberX+j)*2+1] - iSubsetX +m)]*fJacobian[1][k];
-					}
-					for(k=0; k<6; k++){
-						for(n=0; n<6; n++){
-							fHessianXY[k][n] = fRDescent[(l*iSubsetW+m)*6+k] * fRDescent[(l*iSubsetW+m)*6+n];	//Hessian matrix at each point
-							fHessian[k][n] += fHessianXY[k][n];
-						}
-					}
-				}
-			}
-			for(l=0; l<iSubsetH; l++){
-				for(m=0; m<iSubsetW; m++){
-					fSubsetAveR[l*iSubsetW+m] = fSubsetR[l*iSubsetW+m] - fSubAveR;
-					fSubNormR += pow(fSubsetAveR[l*iSubsetW+m],2);
-				}
-			}
-		}
-	}
-	
+	WatchTotal.start();	
 	
 
 	ofstream OutputFile;

@@ -257,10 +257,6 @@ Strategy: Each block compute one of the 21*21 POIs, and within each block 32*32 
 			m_dVy = m_dP[5];
 			__syncthreads();
 
-			if(sqrt(pow(m_dDP[blockID*6+0],2)+pow(m_dDP[blockID*6+1]*m_iSubsetX,2)+pow(m_dDP[blockID*6+2] * m_iSubsetY,2) 
-				+pow(m_dDP[blockID*6+3],2)+pow(m_dDP[blockID*6+4]*m_iSubsetX,2)+pow(m_dDP[blockID*6+5]*m_iSubsetY,2))<m_dNormDeltaP){
-					break;
-			}
 		}
 	}
 	__syncthreads();

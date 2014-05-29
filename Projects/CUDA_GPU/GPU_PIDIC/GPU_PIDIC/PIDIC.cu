@@ -16,7 +16,7 @@ const int iMarginX = 10,	iMarginY = 10;
 const int iGridX = 10,		iGridY = 10;
 const int iSubsetX = 16,	iSubsetY =16;
 const float fDeltaP = 0.001f;
-const int iIterationNum = 5;
+const int iIterationNum = 20;
 
 const int BLOCK_SIZE = 16;
 

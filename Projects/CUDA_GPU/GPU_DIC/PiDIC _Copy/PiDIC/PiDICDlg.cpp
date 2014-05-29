@@ -120,8 +120,8 @@ BOOL CPiDICDlg::OnInitDialog()
 	m_iMarginY = 10;
 	m_iGridSpaceX = 10;
 	m_iGridSpaceY = 10;
-	m_iSubsetX = 16;
-	m_iSubsetY = 16;
+	m_iSubsetX = 8;
+	m_iSubsetY = 8;
 	m_dNormDeltaP = 0.001f;
 	m_iMaxIteration = 20;
 
