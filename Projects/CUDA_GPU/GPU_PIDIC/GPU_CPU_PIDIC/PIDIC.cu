@@ -111,7 +111,7 @@ __global__ void precomputation_kernel(float *d_InputIMGR, float *d_InputIMGT, co
 	}
 
 }
-__global__ void ICGN_kernel(float* input_R, float* input_Rx, float* input_Ry, float fDeltaP,
+__global__ void ICGN_kernel(float* input_R, float* input_Rx, float* input_Ry, float* input_AveR, float* input_NormR, float fDeltaP,
 							float *input_T,   float* input_Bicubic, int* input_iU, int* input_iV, 
 							int iNumberY, int iNumberX, int iSubsetH, int iSubsetW, int width, int height, int iSubsetY, int iSubsetX, 
 							int iGridSpaceX, int iGridSpaceY, int iMarginX, int iMarginY, int iIterationNum,
@@ -121,9 +121,7 @@ __global__ void ICGN_kernel(float* input_R, float* input_Rx, float* input_Ry, fl
 */
 {
 	int x = threadIdx.x, y = threadIdx.y;
-	int row = blockIdx.y * blockDim.y + threadIdx.y;
-	int col = blockIdx.x * blockDim.x + threadIdx.x;
-	int offset = row * iNumberX + col;
+	int offset = blockIdx.y * gridDim.x + blockIdx.x;
 
 	//Shared variables of each ROI
 	__shared__ float fPXY[2];
@@ -132,25 +130,87 @@ __global__ void ICGN_kernel(float* input_R, float* input_Rx, float* input_Ry, fl
 	__shared__ float fR[17*17];
 	__shared__ float fRx[17*17];
 	__shared__ float fRy[17*17];
-	__shared__ float fdP[6], fWarp[3][3], fHessian[6][6],fInvHessian[6][6],fNumerator[6];
+	__shared__ float fdP[6], fdDP[6], fdWarp[3][3], fHessian[6][6],fInvHessian[6][6],fNumerator[6];
+	__shared__ float fdU, fdV, fdUx, fdUy, fdVx, fdVy;
+	__shared__ float fdDU, fdDUx, fdDUy, fdDV, fdDVx, fdDVy;
+	__shared__ float fSubAveR, fSubNormR, fSubAveT, fSubNormT;
 
 	//Private variables for each subset point
-	float fJacobian[2][6];
-	float fdU, fdV, fdUx, fdUy, fdVx, fdVy;
-	float fdDU, fdDUx, fdDUy, fdDV, fdDVx, fdDVy;
-	float fSubAveR, fSubNormR, fSubAveT, fSubNormT;
+	float fJacobian[2][6], fRDescent[6], fHessianXY[6][6];
+	float fSubsetR, fSubsetAveR, fSubsetT, fSubsetAveT;
+	float fdError;
 	
-	//Load the PXY, Rx, Ry and R, T, Bicubic into shared memory of each block
+	//Load the auxiliary variables into shared memory of each block
 	if(x==0 && y ==0){
 		fPXY[0] = float(iMarginX + iSubsetY + blockIdx.y * iGridSpaceY);
 		fPXY[1] = float(iMarginY + iSubsetX + blockIdx.x * iGridSpaceX);
+		
+		fdU = float(input_iU[offset]);		fdDU = 0.0f;
+		fdV = float(input_iV[offset]);		fdDV = 0.0f;
+		fdUx = 0.0f;						fdDUx = 0.0f;
+		fdUy = 0.0f;						fdDUy = 0.0f;
+		fdVx = 0.0f;						fdDVx = 0.0f;
+		fdVy = 0.0f;						fdDVy = 0.0f;
+
+		fdP[0] = fdU;		fdP[3] = fdV;
+		fdP[1] = fdUx;		fdP[4] = fdVx;
+		fdP[2] = fdUy;		fdP[5] = fdVy;
+	
+		fdP[0] = 0.0f;		fdP[3] = 0.0f;
+		fdP[1] = 0.0f;		fdP[4] = 0.0f;
+		fdP[2] = 0.0f;		fdP[5] = 0.0f;
+
+		fdWarp[0][0] = 1 + fdUx;	fdWarp[0][1] = fdUy;		fdWarp[0][2] = fdU;		
+		fdWarp[1][0] = fdVx;		fdWarp[1][1] = 1 + fdVy;	fdWarp[1][2] = fdV;
+		fdWarp[2][0] = 0.0f;		fdWarp[2][1] = 0.0f;		fdWarp[2][2] = 1.0f;
+
+		fNumerator[0] = 0.0f;	fNumerator[1] = 0.0f;	fNumerator[2] = 0.0f;	fNumerator[3] = 0.0f;	fNumerator[4] = 0.0f;	fNumerator[5] = 0.0f;
+		fdDP[0] = 0.0f;	fdDP[1] = 0.0f;	fdDP[2] = 0.0f;	fdDP[3] = 0.0f;	fdDP[4] = 0.0f;	fdDP[5] = 0.0f;
+
+		fSubAveR = input_AveR[offset];	fSubNormR = input_NormR[offset];
+		fSubsetAveT = 0.0f;				fSubNormT = 0.0f;
 	}
 	__syncthreads();
+	if( x<6 && y<6){
+		if( x == y){
+			fInvHessian[y][x] = 1.0f;
+			fHessian[y][x]  = 0.0f;
+		}
+		else{
+			fInvHessian[y][x] = 0.0f;
+			fHessian[y][x] = 0.0f;
+		}
+	}
+	__syncthreads();
+	
+	//Load PXY, Rx, Ry and R, T, Bicubic  into shared_memory
+	if( x<iSubsetW && y<iSubsetH ){
+		fR[y*iSubsetW+x] = input_R[int()*width+int()];	
+	}
+
+
+	// Evaluate the Jacbian dW/dp at (x, 0);
+	fJacobian[0][0] = 1;
+	fJacobian[0][1] = x - iSubsetX;
+	fJacobian[0][2] = y - iSubsetY;
+	fJacobian[0][3] = 0;
+	fJacobian[0][4] = 0;
+	fJacobian[0][5] = 0;
+	fJacobian[1][0] = 0;
+	fJacobian[1][1] = 0;
+	fJacobian[1][2] = 0;
+	fJacobian[1][3] = 1;
+	fJacobian[1][4] = x - iSubsetX;
+	fJacobian[1][5] = y - iSubsetY;
+
+	for(unsigned int i=0; i<6; i++){
+		fRDescent[i] = 
+	}
 
 }
 
 
-void computation_interface(const float* ImgR, const float* ImgT, int iWidth, int iHeight)
+void computation_interface(const std::vector<float>& ImgR, const std::vector<float>& ImgT, int iWidth, int iHeight)
 {
 	//Timers
 	StopWatchWin WatchPrecompute, WatchICGN, WatchTotal;
@@ -208,8 +268,8 @@ void computation_interface(const float* ImgR, const float* ImgT, int iWidth, int
 	checkCudaErrors(cudaMalloc((void**)&d_InputIMGR, (width+2)*(height+2)*sizeof(float)));
 	checkCudaErrors(cudaMalloc((void**)&d_InputIMGT, (width+2)*(height+2)*sizeof(float)));
 	checkCudaErrors(cudaMalloc((void**)&d_InputBiubicCoeff, 16*16*sizeof(float)));
-	checkCudaErrors(cudaMemcpy(d_InputIMGR,ImgR,(width+2)*(height+2)*sizeof(float),cudaMemcpyHostToDevice));
-	checkCudaErrors(cudaMemcpy(d_InputIMGT,ImgT,(width+2)*(height+2)*sizeof(float),cudaMemcpyHostToDevice));
+	checkCudaErrors(cudaMemcpy(d_InputIMGR,&ImgR[0],(width+2)*(height+2)*sizeof(float),cudaMemcpyHostToDevice));
+	checkCudaErrors(cudaMemcpy(d_InputIMGT,&ImgT[0],(width+2)*(height+2)*sizeof(float),cudaMemcpyHostToDevice));
 	checkCudaErrors(cudaMemcpy(d_InputBiubicCoeff,h_InputBicubicCoeff,16*16*sizeof(float),cudaMemcpyHostToDevice));
 	checkCudaErrors(cudaMalloc((void**)&d_OutputIMGR, (width*height)*sizeof(float)));
 	checkCudaErrors(cudaMalloc((void**)&d_OutputIMGRx, (width*height)*sizeof(float)));
@@ -256,9 +316,36 @@ void computation_interface(const float* ImgR, const float* ImgT, int iWidth, int
 	fTimeTotal = WatchTotal.getTime();
 
 
-	/*Befor ICGN starts, pass the average value in first, to simplify GPU's work.*/
+	/*Befor ICGN starts, pass the average and norm value of image R in first, to simplify GPU's work.*/
+	thrust::host_vector<float> hAveR;
+	thrust::host_vector<float> hNormR;
 
-
+	float temp = 0.0f, temp1=0.0f, temp2 = 0.0f;
+	for(int i=0; i<iNumberY; i++){
+		for(int j=0; j<iNumberX; j++){
+			temp = 0.0;
+			for(int l=0; l<iSubsetH; l++){
+				for(int m=0; m<iSubsetW; m++){
+					temp += hInput_dR[int(fdPXY[(i*iNumberX+j)*2+0] - iSubsetY+l)*width
+									+ int(fdPXY[(i*iNumberX+j)*2+1] - iSubsetX+m)] / float(iSubsetW*iSubsetH);
+				}
+			}
+			hAveR.push_back(temp);
+			temp1 = 0.0f, temp2 = 0.0f;
+			for(int l=0; l<iSubsetH; l++){
+				for(int m=0; m<iSubsetW; m++){
+					temp1 = hInput_dR[int(fdPXY[(i*iNumberX+j)*2+0] - iSubsetY+l)*width
+									+ int(fdPXY[(i*iNumberX+j)*2+1] - iSubsetX+m)] / float(iSubsetW*iSubsetH) - hAveR[i*iNumberX+j];
+					temp2 += pow(temp1,2);
+				}
+			}
+			hNormR.push_back(sqrt(temp2));
+		}
+	}
+	thrust::device_vector<float> dAveR = hAveR;
+	thrust::device_vector<float> dNormR = hNormR;
+	float *dAveRaw = thrust::raw_pointer_cast(&dAveR[0]);
+	float *dNormRaw = thrust::raw_pointer_cast(&dNormR[0]);
 
 	//ICGN-Begins
 	WatchICGN.start();
@@ -272,7 +359,7 @@ void computation_interface(const float* ImgR, const float* ImgT, int iWidth, int
 	checkCudaErrors(cudaMemcpy(dInput_iV, iV,(iNumberX*iNumberY)*sizeof(int), cudaMemcpyHostToDevice));
 	checkCudaErrors(cudaMemcpy(dInput_fPXY, fdPXY,(iNumberX*iNumberY)*2*sizeof(float), cudaMemcpyHostToDevice));
 
-	dim3 dimB(1,1,1);
+	dim3 dimB((iSubsetW+2),(iSubsetH+2),1);
 	dim3 dimG(iNumberX,iNumberY,1);
 
 	ICGN_kernel<<<dimG,dimB>>>(dInput_fPXY,d_OutputIMGR,d_OutputIMGRx,d_OutputIMGRy,fDeltaP,d_OutputIMGT,d_OutputBicubic,dInput_iU,dInput_iV,
