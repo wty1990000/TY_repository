@@ -3,7 +3,6 @@
 
 //Initialize CUDA Runtime Library
 void InitCuda();
-void precomputation_interface(const std::vector<float>& h_InputIMGR, const std::vector<float>& h_InputIMGT, int width, int height, float& time,
-							 float* fOutputIMGR, float* fOutputIMGT, float* fOutputIMGRx, float* fOutputIMGRy, float* fOutputBicubic);
+void computation_interface(const std::vector<float>& ImgR, const std::vector<float>& ImgT, int iWidth, int iHeight);
 
 #endif // !PIDIC_CUH_

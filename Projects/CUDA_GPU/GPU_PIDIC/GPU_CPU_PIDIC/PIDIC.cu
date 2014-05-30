@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <fstream>
 
 //Parameters
 const int iMarginX = 10,	iMarginY = 10;
@@ -134,11 +135,15 @@ __global__ void ICGN_kernel(float* input_R, float* input_Rx, float* input_Ry, fl
 	__shared__ float fdU, fdV, fdUx, fdUy, fdVx, fdVy;
 	__shared__ float fdDU, fdDUx, fdDUy, fdDV, fdDVx, fdDVy;
 	__shared__ float fSubAveR, fSubNormR, fSubAveT, fSubNormT;
+	__shared__ float fTemp;
 
 	//Private variables for each subset point
 	float fJacobian[2][6], fRDescent[6], fHessianXY[6][6];
 	float fSubsetR, fSubsetAveR, fSubsetT, fSubsetAveT;
 	float fdError;
+	float fWarpX, fWarpY;
+	int iTemp, iTempX, iTempY;
+	float fTempX, fTempY;
 	
 	//Load the auxiliary variables into shared memory of each block
 	if(x==0 && y ==0){
@@ -185,28 +190,191 @@ __global__ void ICGN_kernel(float* input_R, float* input_Rx, float* input_Ry, fl
 	
 	//Load PXY, Rx, Ry and R, T, Bicubic  into shared_memory
 	if( x<iSubsetW && y<iSubsetH ){
-		fR[y*iSubsetW+x] = input_R[int()*width+int()];	
+		 fR[y*iSubsetW+x] = input_R[int(fPXY[0] - iSubsetY + y)*width+int(fPXY[1] - iSubsetX + x)];	
+		fRx[y*iSubsetW+x] = input_Rx[int(fPXY[0] - iSubsetY + y)*width+int(fPXY[1] - iSubsetX + x)];
+		fRy[y*iSubsetW+x] = input_Ry[int(fPXY[0] - iSubsetY + y)*width+int(fPXY[1] - iSubsetX + x)];
+	}
+	__syncthreads();
+
+	//Load T, Bicubic with additional 1 pixel wider on each side
+	fT[y*iSubsetW+x] = input_T[int(fPXY[0] - (iSubsetY+1) + y)*width+int(fPXY[1] - (iSubsetX+1) + x)];
+	for(int k=0; k<4; k++){
+		for(int n=0; n<4; n++){
+			fBicubic[((y*iSubsetW+x)*4+k)*4+n] = input_Bicubic[((int(fPXY[0] - (iSubsetY+1) + y)*width+int(fPXY[1] - (iSubsetX+1) + x))*4+k)*4+n];
+		}
+	}
+	__syncthreads();
+
+	//Start computing
+
+	if( x<iSubsetW && y<iSubsetH){
+		// Evaluate the Jacbian dW/dp at (x, 0);
+		fJacobian[0][0] = 1;
+		fJacobian[0][1] = x - iSubsetX;
+		fJacobian[0][2] = y - iSubsetY;
+		fJacobian[0][3] = 0;
+		fJacobian[0][4] = 0;
+		fJacobian[0][5] = 0;
+		fJacobian[1][0] = 0;
+		fJacobian[1][1] = 0;
+		fJacobian[1][2] = 0;
+		fJacobian[1][3] = 1;
+		fJacobian[1][4] = x - iSubsetX;
+		fJacobian[1][5] = y - iSubsetY;
+
+		for(unsigned int i=0; i<6; i++){
+			fRDescent[i] = fRx[y*iSubsetW+x] * fJacobian[0][i] + fRy[y*iSubsetW+x] * fJacobian[1][i];
+		}
+		for(unsigned int i=0; i<6; i++){
+			for(unsigned int j=0; j<6; j++){
+				fHessianXY[i][j] = fRDescent[i] * fRDescent[j];
+				/*fHessian[i][j] += fHessianXY[i][j];*/		//This is bad code, cannot be all added to one index.
+				atomicAdd(&fHessian[i][j], fHessianXY[i][j]);	//Must use this instead.
+			}
+		}
+		fSubsetAveR = fSubsetR - fSubAveR;
+	}
+	__syncthreads();
+	//Invert the Hessian matrix using the first 36 threads
+	if(x ==0 && y ==0){
+		for(int l=0; l<6; l++){
+			iTemp = l;
+			for(int m=l+1; m<6; m++){
+				if(fHessian[m][l] > fHessian[iTemp][l]){
+					iTemp = m;
+				}
+			}
+			//Swap the row which has maximum lth column element
+			if(iTemp != l){
+				for(int k=0; k<6; k++){
+					fTemp = fHessian[l][k];
+					fHessian[l][k] = fHessian[iTemp][k];
+					fHessian[iTemp][k] = fTemp;
+
+					fTemp = fInvHessian[l][k]; 
+					fInvHessian[l][k] = fInvHessian[iTemp][k];
+					fInvHessian[iTemp][k] = fTemp;
+				}
+			}
+			//Row oerpation to form required identity matrix
+			for(int m=0; m<6; m++){
+				fTemp = fHessian[m][l];
+				if(m != l){
+					for(int n=0; n<6; n++){
+						fInvHessian[m][n] -= fInvHessian[l][n] * fTemp / fHessian[l][l];
+						fHessian[m][n] -= fHessian[l][n] * fTemp / fHessian[l][l];
+					}
+				}
+				else{
+					for(int n=0; n<6; n++){
+						fInvHessian[m][n] /= fTemp;
+						fHessian[m][n] /= fTemp;
+					}
+				}
+			}
+		}
+	}
+	for(int it=0; it < iIterationNum; it++){
+		if( x==0 && y==0){
+			fSubsetAveT = 0.0f;	fSubNormT = 0.0f;
+			fNumerator[0] = 0.0f; fNumerator[1] = 0.0f; fNumerator[2] = 0.0f; fNumerator[3] = 0.0f; fNumerator[4] = 0.0f; fNumerator[5] = 0.0f; fNumerator[6] = 0.0f;
+		}
+		__syncthreads();
+
+		if( (x<iSubsetW) && (y<iSubsetH) ){
+
+			fWarpX = (iSubsetX+1) + fdWarp[0][0]*(x - iSubsetX) + fdWarp[0][1]*(y - iSubsetY) + fdWarp[0][2];
+			fWarpY = (iSubsetY+1) + fdWarp[1][0]*(x - iSubsetX) + fdWarp[1][1]*(y - iSubsetY) + fdWarp[1][2];
+
+			iTempX = int(fWarpX);
+			iTempY = int(fWarpY);
+
+			if( (iTempX>=0) && (iTempY>=0) && (iTempX<(iSubsetW+1)) && (iTempY<(iSubsetH+1)) ){
+				fTempX = fWarpX - float(iTempX);
+				fTempY = fWarpY - float(iTempY);
+				//if it is integer-pixel location ,feed the intensity of T into subset T
+				if( (fTempX <= 0.000001) && (fTempY <= 0.000001) ){
+					fSubsetT = fT[iTempY*(iSubsetW+2)+iTempX];
+				}
+				else{
+					fSubsetT = 0.0f;
+					for(int k=0; k<4; k++){
+						for(int n=0; n<4; n++){
+							fSubsetT += fBicubic[((iTempY*(iSubsetW+2)+iTempX)*4+k)*4+n]*pow(fTempY,k)*pow(fTempX,n);
+						}
+					}
+				}
+				atomicAdd(&fSubAveT, fSubsetT/float(iSubsetH*iSubsetW));
+				fSubsetAveT = fSubsetT - fSubAveT;
+				__syncthreads();
+				atomicAdd(&fSubNormT, pow(fSubAveT,2));
+			}
+		}
+		if( (x==0) && (y==0) ){
+			fSubNormT = sqrt(fSubNormT);
+		}
+		__syncthreads();
+		if( (x<iSubsetW) && (y<iSubsetH) ){
+			//Compute Error image
+			fdError = (fSubNormR / fSubNormT) * fSubAveT - fSubsetAveR;
+		}
+		__syncthreads();
+		if( x==0 && y==0){
+			for(int i=0; i<6; i++){
+				atomicAdd(&(fNumerator[i]), (fRDescent[i]*fdError));
+			}
+			for(int k=0; k<6; k++){
+				fdDP[k] = 0.0;
+				for(int n=0; n<6; n++){
+					fdDP[k] += (fInvHessian[k][n] * fNumerator[n]);
+				}
+			}
+			fdDU  = fdDP[0];
+			fdDUx = fdDP[1];
+			fdDUy = fdDP[2];
+			fdDV  = fdDP[3];
+			fdDVx = fdDP[4];
+			fdDVy = fdDP[5];
+
+			fTemp = (1+fdDUx) * (1+fdDVy) - fdDUy*fdDVx;
+
+			fdWarp[0][0] = ((1 + fdUx) * (1 + fdDVy) - fdUy * fdDVx) / fTemp;
+			fdWarp[0][1] = (fdUy * (1 + fdDUx) - (1 + fdUx) * fdDUy) / fTemp;
+			fdWarp[0][2] = fdU + (fdUy * (fdDU * fdDVx - fdDV - fdDV * fdDUx) - (1 + fdUx) * (fdDU * fdDVy + fdDU - fdDUy * fdDV)) / fTemp;
+			fdWarp[1][0] = (fdVx * (1 + fdDVy) - (1 + fdVy) * fdDVx) / fTemp;
+			fdWarp[1][1] = ((1 + fdVy) * (1 + fdDUx) - fdVx * fdDUy) / fTemp;
+			fdWarp[1][2] = fdV + ((1 + fdVy) * (fdDU * fdDVx - fdDV - fdDV * fdDUx) - fdVx * (fdDU * fdDVy + fdDU - fdDUy * fdDV)) / fTemp;
+			fdWarp[2][0] = 0;
+			fdWarp[2][1] = 0;
+			fdWarp[2][2] = 1;
+
+			// Update DeltaP
+			fdP[0] = fdWarp[0][2];
+			fdP[1] = fdWarp[0][0] - 1;
+			fdP[2] = fdWarp[0][1];
+			fdP[3] = fdWarp[1][2];
+			fdP[4] = fdWarp[1][0];
+			fdP[5] = fdWarp[1][1] - 1;
+
+			fdU = fdP[0];
+			fdUx = fdP[1];
+			fdUy = fdP[2];
+			fdV = fdP[3];
+			fdVx = fdP[4];
+			fdVy = fdP[5];
+		}
+		__syncthreads();
 	}
 
-
-	// Evaluate the Jacbian dW/dp at (x, 0);
-	fJacobian[0][0] = 1;
-	fJacobian[0][1] = x - iSubsetX;
-	fJacobian[0][2] = y - iSubsetY;
-	fJacobian[0][3] = 0;
-	fJacobian[0][4] = 0;
-	fJacobian[0][5] = 0;
-	fJacobian[1][0] = 0;
-	fJacobian[1][1] = 0;
-	fJacobian[1][2] = 0;
-	fJacobian[1][3] = 1;
-	fJacobian[1][4] = x - iSubsetX;
-	fJacobian[1][5] = y - iSubsetY;
-
-	for(unsigned int i=0; i<6; i++){
-		fRDescent[i] = 
+	//Pass back the values
+	if( x==0 && y==0 ){
+		output_dP[offset*6+0] = fdP[0];
+		output_dP[offset*6+1] = fdP[1];
+		output_dP[offset*6+2] = fdP[2];
+		output_dP[offset*6+3] = fdP[3];
+		output_dP[offset*6+4] = fdP[4];
+		output_dP[offset*6+5] = fdP[5];
 	}
-
 }
 
 
@@ -312,9 +480,6 @@ void computation_interface(const std::vector<float>& ImgR, const std::vector<flo
 	FFT_CC_interface(hInput_dR, hInput_dT, fdPXY, iNumberY, iNumberX, iFFTSubH, iFFTSubW, 
 		width, height, iSubsetY, iSubsetX, fZNCC, iU, iV, fTimeFFTCC);
 
-	WatchTotal.stop();
-	fTimeTotal = WatchTotal.getTime();
-
 
 	/*Befor ICGN starts, pass the average and norm value of image R in first, to simplify GPU's work.*/
 	thrust::host_vector<float> hAveR;
@@ -362,13 +527,16 @@ void computation_interface(const std::vector<float>& ImgR, const std::vector<flo
 	dim3 dimB((iSubsetW+2),(iSubsetH+2),1);
 	dim3 dimG(iNumberX,iNumberY,1);
 
-	ICGN_kernel<<<dimG,dimB>>>(dInput_fPXY,d_OutputIMGR,d_OutputIMGRx,d_OutputIMGRy,fDeltaP,d_OutputIMGT,d_OutputBicubic,dInput_iU,dInput_iV,
-		iNumberY,iNumberX,iSubsetH,iSubsetW,width,height,iSubsetY,iSubsetX,iIterationNum,dOutput_fDP);
+	ICGN_kernel<<<dimG, dimB>>>(d_OutputIMGR,d_OutputIMGRx,d_OutputIMGRy,dAveRaw, dNormRaw,fDeltaP,d_OutputIMGT,d_OutputBicubic,dInput_iU,dInput_iV,
+		iNumberY, iNumberX, iSubsetH, iSubsetW, width, height, iSubsetY, iSubsetX, iGridX, iGridY, iMarginX, iMarginY, iIterationNum, dOutput_fDP);
+
 	float *fdP = (float*)malloc(iNumberX*iNumberY*6*sizeof(float));
 	checkCudaErrors(cudaMemcpy(fdP, dOutput_fDP, iNumberY*iNumberX*6*sizeof(float), cudaMemcpyDeviceToHost));
 	WatchICGN.stop();
 	fTimeICGN = WatchICGN.getTime();
 	
+	WatchTotal.stop();
+	fTimeTotal = WatchTotal.getTime();
 
 	checkCudaErrors(cudaFree(d_OutputIMGR));
 	checkCudaErrors(cudaFree(d_OutputIMGRx));
@@ -379,6 +547,34 @@ void computation_interface(const std::vector<float>& ImgR, const std::vector<flo
 	checkCudaErrors(cudaFree(dInput_iV));
 	checkCudaErrors(cudaFree(dInput_fPXY));
 	checkCudaErrors(cudaFree(dOutput_fDP));
+
+	std::ofstream OutputFile;
+	OutputFile.open("Results.txt");
+	for(int i =0; i<iNumberY; i++){
+		for(int j=0; j<iNumberX; j++){
+			OutputFile<<int(fdPXY[(i*iNumberX+j)*2+1])<<", "<<int(fdPXY[(i*iNumberX+j)*2+0])<<", "<<iU[i*iNumberX+j]<<", "
+				<<fdP[(i*iNumberX+j)*6+0]<<", "<<fdP[(i*iNumberX+j)*6+1]<<", "<<fdP[(i*iNumberX+j)*6+2]<<", "<<fdP[(i*iNumberX+j)*6+3]<<", "<<iV[i*iNumberX+j]<<", "<<fdP[(i*iNumberX+j)*6+4]<<", "<<fdP[(i*iNumberX+j)*6+5]<<", "
+				<<fZNCC[i*iNumberX+j]<<std::endl;
+		}
+	}
+	OutputFile.close();	
+
+	OutputFile.open("Time.txt");
+	OutputFile << "Interval (X-axis): " << iGridX << " [pixel]" << std::endl;
+	OutputFile << "Interval (Y-axis): " << iGridY << " [pixel]" << std::endl;
+	OutputFile << "Number of POI: " << iNumberY*iNumberX << " = " << iNumberX << " X " << iNumberY << std::endl;
+	OutputFile << "Subset dimension: " << iSubsetW << "x" << iSubsetH << " pixels" << std::endl;
+	OutputFile << "Time comsumed: " << fTimeTotal << " [millisec]" <<std::endl;
+	OutputFile << "Time for Pre-computation: " << fTimePrecopmute << " [millisec]" << std::endl;
+	OutputFile << "Time for integral-pixel registration: " << fTimeFFTCC / (iNumberY*iNumberX) << " [millisec]" << std::endl;
+	OutputFile << "Time for sub-pixel registration: " << fTimeICGN / (iNumberY*iNumberX) << " [millisec]" << " for average iteration steps of " << float(iIterationNum) / (iNumberY*iNumberX) << std::endl;
+	OutputFile << width << ", " << height << ", " << iGridX << ", " << iGridY << ", " << std::endl;
+
+	OutputFile <<"Time for computing every FFT:"<<fTimeFFTCC<<"[miliseconds]"<<std::endl;
+	OutputFile <<"Time for ICGN:"<<fTimeICGN<<std::endl;
+
+	OutputFile.close();
+
 	free(hInput_dR);
 	free(hInput_dT);
 	free(fZNCC);

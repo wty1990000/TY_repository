@@ -23,6 +23,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test_Block", "Test_Block\Te
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Thrust_Test", "Thrust_Test\Thrust_Test.vcxproj", "{44E58738-3EDB-4E7C-B199-984A3A200F0D}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LocalAddition", "LocalAddition\LocalAddition.vcxproj", "{E0A5B2F5-EC76-4578-8805-3C7D63B82C74}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -117,6 +119,14 @@ Global
 		{44E58738-3EDB-4E7C-B199-984A3A200F0D}.Release|Win32.Build.0 = Release|Win32
 		{44E58738-3EDB-4E7C-B199-984A3A200F0D}.Release|x64.ActiveCfg = Release|x64
 		{44E58738-3EDB-4E7C-B199-984A3A200F0D}.Release|x64.Build.0 = Release|x64
+		{E0A5B2F5-EC76-4578-8805-3C7D63B82C74}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E0A5B2F5-EC76-4578-8805-3C7D63B82C74}.Debug|Win32.Build.0 = Debug|Win32
+		{E0A5B2F5-EC76-4578-8805-3C7D63B82C74}.Debug|x64.ActiveCfg = Debug|x64
+		{E0A5B2F5-EC76-4578-8805-3C7D63B82C74}.Debug|x64.Build.0 = Debug|x64
+		{E0A5B2F5-EC76-4578-8805-3C7D63B82C74}.Release|Win32.ActiveCfg = Release|Win32
+		{E0A5B2F5-EC76-4578-8805-3C7D63B82C74}.Release|Win32.Build.0 = Release|Win32
+		{E0A5B2F5-EC76-4578-8805-3C7D63B82C74}.Release|x64.ActiveCfg = Release|x64
+		{E0A5B2F5-EC76-4578-8805-3C7D63B82C74}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

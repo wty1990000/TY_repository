@@ -54,46 +54,46 @@ int main(int argc, char** argv)
 	InitCuda();
 
 	//Predefined parameters
-	int width =  Image1.TellWidth() - 2;
-	int height = Image1.TellHeight() -2;
-	int iNumberX = int(floor((width - iSubsetX*2 - iMarginX*2)/float(iGridX))) + 1;
+	int iWidth =  Image1.TellWidth() ;
+	int iHeight = Image1.TellHeight();
+	/*int iNumberX = int(floor((width - iSubsetX*2 - iMarginX*2)/float(iGridX))) + 1;
 	int iNumberY = int(floor((height - iSubsetY*2 - iMarginY*2)/float(iGridY))) + 1;
 	int iSubsetW = iSubsetX*2+1;
 	int iSubsetH = iSubsetY*2+1;
 	int iFFTSubW = iSubsetX*2;
-	int iFFTSubH = iSubsetY*2;
+	int iFFTSubH = iSubsetY*2;*/
 
 	float fTimePrecopmute=0.0f, fTimeFFTCC=0.0f, fTimeICGN=0.0f, fTimeTotal=0.0f;
 
-	//Parameters for computation
-	float *fdR = (float*)malloc(width*height*sizeof(float));
-	float *fdT = (float*)malloc(width*height*sizeof(float));
-	float *fdRx = (float*)malloc(width*height*sizeof(float));
-	float *fdRy = (float*)malloc(width*height*sizeof(float));
-	float *fBicubic = (float*)malloc(width*height*4*4*sizeof(float));
-	float *fZNCC = (float*)malloc(iNumberX*iNumberY*sizeof(float));
-	float *fdP	 = (float*)malloc(iNumberX*iNumberY*6*sizeof(float));
-	float *fdPXY = (float*)malloc(iNumberX*iNumberY*2*sizeof(float));
-	int *iU = (int*)malloc(iNumberX*iNumberY*sizeof(int));
-	int *iV = (int*)malloc(iNumberX*iNumberY*sizeof(int));
-	float fdU, fdV, fdUx, fdUy, fdVx, fdVy;
-	float fdDU, fdDUx, fdDUy, fdDV, fdDVx, fdDVy;
-	float fSubAveR = 0.0f, fSubNormR = 0.0f;
-	float fSubAveT=0.0f , fSubNormT=0.0f;
-	float fWarpX, fWarpY;
-	float fdP[6], fdWarp[3][3], fJacobian[2][6], fHessian[6][6], fHessianXY[6][6], fInvHessian[6][6], fNumerator[6];
-	int k,l,m,n;
-	float *fSubsetR = (float*)malloc(iSubsetH*iSubsetW*sizeof(float));
-	float *fSubsetT = (float*)malloc(iSubsetH*iSubsetW*sizeof(float));
-	float* fSubsetAveR = (float*)malloc(iSubsetH*iSubsetW*sizeof(float));
-	float* fSubsetAveT = (float*)malloc(iSubsetH*iSubsetW*sizeof(float));
-	float* fRDescent = (float*)malloc(iSubsetH*iSubsetW*6*sizeof(float));
-	for(int i=0; i<iNumberY; i++){
-		for(int j=0; j<iNumberX; j++){
-			fdPXY[(i*iNumberX+j)*2+0] = float(iMarginX + iSubsetY + i*iGridY);
-			fdPXY[(i*iNumberX+j)*2+1] = float(iMarginY + iSubsetX + j*iGridX);
-		}
-	}
+	////Parameters for computation
+	//float *fdR = (float*)malloc(width*height*sizeof(float));
+	//float *fdT = (float*)malloc(width*height*sizeof(float));
+	//float *fdRx = (float*)malloc(width*height*sizeof(float));
+	//float *fdRy = (float*)malloc(width*height*sizeof(float));
+	//float *fBicubic = (float*)malloc(width*height*4*4*sizeof(float));
+	//float *fZNCC = (float*)malloc(iNumberX*iNumberY*sizeof(float));
+	//float *fdP	 = (float*)malloc(iNumberX*iNumberY*6*sizeof(float));
+	//float *fdPXY = (float*)malloc(iNumberX*iNumberY*2*sizeof(float));
+	//int *iU = (int*)malloc(iNumberX*iNumberY*sizeof(int));
+	//int *iV = (int*)malloc(iNumberX*iNumberY*sizeof(int));
+	//float fdU, fdV, fdUx, fdUy, fdVx, fdVy;
+	//float fdDU, fdDUx, fdDUy, fdDV, fdDVx, fdDVy;
+	//float fSubAveR = 0.0f, fSubNormR = 0.0f;
+	//float fSubAveT=0.0f , fSubNormT=0.0f;
+	//float fWarpX, fWarpY;
+	//float fdP[6], fdWarp[3][3], fJacobian[2][6], fHessian[6][6], fHessianXY[6][6], fInvHessian[6][6], fNumerator[6];
+	//int k,l,m,n;
+	//float *fSubsetR = (float*)malloc(iSubsetH*iSubsetW*sizeof(float));
+	//float *fSubsetT = (float*)malloc(iSubsetH*iSubsetW*sizeof(float));
+	//float* fSubsetAveR = (float*)malloc(iSubsetH*iSubsetW*sizeof(float));
+	//float* fSubsetAveT = (float*)malloc(iSubsetH*iSubsetW*sizeof(float));
+	//float* fRDescent = (float*)malloc(iSubsetH*iSubsetW*6*sizeof(float));
+	//for(int i=0; i<iNumberY; i++){
+	//	for(int j=0; j<iNumberX; j++){
+	//		fdPXY[(i*iNumberX+j)*2+0] = float(iMarginX + iSubsetY + i*iGridY);
+	//		fdPXY[(i*iNumberX+j)*2+1] = float(iMarginY + iSubsetX + j*iGridX);
+	//	}
+	//}
 
 	/*------------------------------Real computation starts here--------------------------------
 	  Totally, there are three steps:
@@ -105,44 +105,7 @@ int main(int argc, char** argv)
 	StopWatchWin WatchTotal;
 	WatchTotal.start();	
 	
-
-	ofstream OutputFile;
-	OutputFile.open("Results.txt");
-	for(int i =0; i<iNumberY; i++){
-		for(int j=0; j<iNumberX; j++){
-			OutputFile<<int(fdPXY[(i*iNumberX+j)*2+1])<<", "<<int(fdPXY[(i*iNumberX+j)*2+0])<<", "<<iU[i*iNumberX+j]<<", "
-				<<fdP[(i*iNumberX+j)*6+0]<<", "<<fdP[(i*iNumberX+j)*6+1]<<", "<<fdP[(i*iNumberX+j)*6+2]<<", "<<fdP[(i*iNumberX+j)*6+3]<<", "<<iV[i*iNumberX+j]<<", "<<fdP[(i*iNumberX+j)*6+4]<<", "<<fdP[(i*iNumberX+j)*6+5]<<", "
-				<<fZNCC[i*iNumberX+j]<<endl;
-		}
-	}
-	OutputFile.close();	
-
-	OutputFile.open("Time.txt");
-	OutputFile << "Interval (X-axis): " << iGridX << " [pixel]" << endl;
-	OutputFile << "Interval (Y-axis): " << iGridY << " [pixel]" << endl;
-	OutputFile << "Number of POI: " << iNumberY*iNumberX << " = " << iNumberX << " X " << iNumberY << endl;
-	OutputFile << "Subset dimension: " << iSubsetW << "x" << iSubsetH << " pixels" << endl;
-	OutputFile << "Time comsumed: " << fTimeTotal << " [millisec]" << endl;
-	OutputFile << "Time for Pre-computation: " << fTimePrecopmute << " [millisec]" << endl;
-	OutputFile << "Time for integral-pixel registration: " << fTimeFFTCC / (iNumberY*iNumberX) << " [millisec]" << endl;
-	OutputFile << "Time for sub-pixel registration: " << fTimeICGN / (iNumberY*iNumberX) << " [millisec]" << " for average iteration steps of " << float(iIterationNum) / (iNumberY*iNumberX) << endl;
-	OutputFile << width << ", " << height << ", " << iGridX << ", " << iGridY << ", " << endl;
-
-	OutputFile <<"Time for computing every FFT:"<<fTimeFFTCC<<"[miliseconds]"<<endl;
-	OutputFile <<"Time for ICGN:"<<fTimeICGN<<endl;
-
-	OutputFile.close();
-	
-	free(fZNCC);
-	free(fdP);
-	free(fdPXY);
-	free(iU);
-	free(iV);
-	free(fdR);
-	free(fdT);
-	free(fdRx);
-	free(fdRy);
-	free(fBicubic);
+	computation_interface(Img1, Img2, iWidth, iHeight);
 
 	return 0;
 }

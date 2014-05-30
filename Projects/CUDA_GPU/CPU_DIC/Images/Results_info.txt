@@ -1,11 +1,11 @@
 Interval (X-axis): 10 [pixel]
 Interval (Y-axis): 10 [pixel]
-Number of POI: 441 = 21 X 21
-Subset dimension: 33x33 pixels
-Time comsumed: 174.151 [millisec]
-Time for Pre-computation: 12.1679 [millisec]
-Time for integral-pixel registration: 0.0327974 [millisec]
-Time for sub-pixel registration: 0.334456 [millisec] for average iteration steps of 1.46939
+Number of POI: 484 = 22 X 22
+Subset dimension: 17x17 pixels
+Time comsumed: 126.609 [millisec]
+Time for Pre-computation: 12.1612 [millisec]
+Time for integral-pixel registration: 0.00877467 [millisec]
+Time for sub-pixel registration: 0.227637 [millisec] for average iteration steps of 6.79545
 254, 254, 10, 10, 
-Time for computing every FFT:14.4637[miliseconds]
-Time for ICGN:147.495
+Time for computing every FFT:4.24694[miliseconds]
+Time for ICGN:110.176

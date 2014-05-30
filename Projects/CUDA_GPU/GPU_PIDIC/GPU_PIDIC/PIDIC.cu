@@ -432,7 +432,7 @@ void computation(const float* ImgR, const float* ImgT, int iWidth, int iHeight)
 	fTimeTotal = WatchTotal.getTime();
 
 	//ICGN-Begins
-	WatchICGN.start();
+	
 	int *dInput_iU, *dInput_iV;
 	float *dInput_fPXY, *dOutput_fDP;
 	checkCudaErrors(cudaMalloc((void**)&dInput_iU, (iNumberX*iNumberY)*sizeof(int)));
@@ -444,7 +444,7 @@ void computation(const float* ImgR, const float* ImgT, int iWidth, int iHeight)
 	checkCudaErrors(cudaMemcpy(dInput_fPXY, fdPXY,(iNumberX*iNumberY)*2*sizeof(float), cudaMemcpyHostToDevice));
 
 
-	
+	WatchICGN.start();
 	dim3 dimB(iNumberY,iNumberX,1);
 	dim3 dimG(1,1,1);
 
