@@ -3,12 +3,13 @@
 #include <QHBoxLayout>
 #include <QSpinBox>
 #include <QSlider>
+#include <QString>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     MainWindow w;
-    w.setWindowTitle("Enter your age!");
+    w.setWindowTitle(QObject::tr("Enter!"));
     QWidget *window = new QWidget(&w);
     QSpinBox *spinBox = new QSpinBox(window);
     QSlider *slider = new QSlider(Qt::Horizontal,window);

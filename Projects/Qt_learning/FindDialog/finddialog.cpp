@@ -23,7 +23,7 @@ FindDialog::FindDialog(QWidget *parent) :
 
     connect(lineEdit, SIGNAL(textChanged(const QString&)),this,SLOT(enableFindButton(const QString&)));
     connect(findButton,SIGNAL(clicked()),this,SLOT(findClicked()));
-    connect(findButton,SIGNAL(clicked()),this,SLOT(close()));
+    connect(closeButton,SIGNAL(clicked()),this,SLOT(close()));
 
     QHBoxLayout *topLeftLayout = new QHBoxLayout;
     topLeftLayout->addWidget(label);
@@ -43,6 +43,27 @@ FindDialog::FindDialog(QWidget *parent) :
     mainLayout->addLayout(leftLayout);
     mainLayout->addLayout(rightLayout);
     setLayout(mainLayout);
+
+    setWindowTitle(tr("Find"));
+    setFixedHeight(sizeHint().height());
+}
+
+void FindDialog::findClicked()
+{
+    QString text = lineEdit->text();
+    Qt::CaseSensitivity cs = caseCheckBox->isChecked() ? Qt::CaseSensitive
+                                                       : Qt::CaseInsensitive;
+    if(backwardCheckBox->isChecked()){
+        emit findPrevious(text,cs);
+    }
+    else{
+        emit findNext(text,cs);
+    }
+}
+
+void FindDialog::enableFindButton(const QString &text)
+{
+    findButton->setEnabled(!text.isEmpty());
 }
 
 FindDialog::~FindDialog()
