@@ -13,6 +13,7 @@ class ExtentionDialog : public QDialog
 
 public:
     explicit ExtentionDialog(QWidget *parent = 0);
+    void setColumnRange(QChar first, QChar last);
     ~ExtentionDialog();
 
 private:
