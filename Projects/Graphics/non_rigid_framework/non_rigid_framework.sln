@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NRF_Viewer", "NRF_Viewer\NRF_Viewer.vcxproj", "{B12702AD-ABFB-343A-A199-8E24837244A3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VegaFEM", "VegaFEM", "{995922AB-EC1C-4945-9A36-83AD727508BB}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "camera", "VegaFEM\project\camera\camera.vcxproj", "{1C78CBBC-D4A4-436B-99C5-CE40C0ED48FE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B12702AD-ABFB-343A-A199-8E24837244A3}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B12702AD-ABFB-343A-A199-8E24837244A3}.Debug|Win32.Build.0 = Debug|Win32
+		{B12702AD-ABFB-343A-A199-8E24837244A3}.Release|Win32.ActiveCfg = Release|Win32
+		{B12702AD-ABFB-343A-A199-8E24837244A3}.Release|Win32.Build.0 = Release|Win32
+		{1C78CBBC-D4A4-436B-99C5-CE40C0ED48FE}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1C78CBBC-D4A4-436B-99C5-CE40C0ED48FE}.Debug|Win32.Build.0 = Debug|Win32
+		{1C78CBBC-D4A4-436B-99C5-CE40C0ED48FE}.Release|Win32.ActiveCfg = Release|Win32
+		{1C78CBBC-D4A4-436B-99C5-CE40C0ED48FE}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1C78CBBC-D4A4-436B-99C5-CE40C0ED48FE} = {995922AB-EC1C-4945-9A36-83AD727508BB}
+	EndGlobalSection
+EndGlobal
