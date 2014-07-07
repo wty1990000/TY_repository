@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>771</width>
-     <height>23</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -39,21 +39,49 @@
     <property name="title">
      <string>&amp;Edit</string>
     </property>
+    <widget class="QMenu" name="menu_Select">
+     <property name="title">
+      <string>&amp;Select</string>
+     </property>
+     <addaction name="actionRow"/>
+     <addaction name="actionColumn"/>
+     <addaction name="actionAll"/>
+    </widget>
+    <widget class="QMenu" name="menuType_Here">
+     <property name="title">
+      <string>Type Here</string>
+     </property>
+    </widget>
+    <addaction name="actionCut"/>
+    <addaction name="actionCopy"/>
+    <addaction name="actionPaste"/>
+    <addaction name="actionDelete"/>
+    <addaction name="menu_Select"/>
+    <addaction name="separator"/>
+    <addaction name="action_Find"/>
+    <addaction name="actionGotoCell"/>
+    <addaction name="menuType_Here"/>
    </widget>
    <widget class="QMenu" name="menu_Tools">
     <property name="title">
      <string>&amp;Tools</string>
     </property>
+    <addaction name="actionRecalculate"/>
+    <addaction name="actionSort"/>
    </widget>
    <widget class="QMenu" name="menu_Options">
     <property name="title">
      <string>&amp;Options</string>
     </property>
+    <addaction name="actionShowGrid"/>
+    <addaction name="actionAutorecalculate"/>
    </widget>
    <widget class="QMenu" name="menu_Help">
     <property name="title">
      <string>&amp;Help</string>
     </property>
+    <addaction name="actionAbout"/>
+    <addaction name="actionAboutQt"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Edit"/>
@@ -83,6 +111,9 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionCut"/>
+   <addaction name="actionCopy"/>
+   <addaction name="actionPaste"/>
   </widget>
   <action name="action_New">
    <property name="icon">
@@ -137,6 +168,131 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionCut">
+   <property name="icon">
+    <iconset resource="rc_MainWindow.qrc">
+     <normaloff>:/myresourses/cut.png</normaloff>:/myresourses/cut.png</iconset>
+   </property>
+   <property name="text">
+    <string>Cu&amp;t</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+X</string>
+   </property>
+  </action>
+  <action name="actionCopy">
+   <property name="icon">
+    <iconset resource="rc_MainWindow.qrc">
+     <normaloff>:/myresourses/copy.png</normaloff>:/myresourses/copy.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Copy</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
+   </property>
+  </action>
+  <action name="actionPaste">
+   <property name="icon">
+    <iconset resource="rc_MainWindow.qrc">
+     <normaloff>:/myresourses/paste.png</normaloff>:/myresourses/paste.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Paste</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+V</string>
+   </property>
+  </action>
+  <action name="actionDelete">
+   <property name="text">
+    <string>&amp;Delete</string>
+   </property>
+   <property name="shortcut">
+    <string>Del</string>
+   </property>
+  </action>
+  <action name="actionRow">
+   <property name="text">
+    <string>&amp;Row</string>
+   </property>
+  </action>
+  <action name="actionColumn">
+   <property name="text">
+    <string>&amp;Column</string>
+   </property>
+  </action>
+  <action name="actionAll">
+   <property name="text">
+    <string>&amp;All</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+A</string>
+   </property>
+  </action>
+  <action name="action_Find">
+   <property name="icon">
+    <iconset resource="rc_MainWindow.qrc">
+     <normaloff>:/myresourses/find.png</normaloff>:/myresourses/find.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Find...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F</string>
+   </property>
+  </action>
+  <action name="actionGotoCell">
+   <property name="icon">
+    <iconset resource="rc_MainWindow.qrc">
+     <normaloff>:/myresourses/next.png</normaloff>:/myresourses/next.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Go to Cell...</string>
+   </property>
+   <property name="shortcut">
+    <string>F5</string>
+   </property>
+  </action>
+  <action name="actionRecalculate">
+   <property name="text">
+    <string>&amp;Recalculate</string>
+   </property>
+   <property name="shortcut">
+    <string>F9</string>
+   </property>
+  </action>
+  <action name="actionSort">
+   <property name="text">
+    <string>&amp;Sort...</string>
+   </property>
+  </action>
+  <action name="actionShowGrid">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Show Grid</string>
+   </property>
+  </action>
+  <action name="actionAutorecalculate">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Auto-recalculate</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>&amp;About</string>
+   </property>
+  </action>
+  <action name="actionAboutQt">
+   <property name="text">
+    <string>About &amp;Qt</string>
    </property>
   </action>
  </widget>
